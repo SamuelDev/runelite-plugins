@@ -28,4 +28,15 @@ public interface AverageTotalLevelConfig extends Config
 	{
 		return true;
 	}
+
+	@ConfigItem(
+			keyName = "useDecimals",
+			name = "Use decimals in average level",
+			description = "Choose whether or not to show decimal places in the average level",
+			position = 2
+	)
+	default boolean useDecimals()
+	{
+		return true;
+	}
 }
