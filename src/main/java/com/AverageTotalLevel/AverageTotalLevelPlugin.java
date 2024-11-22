@@ -114,6 +114,13 @@ public class AverageTotalLevelPlugin extends Plugin
 		int skillCount = Skill.values().length;
 		float average = (float) (config.virtualAverageTotalLevel() ? displayedTotal : client.getTotalLevel()) / skillCount;
 
-		return new DecimalFormat("#.##").format(average);
+		if (config.useDecimals())
+		{
+			return new DecimalFormat("#.##").format(average);
+		}
+		else
+		{
+			return new DecimalFormat("#").format(Math.floor(average));
+		}
 	}
 }
