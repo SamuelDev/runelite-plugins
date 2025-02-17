@@ -462,7 +462,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		final MenuAction menuAction = MenuAction.of(type);
 		if (NPC_MENU_ACTIONS.contains(menuAction))
 		{
-			NPC npc = client.getCachedNPCs()[event.getIdentifier()];
+			NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
 
 			Color color = null;
 			if (npcUtil.isDying(npc))
@@ -493,7 +493,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		else if (menuAction == MenuAction.EXAMINE_NPC)
 		{
 			final int id = event.getIdentifier();
-			final NPC npc = client.getCachedNPCs()[id];
+			final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
 
 			if (npc != null)
 			{
@@ -613,7 +613,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				|| event.getOption().contains("-Clickbox") || event.getOption().contains("-Turbo")))
 			{
 				final int id = event.getIdentifier();
-				final NPC npc = client.getCachedNPCs()[id];
+				final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
 				boolean tag = event.getOption().contains("Tag");
 				if (npc.getName() != null)
 				{
@@ -782,7 +782,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 			{
 				if (n.spawnPoint == null && n.diedOnTick != -1)
 				{
-					WorldPoint wp = client.isInInstancedRegion() ? WorldPoint.fromLocalInstance(client, npc.getLocalLocation()) : WorldPoint.fromLocal(client, npc.getLocalLocation());
+					WorldPoint wp = WorldPoint.fromLocalInstance(client, npc.getLocalLocation());
 					if (n.spawnLocations.contains(wp))
 					{
 						n.spawnPoint = wp;
@@ -873,7 +873,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 			&& client.getLocalPlayer().getPlayerComposition() != null)
 		{
 			npcList.clear();
-			for (NPC npc : client.getNpcs())
+			for (NPC npc : client.getTopLevelWorldView().npcs())
 			{
 				NPCInfo npcInfo = checkValidNPC(npc);
 				if (npcInfo != null)
