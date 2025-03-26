@@ -1610,13 +1610,14 @@ public interface BetterNpcHighlightConfig extends Config
 	// No Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-		position = 13,
-		keyName = "tagStyleMode",
-		name = "Tag Style",
-		description = "Sets which highlight style list the NPC tagged is added too")
-	default tagStyleMode tagStyleMode()
+	position = 13,
+	keyName = "tagStyleMode",
+	name = "Tag Style",
+	description = "Sets which highlight style(s) the NPC tagged is added too"
+	)
+	default Set<tagStyleMode> tagStyleMode()
 	{
-		return tagStyleMode.TILE;
+		return Collections.emptySet();
 	}
 
 	@ConfigItem(
