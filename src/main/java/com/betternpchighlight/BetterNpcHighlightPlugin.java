@@ -727,35 +727,35 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		{
 			config.setTileNames(configListToString(add, name, tileNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE))
 		{
 			config.setTrueTileNames(configListToString(add, name, trueTileNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE))
 		{
 			config.setSwTileNames(configListToString(add, name, swTileNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE))
 		{
 			config.setSwTrueTileNames(configListToString(add, name, swTrueTileNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.HULL))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.HULL))
 		{
 			config.setHullNames(configListToString(add, name, hullNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.AREA))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.AREA))
 		{
 			config.setAreaNames(configListToString(add, name, areaNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE))
 		{
 			config.setOutlineNames(configListToString(add, name, outlineNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
 		{
 			config.setClickboxNames(configListToString(add, name, clickboxNames, preset));
 		}
-		else if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
+		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
 		{
 			config.setTurboNames(configListToString(add, name, turboNames, 0));
 		}
