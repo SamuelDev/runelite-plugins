@@ -1610,10 +1610,10 @@ public interface BetterNpcHighlightConfig extends Config
 	// No Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-	position = 13,
-	keyName = "tagStyleMode",
-	name = "Tag Style",
-	description = "Sets which highlight style(s) the NPC tagged is added too"
+		position = 13,
+		keyName = "tagStyleMode",
+		name = "Tag Style",
+		description = "Sets which highlight style(s) the NPC tagged is added too"
 	)
 	default Set<tagStyleMode> tagStyleMode()
 	{
