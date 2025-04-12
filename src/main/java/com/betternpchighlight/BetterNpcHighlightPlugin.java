@@ -40,6 +40,7 @@ import net.runelite.api.Menu;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.vars.InputType;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -117,6 +118,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	@Inject
 	private ChatMessageManager chatMessageManager;
 
+	@Inject
+	private ClientThread clientThread;
+
 	private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(MenuAction.NPC_FIRST_OPTION, MenuAction.NPC_SECOND_OPTION,
 		MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION, MenuAction.NPC_FIFTH_OPTION, MenuAction.WIDGET_TARGET_ON_NPC,
 		MenuAction.ITEM_USE_ON_NPC);
@@ -172,42 +176,44 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 
 	protected void startUp()
 	{
-		reset();
-		overlayManager.add(overlay);
-		overlayManager.add(mapOverlay);
-		splitList(config.tileNames(), tileNames);
-		splitList(config.tileIds(), tileIds);
-		splitList(config.trueTileNames(), trueTileNames);
-		splitList(config.trueTileIds(), trueTileIds);
-		splitList(config.swTileNames(), swTileNames);
-		splitList(config.swTileIds(), swTileIds);
-		splitList(config.swTrueTileNames(), swTrueTileNames);
-		splitList(config.swTrueTileIds(), swTrueTileIds);
-		splitList(config.hullNames(), hullNames);
-		splitList(config.hullIds(), hullIds);
-		splitList(config.areaNames(), areaNames);
-		splitList(config.areaIds(), areaIds);
-		splitList(config.outlineNames(), outlineNames);
-		splitList(config.outlineIds(), outlineIds);
-		splitList(config.clickboxNames(), clickboxNames);
-		splitList(config.clickboxIds(), clickboxIds);
-		splitList(config.turboNames(), turboNames);
-		splitList(config.turboIds(), turboIds);
-		splitList(config.displayName(), namesToDisplay);
-		splitList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
-		splitList(config.ignoreDeadExclusionID(), ignoreDeadExclusionIDList);
-		splitList(config.entityHiderNames(), hiddenNames);
-		splitList(config.entityHiderIds(), hiddenIds);
-		splitList(config.drawBeneathList(), beneathNPCs);
-		hooks.registerRenderableDrawListener(drawListener);
-		keyManager.registerKeyListener(this);
+		clientThread.invokeLater(() -> {
+			reset();
+			overlayManager.add(overlay);
+			overlayManager.add(mapOverlay);
+			splitList(config.tileNames(), tileNames);
+			splitList(config.tileIds(), tileIds);
+			splitList(config.trueTileNames(), trueTileNames);
+			splitList(config.trueTileIds(), trueTileIds);
+			splitList(config.swTileNames(), swTileNames);
+			splitList(config.swTileIds(), swTileIds);
+			splitList(config.swTrueTileNames(), swTrueTileNames);
+			splitList(config.swTrueTileIds(), swTrueTileIds);
+			splitList(config.hullNames(), hullNames);
+			splitList(config.hullIds(), hullIds);
+			splitList(config.areaNames(), areaNames);
+			splitList(config.areaIds(), areaIds);
+			splitList(config.outlineNames(), outlineNames);
+			splitList(config.outlineIds(), outlineIds);
+			splitList(config.clickboxNames(), clickboxNames);
+			splitList(config.clickboxIds(), clickboxIds);
+			splitList(config.turboNames(), turboNames);
+			splitList(config.turboIds(), turboIds);
+			splitList(config.displayName(), namesToDisplay);
+			splitList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
+			splitList(config.ignoreDeadExclusionID(), ignoreDeadExclusionIDList);
+			splitList(config.entityHiderNames(), hiddenNames);
+			splitList(config.entityHiderIds(), hiddenIds);
+			splitList(config.drawBeneathList(), beneathNPCs);
+			hooks.registerRenderableDrawListener(drawListener);
+			keyManager.registerKeyListener(this);
 
-		enableSlayerPlugin();
+			enableSlayerPlugin();
 
-		if (client.getGameState() == GameState.LOGGED_IN)
-		{
-			recreateList();
-		}
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				recreateList();
+			}
+		});
 	}
 
 	protected void shutDown()
@@ -257,16 +263,18 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 
 	private void splitList(String configStr, ArrayList<String> strList)
 	{
-		if (!configStr.equals(""))
-		{
-			for (String str : configStr.split(","))
+		clientThread.invokeLater(() -> {
+			if (!configStr.equals(""))
 			{
-				if (!str.trim().equals(""))
+				for (String str : configStr.split(","))
 				{
-					strList.add(str.trim().toLowerCase());
+					if (!str.trim().equals(""))
+					{
+						strList.add(str.trim().toLowerCase());
+					}
 				}
 			}
-		}
+		});
 	}
 
 	@Subscribe
@@ -462,7 +470,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		final MenuAction menuAction = MenuAction.of(type);
 		if (NPC_MENU_ACTIONS.contains(menuAction))
 		{
-			NPC npc = client.getCachedNPCs()[event.getIdentifier()];
+			NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
 
 			Color color = null;
 			if (npcUtil.isDying(npc))
@@ -493,7 +501,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		else if (menuAction == MenuAction.EXAMINE_NPC)
 		{
 			final int id = event.getIdentifier();
-			final NPC npc = client.getCachedNPCs()[id];
+			final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
 
 			if (npc != null)
 			{
@@ -613,7 +621,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				|| event.getOption().contains("-Clickbox") || event.getOption().contains("-Turbo")))
 			{
 				final int id = event.getIdentifier();
-				final NPC npc = client.getCachedNPCs()[id];
+				final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
 				boolean tag = event.getOption().contains("Tag");
 				if (npc.getName() != null)
 				{
@@ -869,20 +877,22 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 
 	public void recreateList()
 	{
-		if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
-			&& client.getLocalPlayer().getPlayerComposition() != null)
-		{
-			npcList.clear();
-			for (NPC npc : client.getNpcs())
+		clientThread.invokeLater(() -> {
+			if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
+				&& client.getLocalPlayer().getPlayerComposition() != null)
 			{
-				NPCInfo npcInfo = checkValidNPC(npc);
-				if (npcInfo != null)
+				npcList.clear();
+				for (NPC npc : client.getNpcs())
 				{
-					npcList.add(npcInfo);
+					NPCInfo npcInfo = checkValidNPC(npc);
+					if (npcInfo != null)
+					{
+						npcList.add(npcInfo);
+					}
 				}
+				currentTask = slayerPluginService.getTask();
 			}
-			currentTask = slayerPluginService.getTask();
-		}
+		});
 	}
 
 	public NPCInfo checkValidNPC(NPC npc)
