@@ -442,6 +442,10 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				case "presetFillColor4":
 				case "presetColor5":
 				case "presetFillColor5":
+				case "useGlobalTileColor":
+				case "globalTileColor":
+				case "globalFillColor":
+				case "globaltileWidth":
 					recreateList();
 					break;
 			}
@@ -696,10 +700,12 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 
 	private void updateListConfig(boolean add, String name, int preset)
 	{
-		if (!add) {
+		if (!add)
+		{
 			removeAllTagStyles(name);
 		}
-		else {
+		else
+		{
 			if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TILE))
 			{
 				config.setTileNames(configListToString(add, name, tileNames, preset));
@@ -739,7 +745,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		}
 	}
 
-	private void removeAllTagStyles(String name) {
+	private void removeAllTagStyles(String name)
+	{
 		config.setTileNames(configListToString(false, name, tileNames, 0));
 		config.setTrueTileNames(configListToString(false, name, trueTileNames, 0));
 		config.setSwTileNames(configListToString(false, name, swTileNames, 0));
@@ -1022,6 +1029,10 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	 */
 	public Color getTagColor()
 	{
+		if (config.useGlobalTileColor())
+		{
+			return config.globalTileColor();
+		}
 		if (config.tagStyleMode().contains(BetterNpcHighlightConfig.tagStyleMode.TILE))
 		{
 			return config.tileColor();
