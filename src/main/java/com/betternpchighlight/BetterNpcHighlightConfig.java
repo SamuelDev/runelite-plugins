@@ -1655,19 +1655,6 @@ public interface BetterNpcHighlightConfig extends Config
 		return new Color(0, 255, 255, 20);
 	}
 
-	@Range(min = 0, max = 50)
-	@ConfigItem(
-		position = 3,
-		keyName = "globaltileWidth",
-		name = "Global Highlight Width",
-		description = "Overrides all other tag style highlight widths.",
-		section = globalTagSection
-	)
-	default double globaltileWidth()
-	{
-		return 2;
-	}
-
 	//------------------------------------------------------------//
 	// No Section
 	//------------------------------------------------------------//

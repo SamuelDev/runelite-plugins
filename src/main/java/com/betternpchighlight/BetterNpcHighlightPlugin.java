@@ -445,7 +445,6 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				case "useGlobalTileColor":
 				case "globalTileColor":
 				case "globalFillColor":
-				case "globaltileWidth":
 					recreateList();
 					break;
 			}
