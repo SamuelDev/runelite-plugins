@@ -15,9 +15,7 @@ import net.runelite.client.plugins.PluginDescriptor;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Hide Prayer Descriptions",
-	description = "Hides the descriptive text when hovering over prayers",
-	tags = {"prayer", "interface", "tooltip", "description"}
+	name = "Hide Prayer Descriptions"
 )
 public class HidePrayerDescriptionsPlugin extends Plugin
 {
