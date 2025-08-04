@@ -8,31 +8,45 @@ import net.runelite.client.config.ConfigItem;
 public interface HidePrayerDescriptionsConfig extends Config
 {
 	@ConfigItem(
-		keyName = "hidePrayerDescriptions",
-		name = "Hide Prayer Descriptions",
-		description = "Hide the descriptive text that appears when hovering over prayers"
+		keyName = "hidePrayerLevel",
+		name = "Hide Prayer Level",
+		description = "Hide the level requirement in the prayer tooltip.",
+		position = 0
 	)
-	default boolean hidePrayerDescriptions()
+	default boolean hidePrayerLevel()
 	{
 		return true;
 	}
 
 	@ConfigItem(
-		keyName = "hideInPrayerTab",
-		name = "Hide in Prayer Tab",
-		description = "Hide prayer descriptions in the prayer tab interface"
+		keyName = "hidePrayerName",
+		name = "Hide Prayer Name",
+		description = "Hide the name in the prayer tooltip.",
+		position = 1
 	)
-	default boolean hideInPrayerTab()
+	default boolean hidePrayerName()
 	{
 		return true;
 	}
-
+	
 	@ConfigItem(
-		keyName = "hideInQuickPrayers",
-		name = "Hide in Quick Prayers",
-		description = "Hide prayer descriptions in the quick prayer interface"
+		keyName = "hidePrayerDescription",
+		name = "Hide Prayer Description",
+		description = "Hide the description in the prayer tooltip.",
+		position = 2
 	)
-	default boolean hideInQuickPrayers()
+	default boolean hidePrayerDescription()
+	{
+		return true;
+	}
+	
+	@ConfigItem(
+		keyName = "hidePrayerDrain",
+		name = "Hide Prayer Drain Rate",
+		description = "Hide the drain rate in the prayer tooltip.",
+		position = 3
+	)
+	default boolean hidePrayerDrain()
 	{
 		return true;
 	}
