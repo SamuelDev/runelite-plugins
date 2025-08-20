@@ -142,6 +142,14 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	String instructionsSection = "instructions";
 
+	@ConfigSection(
+		name = "Global Tag Style",
+		description = "Options for a global tag style",
+		position = 13,
+		closedByDefault = true
+	)
+	String globalTagSection = "globalTagStyle";
+
 	//------------------------------------------------------------//
 	// Tile Section
 	//------------------------------------------------------------//
@@ -1607,20 +1615,62 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	//------------------------------------------------------------//
+	// Global tag style section
+	//------------------------------------------------------------//
+	@ConfigItem(
+		position = 0,
+		keyName = "useGlobalTileColor",
+		name = "Use Global Tile Color",
+		description = "Makes all tile types use the options below instead of individual by tile type. Will not override tiles using a preset. Will not override types hull, area, outline, clickbox, or turbo.",
+		section = globalTagSection
+	)
+	default boolean useGlobalTileColor()
+	{
+		return false;
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 1,
+		keyName = "globalTileColor",
+		name = "Global Tile Color",
+		description = "Overrides all other tag style outlines.",
+		section = globalTagSection
+	)
+	default Color globalTileColor()
+	{
+		return Color.CYAN;
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 2,
+		keyName = "globalFillColor",
+		name = "Global Fill Color",
+		description = "Overrides all other tag style fill colors.",
+		section = globalTagSection
+	)
+	default Color globalFillColor()
+	{
+		return new Color(0, 255, 255, 20);
+	}
+
+	//------------------------------------------------------------//
 	// No Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-		position = 13,
+		position = 14,
 		keyName = "tagStyleMode",
 		name = "Tag Style",
-		description = "Sets which highlight style list the NPC tagged is added too")
-	default tagStyleMode tagStyleMode()
+		description = "Sets which highlight style(s) the NPC tagged is added too"
+	)
+	default Set<tagStyleMode> tagStyleMode()
 	{
-		return tagStyleMode.TILE;
+		return Collections.emptySet();
 	}
 
 	@ConfigItem(
-		position = 14,
+		position = 15,
 		keyName = "tagCommands",
 		name = "Tag Commands",
 		description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section"
@@ -1631,7 +1681,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 16,
 		keyName = "highlightMenuNames",
 		name = "Highlight Menu Names",
 		description = "Highlights names in right click menu entry"
@@ -1642,7 +1692,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 17,
 		keyName = "ignoreDeadNpcs",
 		name = "Ignore Dead NPCs",
 		description = "Doesn't highlight dead NPCs"
@@ -1653,7 +1703,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = "ignoreDeadExclusion",
 		name = "Ignore Dead Exclusion Name List",
 		description = "List of NPC names to not remove highlight when dead"
@@ -1664,7 +1714,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 19,
 		keyName = "ignoreDeadExclusionID",
 		name = "Ignore Dead Exclusion ID List",
 		description = "List of NPC IDs to not remove highlight when dead"
@@ -1675,7 +1725,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 20,
 		keyName = "drawBeneath",
 		name = "Draw Overlays Beneath NPCs",
 		description = "Overlays will appear behind/below NPCs. GPU plugin must be turned on"
@@ -1687,7 +1737,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Range(max = 20)
 	@ConfigItem(
-		position = 20,
+		position = 21,
 		keyName = "drawBeneathLimit",
 		name = "Draw Beneath Limit",
 		description = "Sets the amount of NPCs to have the overlay draw beneath. The higher the number, the more it affects FPS"
@@ -1698,7 +1748,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 21,
+		position = 22,
 		keyName = "drawBeneathList",
 		name = "Draw Beneath List",
 		description = "Sets specific NPCs to have the overlay draw beneath. Empty list will use Draw Beneath Limit"
@@ -1709,7 +1759,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 22,
+		position = 23,
 		keyName = "renderDistance",
 		name = "Render Distance",
 		description = "Limits overlays to be drawn to within the chosen distance from the local player. <br>Short = 7 tiles, Medium = 11 tiles"
@@ -1720,7 +1770,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 23,
+		position = 24,
 		keyName = "highlightPets",
 		name = "Highlight pets",
 		description = "Highlights followers/pets that are in any of your lists"
@@ -1731,7 +1781,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 24,
+		position = 25,
 		keyName = "deadNpcMenuColor",
 		name = "Dead NPC Menu Color",
 		description = "Highlights names in right click menu entry when an NPC is dead"
@@ -1739,7 +1789,7 @@ public interface BetterNpcHighlightConfig extends Config
 	Color deadNpcMenuColor();
 
 	@ConfigItem(
-		position = 25,
+		position = 26,
 		keyName = "respawnTimer",
 		name = "Respawn Timer",
 		description = "Marks tile and shows timer for when a marker NPC will respawn"
@@ -1751,7 +1801,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 26,
+		position = 27,
 		keyName = "respawnTimerColor",
 		name = "Respawn Time Color",
 		description = "Sets the color of the text for Respawn Timer"
@@ -1763,7 +1813,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 27,
+		position = 28,
 		keyName = "respawnOutlineColor",
 		name = "Respawn Outline Color",
 		description = "Sets the color of the tile for Respawn Timer"
@@ -1775,7 +1825,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 28,
+		position = 29,
 		keyName = "respawnFillColor",
 		name = "Respawn Fill Color",
 		description = "Sets the fill color of the tile for Respawn Timer"
@@ -1787,7 +1837,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Range(min = 1, max = 10)
 	@ConfigItem(
-		position = 29,
+		position = 30,
 		keyName = "respawnTileWidth",
 		name = "Respawn Tile Width",
 		description = "Sets the width of the tile for Respawn Timer"
@@ -1798,7 +1848,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 30,
+		position = 31,
 		keyName = "displayName",
 		name = "Display Name",
 		description = "Shows name of NPCs in the list above them"
@@ -1809,7 +1859,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 31,
+		position = 32,
 		keyName = "fontBackground",
 		name = "Font Background",
 		description = "Puts an outline, shadow, or nothing behind font overlays"
@@ -1820,7 +1870,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 32,
+		position = 33,
 		keyName = "npcMinimapMode",
 		name = "Highlight Minimap",
 		description = "Highlights NPC on minimap and/or displays name"
@@ -1831,7 +1881,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 33,
+		position = 34,
 		keyName = "debugNPC",
 		name = "Debug NPC Info",
 		description = "Highlights all NPCs with their Name and ID"
