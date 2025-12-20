@@ -9,7 +9,7 @@
       "name": "Debug RuneLite Plugin",
       "request": "launch",
       "mainClass": "com.HidePrayerDescriptions.HidePrayerDescriptionsTest",
-      "projectName": "AverageTotalLevel-runelite-plugins", // AverageTotalLevel-runelite-plugins
+      "projectName": "HidePrayerDescriptions-runelite-plugins",
       "cwd": "${workspaceFolder}",
       "args": "--developer-mode --debug",
       "vmArgs": "-ea",
