@@ -9,7 +9,7 @@
       "name": "Debug RuneLite Plugin",
       "request": "launch",
       "mainClass": "com.AverageTotalLevel.AverageTotalLevelTest",
-      "projectName": "AverageTotalLevel-runelite-plugins", // AverageTotalLevel-runelite-plugins
+      "projectName": "AverageTotalLevel-runelite-plugins",
       "cwd": "${workspaceFolder}",
       "args": "--developer-mode --debug",
       "vmArgs": "-ea",
