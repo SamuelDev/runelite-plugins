@@ -1,0 +1,21 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug RuneLite Plugin",
+      "request": "launch",
+      "mainClass": "com.AverageTotalLevel.AverageTotalLevelTest",
+      "projectName": "AverageTotalLevel-runelite-plugins", // AverageTotalLevel-runelite-plugins
+      "cwd": "${workspaceFolder}",
+      "args": "--developer-mode --debug",
+      "vmArgs": "-ea",
+      "env": {
+        "JAVA_HOME": "C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.25.9-hotspot"
+      }
+    }
+  ]
+}
