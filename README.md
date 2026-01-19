@@ -8,4 +8,4 @@ A more customizable way of highlighting NPCs.
 + Respawn timer in ticks or seconds
 + Turbo mode for rave enthusiasts
 
-![example](https://i.imgur.com/vsLfpNK.png)
+<img width="234" height="490" alt="image" src="https://github.com/user-attachments/assets/27424fec-11ca-4553-8aab-86fd3d6dfa6f" />
