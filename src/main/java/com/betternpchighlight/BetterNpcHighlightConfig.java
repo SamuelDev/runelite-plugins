@@ -51,10 +51,10 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigSection(
-		name = "Global Tag Style",
-		description = "Options for a global tag style",
+		name = "Global Settings",
+		description = "Settings that apply across multiple highlight types",
 		position = 0,
-		closedByDefault = true
+		closedByDefault = false
 	)
 	String globalTagSection = "globalTagStyle";
 
@@ -173,29 +173,29 @@ public interface BetterNpcHighlightConfig extends Config
 	//------------------------------------------------------------//
 	// Global tag style section
 	//------------------------------------------------------------//
-	@ConfigItem(
-		position = 0,
-		keyName = "useGlobalTileColor",
-		name = "Use Global Tile Color",
-		description = "Makes all tile types use the options below instead of individual by tile type. Will not override tiles using a preset. Will not override types hull, area, outline, clickbox, or turbo.",
-		section = globalTagSection
-	)
-	default boolean useGlobalTileColor()
-	{
-		return false;
-	}
-
 	public static final Set<tagStyleMode> defaultTagStyle = Set.of(tagStyleMode.TILE);
 	@ConfigItem(
-		position = 1,
+		position = 0,
 		keyName = "tagStyleModeSet",
 		name = "Tag Style",
-		description = "Sets which highlight styles to apply to an NPC when tagged from the right click menu.",
+		description = "Sets which highlight styles to apply to an NPC when tagged from the right click menu. Select none to hide the right click menu option.",
 		section = globalTagSection
 	)
 	default Set<tagStyleMode> tagStyleModeSet()
 	{
 		return defaultTagStyle;
+	}
+
+	@ConfigItem(
+		position = 1,
+		keyName = "useGlobalTileColor",
+		name = "Use Global Tile Color",
+		description = "Forces tile, true tile, SW tile, and SW true tile to use the same colors. Will not override highlights using a preset.",
+		section = globalTagSection
+	)
+	default boolean useGlobalTileColor()
+	{
+		return false;
 	}
 
 	@Alpha
