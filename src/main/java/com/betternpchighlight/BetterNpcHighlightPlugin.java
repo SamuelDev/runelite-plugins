@@ -230,8 +230,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	{
 		// migrate old tag style mode config into the new set version of config if possible
 		try {
-			String oldValue = configManager.getConfiguration("BetterNpcHighlight", "tagStyleMode");
-			String newValue = configManager.getConfiguration("BetterNpcHighlight", "tagStyleModeSet");
+			String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
+			String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
 			if (oldValue != null && newValue == null)
 			{
 				log.debug("BNPC: Migrating old tag style mode config to new set version");
@@ -243,7 +243,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
 				
 				// Save the properly serialized Set to the new config
-				configManager.setConfiguration("BetterNpcHighlight", "tagStyleModeSet", newModeSet);
+				configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
 			}
 		}
 		catch (Exception e) {
