@@ -171,6 +171,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	@Provides
 	BetterNpcHighlightConfig providesConfig(ConfigManager configManager)
 	{
+		migrateOldConfig(configManager);
 		return configManager.getConfig(BetterNpcHighlightConfig.class);
 	}
 
@@ -223,6 +224,32 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 		overlayManager.remove(mapOverlay);
 		hooks.unregisterRenderableDrawListener(drawListener);
 		keyManager.unregisterKeyListener(this);
+	}
+
+	private void migrateOldConfig(ConfigManager configManager)
+	{
+		// migrate old tag style mode config into the new set version of config if possible
+		try {
+			String oldValue = configManager.getConfiguration("BetterNpcHighlight", "tagStyleMode");
+			String newValue = configManager.getConfiguration("BetterNpcHighlight", "tagStyleModeSet");
+			if (oldValue != null && newValue == null)
+			{
+				log.debug("BNPC: Migrating old tag style mode config to new set version");
+				
+				// Parse the old enum string value
+				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
+				
+				// Convert to Set format
+				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
+				
+				// Save the properly serialized Set to the new config
+				configManager.setConfiguration("BetterNpcHighlight", "tagStyleModeSet", newModeSet);
+			}
+		}
+		catch (Exception e) {
+			// Could not migrate, ignore
+			log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
+		}
 	}
 
 	private void reset()
@@ -442,6 +469,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 				case "presetFillColor4":
 				case "presetColor5":
 				case "presetFillColor5":
+				case "useGlobalTileColor":
+				case "globalTileColor":
+				case "globalFillColor":
 					recreateList();
 					break;
 			}
@@ -506,51 +536,36 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 			if (npc != null)
 			{
 				String option;
-				if (npc.getName() != null && config.tagStyleMode() != BetterNpcHighlightConfig.tagStyleMode.NONE)
+				// if there is an NPC name AND
+				// ((tag style none is selected, and so is another option) OR
+				// (tag style none is not selected, and another is))
+				if (npc.getName() != null &&
+						((config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE) && config.tagStyleModeSet().size() > 1) ||
+						(!config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE) && !config.tagStyleModeSet().isEmpty())))
 				{
-					if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TILE)
+					if (checkSpecificNameList(tileNames, npc) ||
+							checkSpecificNameList(trueTileNames, npc) ||
+							checkSpecificNameList(swTileNames, npc) ||
+							checkSpecificNameList(swTrueTileNames, npc) ||
+							checkSpecificNameList(hullNames, npc) ||
+							checkSpecificNameList(areaNames, npc) ||
+							checkSpecificNameList(outlineNames, npc) ||
+							checkSpecificNameList(clickboxNames, npc) ||
+							checkSpecificNameList(turboNames, npc))
 					{
-						option = checkSpecificNameList(tileNames, npc) ? "Untag-Tile" : "Tag-Tile";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)
-					{
-						option = checkSpecificNameList(trueTileNames, npc) ? "Untag-True-Tile" : "Tag-True-Tile";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TILE)
-					{
-						option = checkSpecificNameList(swTileNames, npc) ? "Untag-SW-Tile" : "Tag-SW-Tile";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)
-					{
-						option = checkSpecificNameList(swTrueTileNames, npc) ? "Untag-SW-True-Tile" : "Tag-SW-True-Tile";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.HULL)
-					{
-						option = checkSpecificNameList(hullNames, npc) ? "Untag-Hull" : "Tag-Hull";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.AREA)
-					{
-						option = checkSpecificNameList(areaNames, npc) ? "Untag-Area" : "Tag-Area";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.OUTLINE)
-					{
-						option = checkSpecificNameList(outlineNames, npc) ? "Untag-Outline" : "Tag-Outline";
-					}
-					else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)
-					{
-						option = checkSpecificNameList(clickboxNames, npc) ? "Untag-Clickbox" : "Tag-Clickbox";
+						option = "Untag-NPC";
 					}
 					else
 					{
-						option = checkSpecificNameList(turboNames, npc) ? "Untag-Turbo" : "Tag-Turbo";
+						option = "Tag-NPC";
 					}
 
-					if (option.contains("Untag-") && (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null)))
+					if (option.equals("Untag-NPC") && (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null)))
 					{
 						MenuEntry[] menuEntries = client.getMenuEntries();
 						final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
 						String target;
-						if (option.contains("Turbo"))
+						if (checkSpecificNameList(turboNames, npc))
 						{
 							target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 						}
@@ -569,7 +584,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 						if (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null))
 						{
 							String colorCode;
-							if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TURBO)
+							if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
 							{
 								if (turboColors.size() == 0 && turboNames.contains(npc.getName().toLowerCase()))
 								{
@@ -615,14 +630,11 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	{
 		if (event.getType() == MenuAction.RUNELITE)
 		{
-			if ((event.getOption().contains("Tag") || event.getOption().contains("Untag")) && (event.getOption().contains("-Tile")
-				|| event.getOption().contains("-True-Tile") || event.getOption().contains("-SW-Tile") || event.getOption().contains("-SW-True-Tile")
-				|| event.getOption().contains("-Hull") || event.getOption().contains("-Area") || event.getOption().contains("-Outline")
-				|| event.getOption().contains("-Clickbox") || event.getOption().contains("-Turbo")))
+			if (event.getOption().equals("Tag-NPC") || event.getOption().equals("Untag-NPC"))
 			{
 				final int id = event.getIdentifier();
 				final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
-				boolean tag = event.getOption().contains("Tag");
+				boolean tag = event.getOption().equals("Tag-NPC");
 				if (npc.getName() != null)
 				{
 					updateListConfig(tag, npc.getName().toLowerCase(), 0);
@@ -633,11 +645,12 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 
 	private void customColorTag(int idx, NPC npc, MenuEntry parent)
 	{
-		List<Color> colors = new ArrayList<>();
-		Menu submenu = parent.createSubMenu();
 		// add X amount of preset colors based off of config
 		if (config.presetColorAmount() != BetterNpcHighlightConfig.presetColorAmount.ZERO)
 		{
+			List<Color> colors = new ArrayList<>();
+			Menu submenu = parent.createSubMenu();
+
 			if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.ONE)
 			{
 				colors.add(config.presetColor1());
@@ -672,84 +685,101 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 			if (colors.size() > 0)
 			{
 				int index = 1;
-				for (final Color c : colors)
-				{
-					if (c != null)
-					{
+				for (final Color c : colors) {
+					if (c != null) {
 						int preset = index;
 						submenu.createMenuEntry(0)
-							.setOption(ColorUtil.prependColorTag("Preset color " + index, c))
-							.setType(MenuAction.RUNELITE)
-							.onClick(e ->
-							{
-								if (npc.getName() != null)
-								{
-									updateListConfig(true, npc.getName().toLowerCase(), preset);
-								}
-							});
+								.setOption(ColorUtil.prependColorTag("Preset color " + index, c))
+								.setType(MenuAction.RUNELITE)
+								.onClick(e -> {
+									if (npc.getName() != null) {
+										updateListConfig(true, npc.getName().toLowerCase(), preset);
+									}
+								});
 						index++;
 					}
 				}
 			}
-		}
-
-		for (NPCInfo n : npcList)
-		{
-			if (n.getNpc() == npc)
+			
+			for (NPCInfo n : npcList)
 			{
-				submenu.createMenuEntry(0)
-					.setOption("Reset color")
-					.setType(MenuAction.RUNELITE)
-					.onClick(e ->
-					{
-						if (npc.getName() != null)
+				if (n.getNpc() == npc)
+				{
+					submenu.createMenuEntry(0)
+						.setOption("Reset color")
+						.setType(MenuAction.RUNELITE)
+						.onClick(e ->
 						{
-							updateListConfig(true, npc.getName().toLowerCase(), 0);
-						}
-					});
-				break;
+							if (npc.getName() != null)
+							{
+								updateListConfig(true, npc.getName().toLowerCase(), 0);
+							}
+						});
+					break;
+				}
 			}
 		}
 	}
 
 	private void updateListConfig(boolean add, String name, int preset)
 	{
-		if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TILE)
+		if (!add)
 		{
-			config.setTileNames(configListToString(add, name, tileNames, preset));
+			removeAllTagStyles(name);
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)
+		else
 		{
-			config.setTrueTileNames(configListToString(add, name, trueTileNames, preset));
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE))
+			{
+				config.setTileNames(configListToString(add, name, tileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE))
+			{
+				config.setTrueTileNames(configListToString(add, name, trueTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE))
+			{
+				config.setSwTileNames(configListToString(add, name, swTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE))
+			{
+				config.setSwTrueTileNames(configListToString(add, name, swTrueTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL))
+			{
+				config.setHullNames(configListToString(add, name, hullNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA))
+			{
+				config.setAreaNames(configListToString(add, name, areaNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE))
+			{
+				config.setOutlineNames(configListToString(add, name, outlineNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
+			{
+				config.setClickboxNames(configListToString(add, name, clickboxNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
+			{
+				config.setTurboNames(configListToString(add, name, turboNames, 0));
+			}
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TILE)
-		{
-			config.setSwTileNames(configListToString(add, name, swTileNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)
-		{
-			config.setSwTrueTileNames(configListToString(add, name, swTrueTileNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.HULL)
-		{
-			config.setHullNames(configListToString(add, name, hullNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.AREA)
-		{
-			config.setAreaNames(configListToString(add, name, areaNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.OUTLINE)
-		{
-			config.setOutlineNames(configListToString(add, name, outlineNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)
-		{
-			config.setClickboxNames(configListToString(add, name, clickboxNames, preset));
-		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TURBO)
-		{
-			config.setTurboNames(configListToString(add, name, turboNames, 0));
-		}
+	}
+
+	private void removeAllTagStyles(String name)
+	{
+		config.setTileNames(configListToString(false, name, tileNames, 0));
+		config.setTrueTileNames(configListToString(false, name, trueTileNames, 0));
+		config.setSwTileNames(configListToString(false, name, swTileNames, 0));
+		config.setSwTrueTileNames(configListToString(false, name, swTrueTileNames, 0));
+		config.setHullNames(configListToString(false, name, hullNames, 0));
+		config.setAreaNames(configListToString(false, name, areaNames, 0));
+		config.setOutlineNames(configListToString(false, name, outlineNames, 0));
+		config.setClickboxNames(configListToString(false, name, clickboxNames, 0));
+		config.setTurboNames(configListToString(false, name, turboNames, 0));
+
 	}
 
 	private String configListToString(boolean tagOrHide, String name, ArrayList<String> strList, int preset)
@@ -1022,35 +1052,39 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener
 	 */
 	public Color getTagColor()
 	{
-		if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TILE)
+		if (config.useGlobalTileColor())
+		{
+			return config.globalTileColor();
+		}
+		if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE))
 		{
 			return config.tileColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE))
 		{
 			return config.trueTileColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TILE)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE))
 		{
 			return config.swTileColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE))
 		{
 			return config.swTrueTileColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.HULL)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL))
 		{
 			return config.hullColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.AREA)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA))
 		{
 			return config.areaColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.OUTLINE)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE))
 		{
 			return config.outlineColor();
 		}
-		else if (config.tagStyleMode() == BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)
+		else if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
 		{
 			return config.clickboxColor();
 		}

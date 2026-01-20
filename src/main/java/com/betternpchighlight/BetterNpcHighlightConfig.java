@@ -38,10 +38,30 @@ public interface BetterNpcHighlightConfig extends Config
 {
 	String CONFIG_GROUP = "BetterNpcHighlight";
 
+	@Deprecated
+	@ConfigItem(
+		position = -1,
+		keyName = "tagStyleMode",
+		name = "Tag Style",
+		description = "Sets which highlight style list the NPC tagged is added too",
+		hidden = true)
+	default tagStyleMode tagStyleMode()
+	{
+		return null;
+	}
+
+	@ConfigSection(
+		name = "Global Tag Style",
+		description = "Options for a global tag style",
+		position = 0,
+		closedByDefault = true
+	)
+	String globalTagSection = "globalTagStyle";
+
 	@ConfigSection(
 		name = "Tile",
 		description = "Tile Plugins",
-		position = 0,
+		position = 1,
 		closedByDefault = true
 	)
 	String tileSection = "tile";
@@ -49,7 +69,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "True Tile",
 		description = "True Tile Plugins",
-		position = 1,
+		position = 2,
 		closedByDefault = true
 	)
 	String trueTileSection = "trueTile";
@@ -57,7 +77,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "South West Tile",
 		description = "South West Tile Plugins",
-		position = 2,
+		position = 3,
 		closedByDefault = true
 	)
 	String swTileSection = "swTile";
@@ -65,7 +85,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "South West True Tile",
 		description = "South West True Tile Plugins",
-		position = 3,
+		position = 4,
 		closedByDefault = true
 	)
 	String swTrueTileSection = "swTrueTile";
@@ -73,7 +93,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Hull",
 		description = "Hull Plugins",
-		position = 4,
+		position = 5,
 		closedByDefault = true
 	)
 	String hullSection = "hull";
@@ -81,7 +101,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Area",
 		description = "Area Plugins",
-		position = 5,
+		position = 6,
 		closedByDefault = true
 	)
 	String areaSection = "area";
@@ -89,7 +109,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Outline",
 		description = "Outline Plugins",
-		position = 6,
+		position = 7,
 		closedByDefault = true
 	)
 	String outlineSection = "outline";
@@ -97,7 +117,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Clickbox",
 		description = "Clickbox Plugins",
-		position = 7,
+		position = 8,
 		closedByDefault = true
 	)
 	String clickboxSection = "clickbox";
@@ -105,7 +125,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "TURBO MODE",
 		description = "Full send",
-		position = 8,
+		position = 9,
 		closedByDefault = true
 	)
 	String turboSection = "turbo";
@@ -113,7 +133,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Slayer",
 		description = "Slayer Plugins",
-		position = 9,
+		position = 10,
 		closedByDefault = true
 	)
 	String slayerSection = "slayer";
@@ -121,7 +141,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Entity Hider",
 		description = "Entity Hider Plugins",
-		position = 10,
+		position = 11,
 		closedByDefault = true
 	)
 	String entityHiderSection = "entityHider";
@@ -129,7 +149,7 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Presets",
 		description = "Presets Plugins",
-		position = 11,
+		position = 12,
 		closedByDefault = true
 	)
 	String presetsSection = "presets";
@@ -137,10 +157,72 @@ public interface BetterNpcHighlightConfig extends Config
 	@ConfigSection(
 		name = "Instructions",
 		description = "Instructions for various features",
-		position = 12,
+		position = 13,
 		closedByDefault = true
 	)
 	String instructionsSection = "instructions";
+
+		@ConfigSection(
+		name = "Miscellaneous",
+		description = "Miscellaneous Settings",
+		position = 14,
+		closedByDefault = true
+	)
+	String miscellaneousSection = "miscellaneous";
+
+	//------------------------------------------------------------//
+	// Global tag style section
+	//------------------------------------------------------------//
+	@ConfigItem(
+		position = 0,
+		keyName = "useGlobalTileColor",
+		name = "Use Global Tile Color",
+		description = "Makes all tile types use the options below instead of individual by tile type. Will not override tiles using a preset. Will not override types hull, area, outline, clickbox, or turbo.",
+		section = globalTagSection
+	)
+	default boolean useGlobalTileColor()
+	{
+		return false;
+	}
+
+	public static final Set<tagStyleMode> defaultTagStyle = Set.of(tagStyleMode.TILE);
+	@ConfigItem(
+		position = 1,
+		keyName = "tagStyleModeSet",
+		name = "Tag Style",
+		description = "Sets which highlight styles to apply to an NPC when tagged from the right click menu.",
+		section = globalTagSection
+	)
+	default Set<tagStyleMode> tagStyleModeSet()
+	{
+		return defaultTagStyle;
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 2,
+		keyName = "globalTileColor",
+		name = "Global Tile Color",
+		description = "Overrides all other tag style outlines.",
+		section = globalTagSection
+	)
+	default Color globalTileColor()
+	{
+		return Color.CYAN;
+	}
+
+	@Alpha
+	@ConfigItem(
+		position = 3,
+		keyName = "globalFillColor",
+		name = "Global Fill Color",
+		description = "Overrides all other tag style fill colors.",
+		section = globalTagSection
+	)
+	default Color globalFillColor()
+	{
+		return new Color(0, 255, 255, 20);
+	}
 
 	//------------------------------------------------------------//
 	// Tile Section
@@ -154,7 +236,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean tileHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -295,7 +377,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean trueTileHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -436,7 +518,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean swTileHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -577,7 +659,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean swTrueTileHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -718,7 +800,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean hullHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -847,7 +929,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean areaHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -938,7 +1020,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean outlineHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -1055,7 +1137,7 @@ public interface BetterNpcHighlightConfig extends Config
 	)
 	default boolean clickboxHighlight()
 	{
-		return false;
+		return true;
 	}
 
 	@ConfigItem(
@@ -1607,23 +1689,14 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	//------------------------------------------------------------//
-	// No Section
+	// Miscellaneous Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-		position = 13,
-		keyName = "tagStyleMode",
-		name = "Tag Style",
-		description = "Sets which highlight style list the NPC tagged is added too")
-	default tagStyleMode tagStyleMode()
-	{
-		return tagStyleMode.TILE;
-	}
-
-	@ConfigItem(
-		position = 14,
+		position = 0,
 		keyName = "tagCommands",
 		name = "Tag Commands",
-		description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section"
+		description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section",
+		section = miscellaneousSection
 	)
 	default boolean tagCommands()
 	{
@@ -1631,10 +1704,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 15,
+		position = 1,
 		keyName = "highlightMenuNames",
 		name = "Highlight Menu Names",
-		description = "Highlights names in right click menu entry"
+		description = "Highlights names in right click menu entry",
+		section = miscellaneousSection
 	)
 	default boolean highlightMenuNames()
 	{
@@ -1642,10 +1716,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 2,
 		keyName = "ignoreDeadNpcs",
 		name = "Ignore Dead NPCs",
-		description = "Doesn't highlight dead NPCs"
+		description = "Doesn't highlight dead NPCs",
+		section = miscellaneousSection
 	)
 	default boolean ignoreDeadNpcs()
 	{
@@ -1653,10 +1728,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 3,
 		keyName = "ignoreDeadExclusion",
 		name = "Ignore Dead Exclusion Name List",
-		description = "List of NPC names to not remove highlight when dead"
+		description = "List of NPC names to not remove highlight when dead",
+		section = miscellaneousSection
 	)
 	default String ignoreDeadExclusion()
 	{
@@ -1664,10 +1740,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 4,
 		keyName = "ignoreDeadExclusionID",
 		name = "Ignore Dead Exclusion ID List",
-		description = "List of NPC IDs to not remove highlight when dead"
+		description = "List of NPC IDs to not remove highlight when dead",
+		section = miscellaneousSection
 	)
 	default String ignoreDeadExclusionID()
 	{
@@ -1675,10 +1752,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 5,
 		keyName = "drawBeneath",
 		name = "Draw Overlays Beneath NPCs",
-		description = "Overlays will appear behind/below NPCs. GPU plugin must be turned on"
+		description = "Overlays will appear behind/below NPCs. GPU plugin must be turned on",
+		section = miscellaneousSection
 	)
 	default boolean drawBeneath()
 	{
@@ -1687,10 +1765,11 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Range(max = 20)
 	@ConfigItem(
-		position = 20,
+		position = 6,
 		keyName = "drawBeneathLimit",
 		name = "Draw Beneath Limit",
-		description = "Sets the amount of NPCs to have the overlay draw beneath. The higher the number, the more it affects FPS"
+		description = "Sets the amount of NPCs to have the overlay draw beneath. The higher the number, the more it affects FPS",
+		section = miscellaneousSection
 	)
 	default int drawBeneathLimit()
 	{
@@ -1698,10 +1777,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 21,
+		position = 7,
 		keyName = "drawBeneathList",
 		name = "Draw Beneath List",
-		description = "Sets specific NPCs to have the overlay draw beneath. Empty list will use Draw Beneath Limit"
+		description = "Sets specific NPCs to have the overlay draw beneath. Empty list will use Draw Beneath Limit",
+		section = miscellaneousSection
 	)
 	default String drawBeneathList()
 	{
@@ -1709,10 +1789,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 22,
+		position = 8,
 		keyName = "renderDistance",
 		name = "Render Distance",
-		description = "Limits overlays to be drawn to within the chosen distance from the local player. <br>Short = 7 tiles, Medium = 11 tiles"
+		description = "Limits overlays to be drawn to within the chosen distance from the local player. <br>Short = 7 tiles, Medium = 11 tiles",
+		section = miscellaneousSection
 	)
 	default renderDistance renderDistance()
 	{
@@ -1720,10 +1801,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 23,
+		position = 9,
 		keyName = "highlightPets",
 		name = "Highlight pets",
-		description = "Highlights followers/pets that are in any of your lists"
+		description = "Highlights followers/pets that are in any of your lists",
+		section = miscellaneousSection
 	)
 	default boolean highlightPets()
 	{
@@ -1731,18 +1813,20 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 24,
+		position = 10,
 		keyName = "deadNpcMenuColor",
 		name = "Dead NPC Menu Color",
-		description = "Highlights names in right click menu entry when an NPC is dead"
+		description = "Highlights names in right click menu entry when an NPC is dead",
+		section = miscellaneousSection
 	)
 	Color deadNpcMenuColor();
 
 	@ConfigItem(
-		position = 25,
+		position = 11,
 		keyName = "respawnTimer",
 		name = "Respawn Timer",
-		description = "Marks tile and shows timer for when a marker NPC will respawn"
+		description = "Marks tile and shows timer for when a marker NPC will respawn",
+		section = miscellaneousSection
 	)
 	default respawnTimerMode respawnTimer()
 	{
@@ -1751,10 +1835,11 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 26,
+		position = 12,
 		keyName = "respawnTimerColor",
 		name = "Respawn Time Color",
-		description = "Sets the color of the text for Respawn Timer"
+		description = "Sets the color of the text for Respawn Timer",
+		section = miscellaneousSection
 	)
 	default Color respawnTimerColor()
 	{
@@ -1763,10 +1848,11 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 27,
+		position = 13,
 		keyName = "respawnOutlineColor",
 		name = "Respawn Outline Color",
-		description = "Sets the color of the tile for Respawn Timer"
+		description = "Sets the color of the tile for Respawn Timer",
+		section = miscellaneousSection
 	)
 	default Color respawnOutlineColor()
 	{
@@ -1775,10 +1861,11 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 28,
+		position = 14,
 		keyName = "respawnFillColor",
 		name = "Respawn Fill Color",
-		description = "Sets the fill color of the tile for Respawn Timer"
+		description = "Sets the fill color of the tile for Respawn Timer",
+		section = miscellaneousSection
 	)
 	default Color respawnFillColor()
 	{
@@ -1787,10 +1874,11 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Range(min = 1, max = 10)
 	@ConfigItem(
-		position = 29,
+		position = 15,
 		keyName = "respawnTileWidth",
 		name = "Respawn Tile Width",
-		description = "Sets the width of the tile for Respawn Timer"
+		description = "Sets the width of the tile for Respawn Timer",
+		section = miscellaneousSection
 	)
 	default int respawnTileWidth()
 	{
@@ -1798,10 +1886,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 30,
+		position = 16,
 		keyName = "displayName",
 		name = "Display Name",
-		description = "Shows name of NPCs in the list above them"
+		description = "Shows name of NPCs in the list above them",
+		section = miscellaneousSection
 	)
 	default String displayName()
 	{
@@ -1809,10 +1898,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 31,
+		position = 17,
 		keyName = "fontBackground",
 		name = "Font Background",
-		description = "Puts an outline, shadow, or nothing behind font overlays"
+		description = "Puts an outline, shadow, or nothing behind font overlays",
+		section = miscellaneousSection
 	)
 	default background fontBackground()
 	{
@@ -1820,10 +1910,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 32,
+		position = 18,
 		keyName = "npcMinimapMode",
 		name = "Highlight Minimap",
-		description = "Highlights NPC on minimap and/or displays name"
+		description = "Highlights NPC on minimap and/or displays name",
+		section = miscellaneousSection
 	)
 	default npcMinimapMode npcMinimapMode()
 	{
@@ -1831,10 +1922,11 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 33,
+		position = 19,
 		keyName = "debugNPC",
 		name = "Debug NPC Info",
-		description = "Highlights all NPCs with their Name and ID"
+		description = "Highlights all NPCs with their Name and ID",
+		section = miscellaneousSection
 	)
 	default boolean debugNPC()
 	{
