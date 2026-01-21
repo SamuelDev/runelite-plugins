@@ -64,10 +64,10 @@ public class MenuManager {
     {
       NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
 
-      if (npc.getName().equals("Nardah Banker"))
-      {
-        System.out.println("Nardah Banker detected in menu");
-      }
+      // if (npc.getName().equals("Nardah Banker"))
+      // {
+      //   System.out.println("Nardah Banker detected in menu");
+      // }
 
       // Get name for menu item coloring
       Color color = null;
@@ -101,10 +101,10 @@ public class MenuManager {
     {
       final NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
 
-      if (npc.getName().equals("Nardah Banker"))
-      {
-        System.out.println("Nardah Banker detected in menu");
-      }
+      // if (npc.getName().equals("Nardah Banker"))
+      // {
+      //   System.out.println("Nardah Banker detected in menu");
+      // }
 
       if (npc != null)
       {
@@ -116,6 +116,7 @@ public class MenuManager {
             && ((config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE) && config.tagStyleModeSet().size() > 1)
                 || (!config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE) && !config.tagStyleModeSet().isEmpty())))
         {
+          // If the NPC is tagged by name in any way, show "Untag-NPC", else show "Tag-NPC"
           if (configTransformManager.isInAnyNameList(npc))
           {
             option = "Untag-NPC";
@@ -125,6 +126,7 @@ public class MenuManager {
             option = "Tag-NPC";
           }
 
+          // If the menu option is untag, and either highlight menu names is on or dead NPC color is set, colorize the existing examine entry
           if (option.equals("Untag-NPC") && (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null)))
           {
             MenuEntry[] menuEntries = client.getMenuEntries();
