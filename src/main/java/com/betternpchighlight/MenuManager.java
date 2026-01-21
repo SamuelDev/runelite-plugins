@@ -17,43 +17,8 @@ public class MenuManager {
   @Inject
   private BetterNpcHighlightConfig config;
 
-  private ArrayList<String> tileNames;
-  private ArrayList<String> trueTileNames;
-  private ArrayList<String> swTileNames;
-  private ArrayList<String> swTrueTileNames;
-  private ArrayList<String> hullNames;
-  private ArrayList<String> areaNames;
-  private ArrayList<String> outlineNames;
-  private ArrayList<String> clickboxNames;
-  private ArrayList<String> turboNames;
-  private ArrayList<NPCInfo> npcList;
-
-  /**
-   * Injects the highlight lists into this menu manager.
-   * This must be called before using customColorTag or updateListConfig.
-   */
-  public void setHighlightLists(
-      ArrayList<String> tileNames,
-      ArrayList<String> trueTileNames,
-      ArrayList<String> swTileNames,
-      ArrayList<String> swTrueTileNames,
-      ArrayList<String> hullNames,
-      ArrayList<String> areaNames,
-      ArrayList<String> outlineNames,
-      ArrayList<String> clickboxNames,
-      ArrayList<String> turboNames,
-      ArrayList<NPCInfo> npcList) {
-    this.tileNames = tileNames;
-    this.trueTileNames = trueTileNames;
-    this.swTileNames = swTileNames;
-    this.swTrueTileNames = swTrueTileNames;
-    this.hullNames = hullNames;
-    this.areaNames = areaNames;
-    this.outlineNames = outlineNames;
-    this.clickboxNames = clickboxNames;
-    this.turboNames = turboNames;
-    this.npcList = npcList;
-  }
+  @Inject
+  private NameAndIdContainer nameAndIdContainer;
 
   public void customColorTag(int idx, NPC npc, MenuEntry parent) {
     // add X amount of preset colors based off of config
@@ -101,7 +66,7 @@ public class MenuManager {
         }
       }
 
-      for (NPCInfo n : npcList) {
+      for (NPCInfo n : nameAndIdContainer.npcList) {
         if (n.getNpc() == npc) {
           submenu.createMenuEntry(0)
               .setOption("Reset color")
@@ -122,31 +87,31 @@ public class MenuManager {
       removeAllTagStyles(name);
     } else {
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE)) {
-        config.setTileNames(configListToString(add, name, tileNames, preset));
+        config.setTileNames(configListToString(add, name, nameAndIdContainer.tileNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)) {
-        config.setTrueTileNames(configListToString(add, name, trueTileNames, preset));
+        config.setTrueTileNames(configListToString(add, name, nameAndIdContainer.trueTileNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE)) {
-        config.setSwTileNames(configListToString(add, name, swTileNames, preset));
+        config.setSwTileNames(configListToString(add, name, nameAndIdContainer.swTileNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)) {
-        config.setSwTrueTileNames(configListToString(add, name, swTrueTileNames, preset));
+        config.setSwTrueTileNames(configListToString(add, name, nameAndIdContainer.swTrueTileNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL)) {
-        config.setHullNames(configListToString(add, name, hullNames, preset));
+        config.setHullNames(configListToString(add, name, nameAndIdContainer.hullNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA)) {
-        config.setAreaNames(configListToString(add, name, areaNames, preset));
+        config.setAreaNames(configListToString(add, name, nameAndIdContainer.areaNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE)) {
-        config.setOutlineNames(configListToString(add, name, outlineNames, preset));
+        config.setOutlineNames(configListToString(add, name, nameAndIdContainer.outlineNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)) {
-        config.setClickboxNames(configListToString(add, name, clickboxNames, preset));
+        config.setClickboxNames(configListToString(add, name, nameAndIdContainer.clickboxNames, preset));
       }
       if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
-        config.setTurboNames(configListToString(add, name, turboNames, 0));
+        config.setTurboNames(configListToString(add, name, nameAndIdContainer.turboNames, 0));
       }
     }
   }
@@ -179,14 +144,14 @@ public class MenuManager {
 	}
 
   private void removeAllTagStyles(String name) {
-    config.setTileNames(configListToString(false, name, tileNames, 0));
-    config.setTrueTileNames(configListToString(false, name, trueTileNames, 0));
-    config.setSwTileNames(configListToString(false, name, swTileNames, 0));
-    config.setSwTrueTileNames(configListToString(false, name, swTrueTileNames, 0));
-    config.setHullNames(configListToString(false, name, hullNames, 0));
-    config.setAreaNames(configListToString(false, name, areaNames, 0));
-    config.setOutlineNames(configListToString(false, name, outlineNames, 0));
-    config.setClickboxNames(configListToString(false, name, clickboxNames, 0));
-    config.setTurboNames(configListToString(false, name, turboNames, 0));
+    config.setTileNames(configListToString(false, name, nameAndIdContainer.tileNames, 0));
+    config.setTrueTileNames(configListToString(false, name, nameAndIdContainer.trueTileNames, 0));
+    config.setSwTileNames(configListToString(false, name, nameAndIdContainer.swTileNames, 0));
+    config.setSwTrueTileNames(configListToString(false, name, nameAndIdContainer.swTrueTileNames, 0));
+    config.setHullNames(configListToString(false, name, nameAndIdContainer.hullNames, 0));
+    config.setAreaNames(configListToString(false, name, nameAndIdContainer.areaNames, 0));
+    config.setOutlineNames(configListToString(false, name, nameAndIdContainer.outlineNames, 0));
+    config.setClickboxNames(configListToString(false, name, nameAndIdContainer.clickboxNames, 0));
+    config.setTurboNames(configListToString(false, name, nameAndIdContainer.turboNames, 0));
   }
 }

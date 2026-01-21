@@ -35,7 +35,7 @@ public class SlayerPluginIntegration {
     } catch (PluginInstantiationException ex) {
       log.error("error starting slayer plugin", ex);
     }
-    
+
     return "";
   }
 }

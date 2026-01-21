@@ -100,9 +100,6 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	private ConfigManager configManager;
 
 	@Inject
-	private PluginManager pluginManager;
-
-	@Inject
 	private Hooks hooks;
 
 	@Inject
@@ -126,13 +123,14 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	@Inject
 	private ConfigTransformManager configTransformManager;
 
+	@Inject
+	private NameAndIdContainer nameAndIdContainer;
+
 	private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(MenuAction.NPC_FIRST_OPTION,
 			MenuAction.NPC_SECOND_OPTION,
 			MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION, MenuAction.NPC_FIFTH_OPTION,
 			MenuAction.WIDGET_TARGET_ON_NPC,
 			MenuAction.ITEM_USE_ON_NPC);
-
-	public NameAndIdContainer nameAndIdContainer = new NameAndIdContainer();
 
 	public Instant lastTickUpdate;
 	public int turboModeStyle = 0;
@@ -183,19 +181,12 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			configTransformManager.splitList(config.entityHiderIds(), nameAndIdContainer.hiddenIds);
 			configTransformManager.splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
 
-			// Inject highlight lists into MenuManager
-			menuManager.setHighlightLists(nameAndIdContainer.tileNames, nameAndIdContainer.trueTileNames,
-					nameAndIdContainer.swTileNames, nameAndIdContainer.swTrueTileNames,
-					nameAndIdContainer.hullNames, nameAndIdContainer.areaNames, nameAndIdContainer.outlineNames,
-					nameAndIdContainer.clickboxNames, nameAndIdContainer.turboNames,
-					nameAndIdContainer.npcList);
 			hooks.registerRenderableDrawListener(drawListener);
 			keyManager.registerKeyListener(this);
-
 			slayerPluginIntegration.enableSlayerPlugin();
 
 			if (client.getGameState() == GameState.LOGGED_IN) {
-				configTransformManager.recreateList(nameAndIdContainer, this);
+				configTransformManager.recreateList();
 			}
 		});
 	}
@@ -247,7 +238,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
 		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP)) {
-			configTransformManager.updateConfig(event, config, nameAndIdContainer, this);
+			configTransformManager.updateConfig(event);
 		}
 	}
 
@@ -451,7 +442,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	@Subscribe(priority = -1)
 	public void onGameTick(GameTick event) {
 		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask())) {
-			configTransformManager.recreateList(nameAndIdContainer, this);
+			configTransformManager.recreateList();
 		}
 
 		lastTickUpdate = Instant.now();

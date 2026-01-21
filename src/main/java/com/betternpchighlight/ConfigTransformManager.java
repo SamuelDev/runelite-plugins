@@ -24,6 +24,15 @@ public class ConfigTransformManager {
 	@Inject
 	private SlayerPluginIntegration slayerPluginIntegration;
 
+	@Inject
+	private NameAndIdContainer nameAndIdContainer;
+
+	@Inject
+	private BetterNpcHighlightConfig config;
+
+	@Inject
+	private BetterNpcHighlightPlugin plugin;
+
 	public void splitList(String configStr, ArrayList<String> strList) {
 		clientThread.invokeLater(() -> {
 			if (!configStr.equals("")) {
@@ -36,98 +45,97 @@ public class ConfigTransformManager {
 		});
 	}
 
-	public void updateConfig(ConfigChanged event, BetterNpcHighlightConfig config,
-			NameAndIdContainer nameAndIdContainer, BetterNpcHighlightPlugin plugin) {
+	public void updateConfig(ConfigChanged event) {
 		switch (event.getKey()) {
 			case "tileNames":
 				nameAndIdContainer.tileNames.clear();
 				splitList(config.tileNames(), nameAndIdContainer.tileNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "tileIds":
 				nameAndIdContainer.tileIds.clear();
 				splitList(config.tileIds(), nameAndIdContainer.tileIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "trueTileNames":
 				nameAndIdContainer.trueTileNames.clear();
 				splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "trueTileIds":
 				nameAndIdContainer.trueTileIds.clear();
 				splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "swTileNames":
 				nameAndIdContainer.swTileNames.clear();
 				splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "swTileIds":
 				nameAndIdContainer.swTileIds.clear();
 				splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "swTrueTileNames":
 				nameAndIdContainer.swTrueTileNames.clear();
 				splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "swTrueTileIds":
 				nameAndIdContainer.swTrueTileIds.clear();
 				splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "hullNames":
 				nameAndIdContainer.hullNames.clear();
 				splitList(config.hullNames(), nameAndIdContainer.hullNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "hullIds":
 				nameAndIdContainer.hullIds.clear();
 				splitList(config.hullIds(), nameAndIdContainer.hullIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "areaNames":
 				nameAndIdContainer.areaNames.clear();
 				splitList(config.areaNames(), nameAndIdContainer.areaNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "areaIds":
 				nameAndIdContainer.areaIds.clear();
 				splitList(config.areaIds(), nameAndIdContainer.areaIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "outlineNames":
 				nameAndIdContainer.outlineNames.clear();
 				splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "outlineIds":
 				nameAndIdContainer.outlineIds.clear();
 				splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "clickboxNames":
 				nameAndIdContainer.clickboxNames.clear();
 				splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "clickboxIds":
 				nameAndIdContainer.clickboxIds.clear();
 				splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "turboNames":
 				nameAndIdContainer.turboNames.clear();
 				splitList(config.turboNames(), nameAndIdContainer.turboNames);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "turboIds":
 				nameAndIdContainer.turboIds.clear();
 				splitList(config.turboIds(), nameAndIdContainer.turboIds);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "displayName":
 				nameAndIdContainer.namesToDisplay.clear();
@@ -136,12 +144,12 @@ public class ConfigTransformManager {
 			case "ignoreDeadExclusion":
 				nameAndIdContainer.ignoreDeadExclusionList.clear();
 				splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "ignoreDeadExclusionID":
 				nameAndIdContainer.ignoreDeadExclusionIDList.clear();
 				splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 			case "turboHighlight":
 				if (event.getNewValue().equals("true")) {
@@ -196,16 +204,17 @@ public class ConfigTransformManager {
 			case "useGlobalTileColor":
 			case "globalTileColor":
 			case "globalFillColor":
-				recreateList(nameAndIdContainer, plugin);
+				recreateList();
 				break;
 		}
 	}
 
-	public void recreateList(NameAndIdContainer nameAndIdContainer, BetterNpcHighlightPlugin plugin) {
+	public void recreateList() {
 		clientThread.invokeLater(() -> {
 			if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
 					&& client.getLocalPlayer().getPlayerComposition() != null) {
 				nameAndIdContainer.npcList.clear();
+
 				for (NPC npc : client.getNpcs()) {
 					NPCInfo npcInfo = plugin.checkValidNPC(npc);
 					if (npcInfo != null) {

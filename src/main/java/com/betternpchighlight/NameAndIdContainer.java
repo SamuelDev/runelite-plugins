@@ -3,6 +3,9 @@ package com.betternpchighlight;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class NameAndIdContainer {
   public String currentTask = "";
   public boolean confirmedWarning = false;

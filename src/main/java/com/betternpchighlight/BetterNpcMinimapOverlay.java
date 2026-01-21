@@ -15,6 +15,9 @@ public class BetterNpcMinimapOverlay extends Overlay
 	private final BetterNpcHighlightConfig config;
 
 	@Inject
+	private NameAndIdContainer nameAndIdContainer;
+
+	@Inject
 	private BetterNpcMinimapOverlay(BetterNpcHighlightPlugin plugin, BetterNpcHighlightConfig config)
 	{
 		this.plugin = plugin;
@@ -26,7 +29,7 @@ public class BetterNpcMinimapOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		for (NPCInfo npcInfo : plugin.nameAndIdContainer.npcList)
+		for (NPCInfo npcInfo : nameAndIdContainer.npcList)
 		{
 			NPC npc = npcInfo.getNpc();
 			if (npc.getName() != null && config.npcMinimapMode() != BetterNpcHighlightConfig.npcMinimapMode.OFF)
