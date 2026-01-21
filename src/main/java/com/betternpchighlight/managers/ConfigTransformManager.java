@@ -227,7 +227,7 @@ public class ConfigTransformManager {
 					&& client.getLocalPlayer().getPlayerComposition() != null) {
 				nameAndIdContainer.npcList.clear();
 
-				for (NPC npc : client.getNpcs()) {
+				for (NPC npc : client.getTopLevelWorldView().npcs()) {
 					NPCInfo npcInfo = plugin.checkValidNPC(npc);
 					if (npcInfo != null) {
 						nameAndIdContainer.npcList.add(npcInfo);
