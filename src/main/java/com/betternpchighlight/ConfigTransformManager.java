@@ -1,15 +1,17 @@
 package com.betternpchighlight;
 
+import java.awt.Color;
 import java.util.ArrayList;
-
 import javax.inject.Inject;
-
+import org.apache.commons.lang3.StringUtils;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.slayer.SlayerPluginService;
+import net.runelite.client.util.Text;
+import net.runelite.client.util.WildcardMatcher;
 
 public class ConfigTransformManager {
 	@Inject
@@ -32,6 +34,9 @@ public class ConfigTransformManager {
 
 	@Inject
 	private BetterNpcHighlightPlugin plugin;
+
+	@Inject
+	private ColorManager colorManager;
 
 	public void splitList(String configStr, ArrayList<String> strList) {
 		clientThread.invokeLater(() -> {
@@ -224,5 +229,141 @@ public class ConfigTransformManager {
 				nameAndIdContainer.currentTask = slayerPluginService.getTask();
 			}
 		});
+	}
+
+	public String configListToString(boolean tagOrHide, String name, ArrayList<String> strList, int preset) {
+		if (tagOrHide) {
+			boolean foundName = false;
+			String newName = preset > 0 ? name + ":" + preset : name;
+			for (String str : strList) {
+				if (str.startsWith(name + ":") || str.equalsIgnoreCase(name)) {
+					strList.set(strList.indexOf(str), newName);
+					foundName = true;
+				}
+			}
+
+			if (!foundName) {
+				strList.add(newName);
+			}
+		} else {
+			strList.removeIf(str -> str.toLowerCase().startsWith(name + ":") || str.equalsIgnoreCase(name));
+		}
+		return Text.toCSV(strList);
+	}
+
+	public void updateListConfig(boolean add, String name, int preset) {
+		if (!add) {
+			removeAllTagStyles(name);
+		} else {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE)) {
+				config.setTileNames(configListToString(add, name, nameAndIdContainer.tileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)) {
+				config.setTrueTileNames(configListToString(add, name, nameAndIdContainer.trueTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE)) {
+				config.setSwTileNames(configListToString(add, name, nameAndIdContainer.swTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)) {
+				config.setSwTrueTileNames(configListToString(add, name, nameAndIdContainer.swTrueTileNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL)) {
+				config.setHullNames(configListToString(add, name, nameAndIdContainer.hullNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA)) {
+				config.setAreaNames(configListToString(add, name, nameAndIdContainer.areaNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE)) {
+				config.setOutlineNames(configListToString(add, name, nameAndIdContainer.outlineNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)) {
+				config.setClickboxNames(configListToString(add, name, nameAndIdContainer.clickboxNames, preset));
+			}
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
+				config.setTurboNames(configListToString(add, name, nameAndIdContainer.turboNames, 0));
+			}
+		}
+	}
+
+	public HighlightColor checkSpecificList(ArrayList<String> strList, ArrayList<String> idList, NPC npc,
+			Color configColor, Color configFillColor) {
+		for (String entry : idList) {
+			int id = -1;
+			String preset = "";
+			if (entry.contains(":")) {
+				String[] strArr = entry.split(":");
+				if (StringUtils.isNumeric(strArr[0])) {
+					id = Integer.parseInt(strArr[0]);
+				}
+				preset = strArr[1];
+			} else if (StringUtils.isNumeric(entry)) {
+				id = Integer.parseInt(entry);
+			}
+
+			if (id == npc.getId()) {
+				return new HighlightColor(true,
+						colorManager.getHighlightColor(preset, configColor),
+						colorManager.getHighlightFillColor(preset, configFillColor));
+			}
+		}
+
+		if (npc.getName() != null) {
+			String name = npc.getName().toLowerCase();
+			for (String entry : strList) {
+				String nameStr = entry;
+				String preset = "";
+				if (entry.contains(":")) {
+					String[] strArr = entry.split(":");
+					nameStr = strArr[0];
+					preset = strArr[1];
+				}
+
+				if (WildcardMatcher.matches(nameStr, name)) {
+					return new HighlightColor(true, colorManager.getHighlightColor(preset, configColor),
+							colorManager.getHighlightFillColor(preset, configFillColor));
+				}
+			}
+		}
+		return new HighlightColor(false, configColor, configFillColor);
+	}
+
+	public boolean checkSpecificNameList(ArrayList<String> strList, NPC npc) {
+		if (npc.getName() != null) {
+			String name = npc.getName().toLowerCase();
+			for (String entry : strList) {
+				String nameStr = entry;
+				if (entry.contains(":")) {
+					String[] strArr = entry.split(":");
+					nameStr = strArr[0];
+				}
+
+				if (WildcardMatcher.matches(nameStr, name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean checkSpecificIdList(ArrayList<String> strList, NPC npc) {
+		int id = npc.getId();
+		for (String entry : strList) {
+			if (StringUtils.isNumeric(entry) && Integer.parseInt(entry) == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void removeAllTagStyles(String name) {
+		config.setTileNames(configListToString(false, name, nameAndIdContainer.tileNames, 0));
+		config.setTrueTileNames(configListToString(false, name, nameAndIdContainer.trueTileNames, 0));
+		config.setSwTileNames(configListToString(false, name, nameAndIdContainer.swTileNames, 0));
+		config.setSwTrueTileNames(configListToString(false, name, nameAndIdContainer.swTrueTileNames, 0));
+		config.setHullNames(configListToString(false, name, nameAndIdContainer.hullNames, 0));
+		config.setAreaNames(configListToString(false, name, nameAndIdContainer.areaNames, 0));
+		config.setOutlineNames(configListToString(false, name, nameAndIdContainer.outlineNames, 0));
+		config.setClickboxNames(configListToString(false, name, nameAndIdContainer.clickboxNames, 0));
+		config.setTurboNames(configListToString(false, name, nameAndIdContainer.turboNames, 0));
 	}
 }

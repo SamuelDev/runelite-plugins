@@ -1,24 +1,167 @@
 package com.betternpchighlight;
 
+import static net.runelite.api.MenuAction.MENU_ACTION_DEPRIORITIZE_OFFSET;
+
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import com.google.common.collect.ImmutableSet;
+
+import net.runelite.api.Client;
+import net.runelite.api.KeyCode;
 import net.runelite.api.Menu;
 import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
+import net.runelite.api.events.MenuEntryAdded;
+import net.runelite.client.game.NpcUtil;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
 
 public class MenuManager {
   @Inject
+  private Client client;
+
+  @Inject
   private BetterNpcHighlightConfig config;
 
   @Inject
   private NameAndIdContainer nameAndIdContainer;
+
+  @Inject
+  private NpcUtil npcUtil;
+
+  @Inject
+  private ColorManager colorManager;
+
+  @Inject
+  private ConfigTransformManager configTransformManager;
+
+  private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(MenuAction.NPC_FIRST_OPTION,
+      MenuAction.NPC_SECOND_OPTION,
+      MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION, MenuAction.NPC_FIFTH_OPTION,
+      MenuAction.WIDGET_TARGET_ON_NPC,
+      MenuAction.ITEM_USE_ON_NPC);
+
+  public void craftMenu(MenuEntryAdded event) {
+    // add craft menu entry
+    int type = event.getType();
+    if (type >= MENU_ACTION_DEPRIORITIZE_OFFSET) {
+      type -= MENU_ACTION_DEPRIORITIZE_OFFSET;
+    }
+
+    final MenuAction menuAction = MenuAction.of(type);
+    if (NPC_MENU_ACTIONS.contains(menuAction)) {
+      NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
+
+      Color color = null;
+      if (npcUtil.isDying(npc)) {
+        color = config.deadNpcMenuColor();
+      } else if (config.highlightMenuNames() && npc.getName() != null) {
+        for (NPCInfo npcInfo : nameAndIdContainer.npcList) {
+          if (npcInfo.getNpc() == npc) {
+            color = colorManager.getSpecificColor(npcInfo);
+            break;
+          }
+        }
+      }
+
+      if (color != null) {
+        MenuEntry[] menuEntries = client.getMenuEntries();
+        final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
+        final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
+        menuEntry.setTarget(target);
+        client.setMenuEntries(menuEntries);
+      }
+    } else if (menuAction == MenuAction.EXAMINE_NPC) {
+      final int id = event.getIdentifier();
+      final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
+
+      if (npc != null) {
+        String option;
+        // if there is an NPC name AND
+        // ((tag style none is selected, and so is another option) OR
+        // (tag style none is not selected, and another is))
+        if (npc.getName() != null &&
+            ((config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE)
+                && config.tagStyleModeSet().size() > 1) ||
+                (!config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE)
+                    && !config.tagStyleModeSet().isEmpty()))) {
+          if (configTransformManager.checkSpecificNameList(nameAndIdContainer.tileNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.trueTileNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.swTileNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.swTrueTileNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.hullNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.areaNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.outlineNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.clickboxNames, npc) ||
+              configTransformManager.checkSpecificNameList(nameAndIdContainer.turboNames, npc)) {
+            option = "Untag-NPC";
+          } else {
+            option = "Tag-NPC";
+          }
+
+          if (option.equals("Untag-NPC")
+              && (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null))) {
+            MenuEntry[] menuEntries = client.getMenuEntries();
+            final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
+            String target;
+            if (configTransformManager.checkSpecificNameList(nameAndIdContainer.turboNames, npc)) {
+              target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()),
+                  Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+            } else {
+              Color color = npc.isDead() ? config.deadNpcMenuColor() : colorManager.getTagColor();
+              target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
+            }
+            menuEntry.setTarget(target);
+            client.setMenuEntries(menuEntries);
+          }
+
+          if (client.isKeyPressed(KeyCode.KC_SHIFT)) {
+            String tagAllEntry;
+            if (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null)) {
+              String colorCode;
+              if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
+                if (nameAndIdContainer.turboColors.size() == 0
+                    && nameAndIdContainer.turboNames.contains(npc.getName().toLowerCase())) {
+                  colorCode = Integer
+                      .toHexString(nameAndIdContainer.turboColors
+                          .get(nameAndIdContainer.turboNames.indexOf(npc.getName().toLowerCase())).getRGB());
+                } else {
+                  colorCode = Integer.toHexString(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F).getRGB());
+                }
+              } else {
+                colorCode = npc.isDead() ? Integer.toHexString(config.deadNpcMenuColor().getRGB())
+                    : Integer.toHexString(colorManager.getTagColor().getRGB());
+              }
+              tagAllEntry = "<col=" + colorCode.substring(2) + ">" + Text.removeTags(event.getTarget());
+            } else {
+              tagAllEntry = event.getTarget();
+            }
+
+            int idx = -1;
+            MenuEntry parent = client.createMenuEntry(idx)
+                .setOption(option)
+                .setTarget(tagAllEntry)
+                .setIdentifier(event.getIdentifier())
+                .setParam0(event.getActionParam0())
+                .setParam1(event.getActionParam1())
+                .setType(MenuAction.RUNELITE)
+                .onClick(this::tagNPC);
+
+            if (parent != null) {
+              this.customColorTag(idx, npc, parent);
+            }
+          }
+        }
+      }
+    }
+  }
 
   public void customColorTag(int idx, NPC npc, MenuEntry parent) {
     // add X amount of preset colors based off of config
@@ -58,7 +201,7 @@ public class MenuManager {
                 .setType(MenuAction.RUNELITE)
                 .onClick(e -> {
                   if (npc.getName() != null) {
-                    updateListConfig(true, npc.getName().toLowerCase(), preset);
+                    configTransformManager.updateListConfig(true, npc.getName().toLowerCase(), preset);
                   }
                 });
             index++;
@@ -73,7 +216,7 @@ public class MenuManager {
               .setType(MenuAction.RUNELITE)
               .onClick(e -> {
                 if (npc.getName() != null) {
-                  updateListConfig(true, npc.getName().toLowerCase(), 0);
+                  configTransformManager.updateListConfig(true, npc.getName().toLowerCase(), 0);
                 }
               });
           break;
@@ -82,76 +225,17 @@ public class MenuManager {
     }
   }
 
-  public void updateListConfig(boolean add, String name, int preset) {
-    if (!add) {
-      removeAllTagStyles(name);
-    } else {
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE)) {
-        config.setTileNames(configListToString(add, name, nameAndIdContainer.tileNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)) {
-        config.setTrueTileNames(configListToString(add, name, nameAndIdContainer.trueTileNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE)) {
-        config.setSwTileNames(configListToString(add, name, nameAndIdContainer.swTileNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)) {
-        config.setSwTrueTileNames(configListToString(add, name, nameAndIdContainer.swTrueTileNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL)) {
-        config.setHullNames(configListToString(add, name, nameAndIdContainer.hullNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA)) {
-        config.setAreaNames(configListToString(add, name, nameAndIdContainer.areaNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE)) {
-        config.setOutlineNames(configListToString(add, name, nameAndIdContainer.outlineNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)) {
-        config.setClickboxNames(configListToString(add, name, nameAndIdContainer.clickboxNames, preset));
-      }
-      if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
-        config.setTurboNames(configListToString(add, name, nameAndIdContainer.turboNames, 0));
+  private void tagNPC(MenuEntry event) {
+    if (event.getType() == MenuAction.RUNELITE) {
+      if (event.getOption().equals("Tag-NPC") || event.getOption().equals("Untag-NPC")) {
+        final int id = event.getIdentifier();
+        final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
+        boolean tag = event.getOption().equals("Tag-NPC");
+        if (npc.getName() != null) {
+          configTransformManager.updateListConfig(tag, npc.getName().toLowerCase(), 0);
+        }
       }
     }
   }
 
-  public String configListToString(boolean tagOrHide, String name, ArrayList<String> strList, int preset)
-	{
-		if (tagOrHide)
-		{
-			boolean foundName = false;
-			String newName = preset > 0 ? name + ":" + preset : name;
-			for (String str : strList)
-			{
-				if (str.startsWith(name + ":") || str.equalsIgnoreCase(name))
-				{
-					strList.set(strList.indexOf(str), newName);
-					foundName = true;
-				}
-			}
-
-			if (!foundName)
-			{
-				strList.add(newName);
-			}
-		}
-		else
-		{
-			strList.removeIf(str -> str.toLowerCase().startsWith(name + ":") || str.equalsIgnoreCase(name));
-		}
-		return Text.toCSV(strList);
-	}
-
-  private void removeAllTagStyles(String name) {
-    config.setTileNames(configListToString(false, name, nameAndIdContainer.tileNames, 0));
-    config.setTrueTileNames(configListToString(false, name, nameAndIdContainer.trueTileNames, 0));
-    config.setSwTileNames(configListToString(false, name, nameAndIdContainer.swTileNames, 0));
-    config.setSwTrueTileNames(configListToString(false, name, nameAndIdContainer.swTrueTileNames, 0));
-    config.setHullNames(configListToString(false, name, nameAndIdContainer.hullNames, 0));
-    config.setAreaNames(configListToString(false, name, nameAndIdContainer.areaNames, 0));
-    config.setOutlineNames(configListToString(false, name, nameAndIdContainer.outlineNames, 0));
-    config.setClickboxNames(configListToString(false, name, nameAndIdContainer.clickboxNames, 0));
-    config.setTurboNames(configListToString(false, name, nameAndIdContainer.turboNames, 0));
-  }
 }

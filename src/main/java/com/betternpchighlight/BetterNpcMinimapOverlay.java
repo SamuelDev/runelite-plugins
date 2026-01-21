@@ -10,18 +10,17 @@ import net.runelite.client.util.Text;
 
 public class BetterNpcMinimapOverlay extends Overlay
 {
-	private final BetterNpcHighlightPlugin plugin;
-
-	private final BetterNpcHighlightConfig config;
+	@Inject
+	private BetterNpcHighlightConfig config;
 
 	@Inject
 	private NameAndIdContainer nameAndIdContainer;
 
 	@Inject
-	private BetterNpcMinimapOverlay(BetterNpcHighlightPlugin plugin, BetterNpcHighlightConfig config)
-	{
-		this.plugin = plugin;
-		this.config = config;
+	private ColorManager colorManager;
+
+	@Inject
+	private BetterNpcMinimapOverlay() {
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_WIDGETS);
 	}
@@ -34,7 +33,7 @@ public class BetterNpcMinimapOverlay extends Overlay
 			NPC npc = npcInfo.getNpc();
 			if (npc.getName() != null && config.npcMinimapMode() != BetterNpcHighlightConfig.npcMinimapMode.OFF)
 			{
-				Color color = plugin.getSpecificColor(npcInfo);
+				Color color = colorManager.getSpecificColor(npcInfo);
 
 				NPCComposition npcComposition = npc.getTransformedComposition();
 				if (color != null && npcComposition != null && npcComposition.isInteractible())
