@@ -8,8 +8,7 @@ import net.runelite.api.coords.WorldPoint;
 import java.util.ArrayList;
 
 @Getter()
-public class NpcSpawn
-{
+public class NpcSpawn {
 	public int index;
 	public String name;
 	public int id;
@@ -20,8 +19,7 @@ public class NpcSpawn
 	public WorldPoint spawnPoint;
 	public boolean dead;
 
-	public NpcSpawn(NPC npc)
-	{
+	public NpcSpawn(NPC npc) {
 		this.name = npc.getName();
 		this.id = npc.getId();
 		this.index = npc.getIndex();

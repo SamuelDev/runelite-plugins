@@ -47,9 +47,12 @@ public class ConfigTransformManager {
 
 	public void splitList(String configStr, ArrayList<String> strList) {
 		clientThread.invokeLater(() -> {
-			if (!configStr.equals("")) {
-				for (String str : configStr.split(",")) {
-					if (!str.trim().equals("")) {
+			if (!configStr.equals(""))
+			{
+				for (String str : configStr.split(","))
+				{
+					if (!str.trim().equals(""))
+					{
 						strList.add(str.trim().toLowerCase());
 					}
 				}
@@ -59,177 +62,184 @@ public class ConfigTransformManager {
 
 	public void updateConfig(ConfigChanged event) {
 		switch (event.getKey()) {
-			case "tileNames":
-				nameAndIdContainer.tileNames.clear();
-				splitList(config.tileNames(), nameAndIdContainer.tileNames);
-				recreateList();
-				break;
-			case "tileIds":
-				nameAndIdContainer.tileIds.clear();
-				splitList(config.tileIds(), nameAndIdContainer.tileIds);
-				recreateList();
-				break;
-			case "trueTileNames":
-				nameAndIdContainer.trueTileNames.clear();
-				splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
-				recreateList();
-				break;
-			case "trueTileIds":
-				nameAndIdContainer.trueTileIds.clear();
-				splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
-				recreateList();
-				break;
-			case "swTileNames":
-				nameAndIdContainer.swTileNames.clear();
-				splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
-				recreateList();
-				break;
-			case "swTileIds":
-				nameAndIdContainer.swTileIds.clear();
-				splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
-				recreateList();
-				break;
-			case "swTrueTileNames":
-				nameAndIdContainer.swTrueTileNames.clear();
-				splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
-				recreateList();
-				break;
-			case "swTrueTileIds":
-				nameAndIdContainer.swTrueTileIds.clear();
-				splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
-				recreateList();
-				break;
-			case "hullNames":
-				nameAndIdContainer.hullNames.clear();
-				splitList(config.hullNames(), nameAndIdContainer.hullNames);
-				recreateList();
-				break;
-			case "hullIds":
-				nameAndIdContainer.hullIds.clear();
-				splitList(config.hullIds(), nameAndIdContainer.hullIds);
-				recreateList();
-				break;
-			case "areaNames":
-				nameAndIdContainer.areaNames.clear();
-				splitList(config.areaNames(), nameAndIdContainer.areaNames);
-				recreateList();
-				break;
-			case "areaIds":
-				nameAndIdContainer.areaIds.clear();
-				splitList(config.areaIds(), nameAndIdContainer.areaIds);
-				recreateList();
-				break;
-			case "outlineNames":
-				nameAndIdContainer.outlineNames.clear();
-				splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
-				recreateList();
-				break;
-			case "outlineIds":
-				nameAndIdContainer.outlineIds.clear();
-				splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
-				recreateList();
-				break;
-			case "clickboxNames":
-				nameAndIdContainer.clickboxNames.clear();
-				splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
-				recreateList();
-				break;
-			case "clickboxIds":
-				nameAndIdContainer.clickboxIds.clear();
-				splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
-				recreateList();
-				break;
-			case "turboNames":
-				nameAndIdContainer.turboNames.clear();
-				splitList(config.turboNames(), nameAndIdContainer.turboNames);
-				recreateList();
-				break;
-			case "turboIds":
-				nameAndIdContainer.turboIds.clear();
-				splitList(config.turboIds(), nameAndIdContainer.turboIds);
-				recreateList();
-				break;
-			case "displayName":
-				nameAndIdContainer.namesToDisplay.clear();
-				splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
-				break;
-			case "ignoreDeadExclusion":
-				nameAndIdContainer.ignoreDeadExclusionList.clear();
-				splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
-				recreateList();
-				break;
-			case "ignoreDeadExclusionID":
-				nameAndIdContainer.ignoreDeadExclusionIDList.clear();
-				splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
-				recreateList();
-				break;
-			case "turboHighlight":
-				if (event.getNewValue().equals("true")) {
-					if (!nameAndIdContainer.confirmedWarning) {
-						plugin.showEpilepsyWarning();
-					} else {
-						nameAndIdContainer.confirmedWarning = false;
-					}
+		case "tileNames":
+			nameAndIdContainer.tileNames.clear();
+			splitList(config.tileNames(), nameAndIdContainer.tileNames);
+			recreateList();
+			break;
+		case "tileIds":
+			nameAndIdContainer.tileIds.clear();
+			splitList(config.tileIds(), nameAndIdContainer.tileIds);
+			recreateList();
+			break;
+		case "trueTileNames":
+			nameAndIdContainer.trueTileNames.clear();
+			splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
+			recreateList();
+			break;
+		case "trueTileIds":
+			nameAndIdContainer.trueTileIds.clear();
+			splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
+			recreateList();
+			break;
+		case "swTileNames":
+			nameAndIdContainer.swTileNames.clear();
+			splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
+			recreateList();
+			break;
+		case "swTileIds":
+			nameAndIdContainer.swTileIds.clear();
+			splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
+			recreateList();
+			break;
+		case "swTrueTileNames":
+			nameAndIdContainer.swTrueTileNames.clear();
+			splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
+			recreateList();
+			break;
+		case "swTrueTileIds":
+			nameAndIdContainer.swTrueTileIds.clear();
+			splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
+			recreateList();
+			break;
+		case "hullNames":
+			nameAndIdContainer.hullNames.clear();
+			splitList(config.hullNames(), nameAndIdContainer.hullNames);
+			recreateList();
+			break;
+		case "hullIds":
+			nameAndIdContainer.hullIds.clear();
+			splitList(config.hullIds(), nameAndIdContainer.hullIds);
+			recreateList();
+			break;
+		case "areaNames":
+			nameAndIdContainer.areaNames.clear();
+			splitList(config.areaNames(), nameAndIdContainer.areaNames);
+			recreateList();
+			break;
+		case "areaIds":
+			nameAndIdContainer.areaIds.clear();
+			splitList(config.areaIds(), nameAndIdContainer.areaIds);
+			recreateList();
+			break;
+		case "outlineNames":
+			nameAndIdContainer.outlineNames.clear();
+			splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
+			recreateList();
+			break;
+		case "outlineIds":
+			nameAndIdContainer.outlineIds.clear();
+			splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
+			recreateList();
+			break;
+		case "clickboxNames":
+			nameAndIdContainer.clickboxNames.clear();
+			splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
+			recreateList();
+			break;
+		case "clickboxIds":
+			nameAndIdContainer.clickboxIds.clear();
+			splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
+			recreateList();
+			break;
+		case "turboNames":
+			nameAndIdContainer.turboNames.clear();
+			splitList(config.turboNames(), nameAndIdContainer.turboNames);
+			recreateList();
+			break;
+		case "turboIds":
+			nameAndIdContainer.turboIds.clear();
+			splitList(config.turboIds(), nameAndIdContainer.turboIds);
+			recreateList();
+			break;
+		case "displayName":
+			nameAndIdContainer.namesToDisplay.clear();
+			splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
+			break;
+		case "ignoreDeadExclusion":
+			nameAndIdContainer.ignoreDeadExclusionList.clear();
+			splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
+			recreateList();
+			break;
+		case "ignoreDeadExclusionID":
+			nameAndIdContainer.ignoreDeadExclusionIDList.clear();
+			splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
+			recreateList();
+			break;
+		case "turboHighlight":
+			if (event.getNewValue().equals("true"))
+			{
+				if (!nameAndIdContainer.confirmedWarning)
+				{
+					plugin.showEpilepsyWarning();
 				}
-				break;
-			case "entityHiderNames":
-				nameAndIdContainer.hiddenNames.clear();
-				splitList(config.entityHiderNames(), nameAndIdContainer.hiddenNames);
-				break;
-			case "entityHiderIds":
-				nameAndIdContainer.hiddenIds.clear();
-				splitList(config.entityHiderIds(), nameAndIdContainer.hiddenIds);
-				break;
-			case "drawBeneathList":
-				nameAndIdContainer.beneathNPCs.clear();
-				splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
-				break;
-			case "slayerHighlight":
-				slayerPluginIntegration.enableSlayerPlugin();
-				break;
-			case "tileColor":
-			case "tileFillColor":
-			case "trueTileColor":
-			case "trueTileFillColor":
-			case "swTileColor":
-			case "swTileFillColor":
-			case "swTrueTileColor":
-			case "swTrueTileFillColor":
-			case "hullColor":
-			case "hullFillColor":
-			case "areaColor":
-			case "outlineColor":
-			case "clickboxColor":
-			case "clickboxFillColor":
-			case "taskColor":
-			case "taskFillColor":
-			case "presetColor1":
-			case "presetFillColor1":
-			case "presetColor2":
-			case "presetFillColor2":
-			case "presetColor3":
-			case "presetFillColor3":
-			case "presetColor4":
-			case "presetFillColor4":
-			case "presetColor5":
-			case "presetFillColor5":
-			case "useGlobalTileColor":
-			case "globalTileColor":
-			case "globalFillColor":
-				recreateList();
-				break;
+				else
+				{
+					nameAndIdContainer.confirmedWarning = false;
+				}
+			}
+			break;
+		case "entityHiderNames":
+			nameAndIdContainer.hiddenNames.clear();
+			splitList(config.entityHiderNames(), nameAndIdContainer.hiddenNames);
+			break;
+		case "entityHiderIds":
+			nameAndIdContainer.hiddenIds.clear();
+			splitList(config.entityHiderIds(), nameAndIdContainer.hiddenIds);
+			break;
+		case "drawBeneathList":
+			nameAndIdContainer.beneathNPCs.clear();
+			splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
+			break;
+		case "slayerHighlight":
+			slayerPluginIntegration.enableSlayerPlugin();
+			break;
+		case "tileColor":
+		case "tileFillColor":
+		case "trueTileColor":
+		case "trueTileFillColor":
+		case "swTileColor":
+		case "swTileFillColor":
+		case "swTrueTileColor":
+		case "swTrueTileFillColor":
+		case "hullColor":
+		case "hullFillColor":
+		case "areaColor":
+		case "outlineColor":
+		case "clickboxColor":
+		case "clickboxFillColor":
+		case "taskColor":
+		case "taskFillColor":
+		case "presetColor1":
+		case "presetFillColor1":
+		case "presetColor2":
+		case "presetFillColor2":
+		case "presetColor3":
+		case "presetFillColor3":
+		case "presetColor4":
+		case "presetFillColor4":
+		case "presetColor5":
+		case "presetFillColor5":
+		case "useGlobalTileColor":
+		case "globalTileColor":
+		case "globalFillColor":
+			recreateList();
+			break;
 		}
 	}
 
 	public void recreateList() {
 		clientThread.invokeLater(() -> {
 			if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
-					&& client.getLocalPlayer().getPlayerComposition() != null) {
+					&& client.getLocalPlayer().getPlayerComposition() != null)
+			{
 				nameAndIdContainer.npcList.clear();
 
-				for (NPC npc : client.getTopLevelWorldView().npcs()) {
+				for (NPC npc : client.getTopLevelWorldView().npcs())
+				{
 					NPCInfo npcInfo = plugin.checkValidNPC(npc);
-					if (npcInfo != null) {
+					if (npcInfo != null)
+					{
 						nameAndIdContainer.npcList.add(npcInfo);
 					}
 				}
@@ -239,93 +249,120 @@ public class ConfigTransformManager {
 	}
 
 	public String configListToString(boolean tagOrHide, String name, ArrayList<String> strList, int preset) {
-		if (tagOrHide) {
+		if (tagOrHide)
+		{
 			boolean foundName = false;
 			String newName = preset > 0 ? name + ":" + preset : name;
-			for (String str : strList) {
-				if (str.startsWith(name + ":") || str.equalsIgnoreCase(name)) {
+			for (String str : strList)
+			{
+				if (str.startsWith(name + ":") || str.equalsIgnoreCase(name))
+				{
 					strList.set(strList.indexOf(str), newName);
 					foundName = true;
 				}
 			}
 
-			if (!foundName) {
+			if (!foundName)
+			{
 				strList.add(newName);
 			}
-		} else {
+		}
+		else
+		{
 			strList.removeIf(str -> str.toLowerCase().startsWith(name + ":") || str.equalsIgnoreCase(name));
 		}
 		return Text.toCSV(strList);
 	}
 
 	public void updateListConfig(boolean add, String name, int preset) {
-		if (!add) {
+		if (!add)
+		{
 			removeAllTagStyles(name);
-		} else {
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE)) {
+		}
+		else
+		{
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TILE))
+			{
 				config.setTileNames(configListToString(add, name, nameAndIdContainer.tileNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TRUE_TILE))
+			{
 				config.setTrueTileNames(configListToString(add, name, nameAndIdContainer.trueTileNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TILE))
+			{
 				config.setSwTileNames(configListToString(add, name, nameAndIdContainer.swTileNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.SW_TRUE_TILE))
+			{
 				config.setSwTrueTileNames(configListToString(add, name, nameAndIdContainer.swTrueTileNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.HULL))
+			{
 				config.setHullNames(configListToString(add, name, nameAndIdContainer.hullNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.AREA))
+			{
 				config.setAreaNames(configListToString(add, name, nameAndIdContainer.areaNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.OUTLINE))
+			{
 				config.setOutlineNames(configListToString(add, name, nameAndIdContainer.outlineNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
+			{
 				config.setClickboxNames(configListToString(add, name, nameAndIdContainer.clickboxNames, preset));
 			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
+			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
+			{
 				config.setTurboNames(configListToString(add, name, nameAndIdContainer.turboNames, 0));
 			}
 		}
 	}
 
-	public HighlightColor isInNameOrIdList(ArrayList<String> strList, ArrayList<String> idList, NPC npc,
-			Color configColor, Color configFillColor) {
-		for (String entry : idList) {
+	public HighlightColor isInNameOrIdList(ArrayList<String> strList, ArrayList<String> idList, NPC npc, Color configColor,
+			Color configFillColor) {
+		for (String entry : idList)
+		{
 			int id = -1;
 			String preset = "";
-			if (entry.contains(":")) {
+			if (entry.contains(":"))
+			{
 				String[] strArr = entry.split(":");
-				if (StringUtils.isNumeric(strArr[0])) {
+				if (StringUtils.isNumeric(strArr[0]))
+				{
 					id = Integer.parseInt(strArr[0]);
 				}
 				preset = strArr[1];
-			} else if (StringUtils.isNumeric(entry)) {
+			}
+			else if (StringUtils.isNumeric(entry))
+			{
 				id = Integer.parseInt(entry);
 			}
 
-			if (id == npc.getId()) {
-				return new HighlightColor(true,
-						colorManager.getHighlightColor(preset, configColor),
+			if (id == npc.getId())
+			{
+				return new HighlightColor(true, colorManager.getHighlightColor(preset, configColor),
 						colorManager.getHighlightFillColor(preset, configFillColor));
 			}
 		}
 
-		if (npc.getName() != null) {
+		if (npc.getName() != null)
+		{
 			String name = npc.getName().toLowerCase();
-			for (String entry : strList) {
+			for (String entry : strList)
+			{
 				String nameStr = entry;
 				String preset = "";
-				if (entry.contains(":")) {
+				if (entry.contains(":"))
+				{
 					String[] strArr = entry.split(":");
 					nameStr = strArr[0];
 					preset = strArr[1];
 				}
 
-				if (WildcardMatcher.matches(nameStr, name)) {
+				if (WildcardMatcher.matches(nameStr, name))
+				{
 					return new HighlightColor(true, colorManager.getHighlightColor(preset, configColor),
 							colorManager.getHighlightFillColor(preset, configFillColor));
 				}
@@ -335,16 +372,20 @@ public class ConfigTransformManager {
 	}
 
 	public boolean isInSpecificNameList(ArrayList<String> strList, NPC npc) {
-		if (npc.getName() != null) {
+		if (npc.getName() != null)
+		{
 			String name = npc.getName().toLowerCase();
-			for (String entry : strList) {
+			for (String entry : strList)
+			{
 				String nameStr = entry;
-				if (entry.contains(":")) {
+				if (entry.contains(":"))
+				{
 					String[] strArr = entry.split(":");
 					nameStr = strArr[0];
 				}
 
-				if (WildcardMatcher.matches(nameStr, name)) {
+				if (WildcardMatcher.matches(nameStr, name))
+				{
 					return true;
 				}
 			}
@@ -363,7 +404,7 @@ public class ConfigTransformManager {
 		}
 		return false;
 	}
-	
+
 	public boolean isInAnyNameList(NPC npc) {
 		return isInSpecificNameList(nameAndIdContainer.tileNames, npc) || isInSpecificNameList(nameAndIdContainer.trueTileNames, npc)
 				|| isInSpecificNameList(nameAndIdContainer.swTileNames, npc) || isInSpecificNameList(nameAndIdContainer.swTrueTileNames, npc)
@@ -371,7 +412,7 @@ public class ConfigTransformManager {
 				|| isInSpecificNameList(nameAndIdContainer.outlineNames, npc) || isInSpecificNameList(nameAndIdContainer.clickboxNames, npc)
 				|| isInSpecificNameList(nameAndIdContainer.turboNames, npc);
 	}
-	
+
 	public boolean isInAnyIdList(NPC npc) {
 		return isInSpecificIdList(nameAndIdContainer.tileNames, npc) || isInSpecificIdList(nameAndIdContainer.trueTileNames, npc)
 				|| isInSpecificIdList(nameAndIdContainer.swTileNames, npc) || isInSpecificIdList(nameAndIdContainer.swTrueTileNames, npc)

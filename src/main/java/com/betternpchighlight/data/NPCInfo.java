@@ -13,8 +13,7 @@ import com.betternpchighlight.managers.SlayerPluginManager;
 
 @Getter
 @Setter
-public class NPCInfo
-{
+public class NPCInfo {
 	NPC npc;
 	HighlightColor tile;
 	HighlightColor trueTile;
@@ -28,8 +27,8 @@ public class NPCInfo
 	boolean isTask;
 	boolean ignoreDead;
 
-	public NPCInfo(NPC npc, BetterNpcHighlightPlugin plugin, SlayerPluginService slayerPluginService, BetterNpcHighlightConfig config, SlayerPluginManager slayerPluginIntegration, NameAndIdContainer nameAndIdContainer, ConfigTransformManager configTransformManager)
-	{	
+	public NPCInfo(NPC npc, BetterNpcHighlightPlugin plugin, SlayerPluginService slayerPluginService, BetterNpcHighlightConfig config,
+			SlayerPluginManager slayerPluginIntegration, NameAndIdContainer nameAndIdContainer, ConfigTransformManager configTransformManager) {
 		Color globalTileColor = config.useGlobalTileColor() ? config.globalTileColor() : null;
 		Color globalFillColor = config.useGlobalTileColor() ? config.globalFillColor() : null;
 
@@ -37,18 +36,16 @@ public class NPCInfo
 		this.tile = configTransformManager.isInNameOrIdList(nameAndIdContainer.tileNames, nameAndIdContainer.tileIds, npc,
 				coalesceColor(globalTileColor, config.tileColor()), coalesceColor(globalFillColor, config.tileFillColor()));
 		this.trueTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.trueTileNames, nameAndIdContainer.trueTileIds, npc,
-				coalesceColor(globalTileColor, config.trueTileColor()),
-				coalesceColor(globalFillColor, config.trueTileFillColor()));
+				coalesceColor(globalTileColor, config.trueTileColor()), coalesceColor(globalFillColor, config.trueTileFillColor()));
 		this.swTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.swTileNames, nameAndIdContainer.swTileIds, npc,
 				coalesceColor(globalTileColor, config.swTileColor()), coalesceColor(globalFillColor, config.swTileFillColor()));
-		this.swTrueTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.swTrueTileNames, nameAndIdContainer.swTrueTileIds,
-				npc, coalesceColor(globalTileColor, config.swTrueTileColor()),
-				coalesceColor(globalFillColor, config.swTrueTileFillColor()));
+		this.swTrueTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.swTrueTileNames, nameAndIdContainer.swTrueTileIds, npc,
+				coalesceColor(globalTileColor, config.swTrueTileColor()), coalesceColor(globalFillColor, config.swTrueTileFillColor()));
 
-		this.hull = configTransformManager.isInNameOrIdList(nameAndIdContainer.hullNames, nameAndIdContainer.hullIds, npc,
-				config.hullColor(), config.hullFillColor());
-		this.area = configTransformManager.isInNameOrIdList(nameAndIdContainer.areaNames, nameAndIdContainer.areaIds, npc,
-				config.areaColor(), null);
+		this.hull = configTransformManager.isInNameOrIdList(nameAndIdContainer.hullNames, nameAndIdContainer.hullIds, npc, config.hullColor(),
+				config.hullFillColor());
+		this.area = configTransformManager.isInNameOrIdList(nameAndIdContainer.areaNames, nameAndIdContainer.areaIds, npc, config.areaColor(),
+				null);
 		this.outline = configTransformManager.isInNameOrIdList(nameAndIdContainer.outlineNames, nameAndIdContainer.outlineIds, npc,
 				config.outlineColor(), null);
 		this.clickbox = configTransformManager.isInNameOrIdList(nameAndIdContainer.clickboxNames, nameAndIdContainer.clickboxIds, npc,
@@ -60,8 +57,7 @@ public class NPCInfo
 				|| configTransformManager.isInSpecificIdList(nameAndIdContainer.ignoreDeadExclusionIDList, npc);
 	}
 
-	private Color coalesceColor(Color color, Color defaultColor)
-	{
+	private Color coalesceColor(Color color, Color defaultColor) {
 		return color != null ? color : defaultColor;
 	}
 }

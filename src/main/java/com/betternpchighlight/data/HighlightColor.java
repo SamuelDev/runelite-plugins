@@ -8,8 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class HighlightColor
-{
+public class HighlightColor {
 	boolean isHighlight;
 	Color color;
 	Color fill;
