@@ -24,7 +24,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.betternpchighlight;
+package com.betternpchighlight.overlays;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -38,6 +38,14 @@ import net.runelite.client.ui.overlay.*;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 
 import javax.inject.Inject;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
+import com.betternpchighlight.BetterNpcHighlightPlugin;
+import com.betternpchighlight.data.NPCInfo;
+import com.betternpchighlight.data.NameAndIdContainer;
+import com.betternpchighlight.data.NpcSpawn;
+import com.betternpchighlight.managers.ColorManager;
+
 import java.awt.*;
 import java.time.Instant;
 import java.util.Random;

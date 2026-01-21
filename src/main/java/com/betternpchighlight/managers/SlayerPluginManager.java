@@ -1,8 +1,10 @@
-package com.betternpchighlight;
+package com.betternpchighlight.managers;
 
 import java.util.Optional;
 
 import javax.inject.Inject;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.plugins.Plugin;
@@ -10,7 +12,7 @@ import net.runelite.client.plugins.PluginInstantiationException;
 import net.runelite.client.plugins.PluginManager;
 
 @Slf4j
-public class SlayerPluginIntegration {
+public class SlayerPluginManager {
   @Inject
   private PluginManager pluginManager;
 

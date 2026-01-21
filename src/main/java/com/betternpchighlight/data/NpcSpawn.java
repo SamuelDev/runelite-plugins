@@ -1,6 +1,5 @@
-package com.betternpchighlight;
+package com.betternpchighlight.data;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
@@ -8,7 +7,7 @@ import net.runelite.api.coords.WorldPoint;
 
 import java.util.ArrayList;
 
-@Getter(AccessLevel.PACKAGE)
+@Getter()
 public class NpcSpawn
 {
 	public int index;
@@ -21,7 +20,7 @@ public class NpcSpawn
 	public WorldPoint spawnPoint;
 	public boolean dead;
 
-	NpcSpawn(NPC npc)
+	public NpcSpawn(NPC npc)
 	{
 		this.name = npc.getName();
 		this.id = npc.getId();

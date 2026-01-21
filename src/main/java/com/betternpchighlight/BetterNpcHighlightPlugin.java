@@ -24,6 +24,14 @@
  */
 package com.betternpchighlight;
 
+import com.betternpchighlight.data.NPCInfo;
+import com.betternpchighlight.data.NameAndIdContainer;
+import com.betternpchighlight.data.NpcSpawn;
+import com.betternpchighlight.managers.ConfigTransformManager;
+import com.betternpchighlight.managers.MenuManager;
+import com.betternpchighlight.managers.SlayerPluginManager;
+import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
+import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
@@ -99,7 +107,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	private ClientThread clientThread;
 
 	@Inject
-	private SlayerPluginIntegration slayerPluginIntegration;
+	private SlayerPluginManager slayerPluginIntegration;
 
 	@Inject
 	private MenuManager menuManager;

@@ -1,4 +1,4 @@
-package com.betternpchighlight;
+package com.betternpchighlight.data;
 
 import java.awt.Color;
 import java.util.ArrayList;

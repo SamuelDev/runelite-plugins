@@ -1,9 +1,13 @@
-package com.betternpchighlight;
+package com.betternpchighlight.managers;
 
 import java.awt.Color;
 import java.util.Random;
 
 import javax.inject.Inject;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
+import com.betternpchighlight.data.NPCInfo;
+import com.betternpchighlight.data.NameAndIdContainer;
 
 import net.runelite.api.Client;
 import net.runelite.client.util.WildcardMatcher;

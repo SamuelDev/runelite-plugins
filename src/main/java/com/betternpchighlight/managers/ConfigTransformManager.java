@@ -1,9 +1,16 @@
-package com.betternpchighlight;
+package com.betternpchighlight.managers;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
+import com.betternpchighlight.BetterNpcHighlightPlugin;
+import com.betternpchighlight.data.HighlightColor;
+import com.betternpchighlight.data.NPCInfo;
+import com.betternpchighlight.data.NameAndIdContainer;
+
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
@@ -24,7 +31,7 @@ public class ConfigTransformManager {
 	private SlayerPluginService slayerPluginService;
 
 	@Inject
-	private SlayerPluginIntegration slayerPluginIntegration;
+	private SlayerPluginManager slayerPluginIntegration;
 
 	@Inject
 	private NameAndIdContainer nameAndIdContainer;
@@ -285,7 +292,7 @@ public class ConfigTransformManager {
 		}
 	}
 
-	public HighlightColor checkSpecificList(ArrayList<String> strList, ArrayList<String> idList, NPC npc,
+	public HighlightColor isInNameOrIdList(ArrayList<String> strList, ArrayList<String> idList, NPC npc,
 			Color configColor, Color configFillColor) {
 		for (String entry : idList) {
 			int id = -1;
@@ -327,7 +334,7 @@ public class ConfigTransformManager {
 		return new HighlightColor(false, configColor, configFillColor);
 	}
 
-	public boolean checkSpecificNameList(ArrayList<String> strList, NPC npc) {
+	public boolean isInSpecificNameList(ArrayList<String> strList, NPC npc) {
 		if (npc.getName() != null) {
 			String name = npc.getName().toLowerCase();
 			for (String entry : strList) {
@@ -345,14 +352,36 @@ public class ConfigTransformManager {
 		return false;
 	}
 
-	public boolean checkSpecificIdList(ArrayList<String> strList, NPC npc) {
+	public boolean isInSpecificIdList(ArrayList<String> strList, NPC npc) {
 		int id = npc.getId();
-		for (String entry : strList) {
-			if (StringUtils.isNumeric(entry) && Integer.parseInt(entry) == id) {
+		for (String entry : strList)
+		{
+			if (StringUtils.isNumeric(entry) && Integer.parseInt(entry) == id)
+			{
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	public boolean isInAnyNameList(NPC npc) {
+		return isInSpecificNameList(nameAndIdContainer.tileNames, npc) || isInSpecificNameList(nameAndIdContainer.trueTileNames, npc)
+				|| isInSpecificNameList(nameAndIdContainer.swTileNames, npc) || isInSpecificNameList(nameAndIdContainer.swTrueTileNames, npc)
+				|| isInSpecificNameList(nameAndIdContainer.hullNames, npc) || isInSpecificNameList(nameAndIdContainer.areaNames, npc)
+				|| isInSpecificNameList(nameAndIdContainer.outlineNames, npc) || isInSpecificNameList(nameAndIdContainer.clickboxNames, npc)
+				|| isInSpecificNameList(nameAndIdContainer.turboNames, npc);
+	}
+	
+	public boolean isInAnyIdList(NPC npc) {
+		return isInSpecificIdList(nameAndIdContainer.tileNames, npc) || isInSpecificIdList(nameAndIdContainer.trueTileNames, npc)
+				|| isInSpecificIdList(nameAndIdContainer.swTileNames, npc) || isInSpecificIdList(nameAndIdContainer.swTrueTileNames, npc)
+				|| isInSpecificIdList(nameAndIdContainer.hullNames, npc) || isInSpecificIdList(nameAndIdContainer.areaNames, npc)
+				|| isInSpecificIdList(nameAndIdContainer.outlineNames, npc) || isInSpecificIdList(nameAndIdContainer.clickboxNames, npc)
+				|| isInSpecificIdList(nameAndIdContainer.turboNames, npc);
+	}
+
+	public boolean isInAnyList(NPC npc) {
+		return isInAnyNameList(npc) || isInAnyIdList(npc);
 	}
 
 	private void removeAllTagStyles(String name) {
