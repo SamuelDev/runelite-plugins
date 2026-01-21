@@ -23,7 +23,7 @@ public class NPCInfo
 	boolean isTask;
 	boolean ignoreDead;
 
-	public NPCInfo(NPC npc, BetterNpcHighlightPlugin plugin, SlayerPluginService slayerPluginService, BetterNpcHighlightConfig config)
+	public NPCInfo(NPC npc, BetterNpcHighlightPlugin plugin, SlayerPluginService slayerPluginService, BetterNpcHighlightConfig config, SlayerPluginIntegration slayerPluginIntegration)
 	{
 		Color globalTileColor = config.useGlobalTileColor() ? config.globalTileColor() : null;
 		Color globalFillColor = config.useGlobalTileColor() ? config.globalFillColor() : null;
@@ -39,7 +39,7 @@ public class NPCInfo
 		this.outline = plugin.checkSpecificList(plugin.outlineNames, plugin.outlineIds, npc, config.outlineColor(), null);
 		this.clickbox = plugin.checkSpecificList(plugin.clickboxNames, plugin.clickboxIds, npc, config.clickboxColor(), config.clickboxFillColor());
 		this.turbo = plugin.checkSpecificList(plugin.turboNames, plugin.turboIds, npc, null, null);
-		this.isTask = plugin.checkSlayerPluginEnabled() && slayerPluginService != null && slayerPluginService.getTargets().contains(npc);
+		this.isTask = slayerPluginIntegration.checkSlayerPluginEnabled() && slayerPluginService != null && slayerPluginService.getTargets().contains(npc);
 		this.ignoreDead = plugin.checkSpecificNameList(plugin.ignoreDeadExclusionList, npc) || plugin.checkSpecificIdList(plugin.ignoreDeadExclusionIDList, npc);
 	}
 
