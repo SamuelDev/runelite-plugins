@@ -180,7 +180,7 @@ public class ColorManager {
     }
     else if (name != null)
     {
-      int index = nameAndIdContainer.turboIds.size() - 1;
+      int index = nameAndIdContainer.turboIds.size();
       for (String str : nameAndIdContainer.turboNames)
       {
         if (WildcardMatcher.matches(str, name))
