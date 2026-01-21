@@ -27,6 +27,7 @@ package com.betternpchighlight;
 import com.betternpchighlight.data.NPCInfo;
 import com.betternpchighlight.data.NameAndIdContainer;
 import com.betternpchighlight.data.NpcSpawn;
+import com.betternpchighlight.managers.ChatCommandManager;
 import com.betternpchighlight.managers.ConfigTransformManager;
 import com.betternpchighlight.managers.MenuManager;
 import com.betternpchighlight.managers.SlayerPluginManager;
@@ -69,10 +70,10 @@ import java.util.Random;
 import java.util.Set;
 
 @Slf4j
-@PluginDescriptor(name = "Better NPC Highlight", description = "A more customizable NPC highlight", tags = { "npc",
-		"highlight", "indicators", "respawn", "hide", "entity", "custom", "id", "name" })
+@PluginDescriptor(name = "Better NPC Highlight", description = "A more customizable NPC highlight", tags = { "npc", "highlight",
+		"indicators", "respawn", "hide", "entity", "custom", "id", "name" })
 @PluginDependency(SlayerPlugin.class)
-public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
+public class BetterNpcHighlightPlugin extends Plugin {
 	@Inject
 	private Client client;
 
@@ -98,12 +99,6 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	private SlayerPluginService slayerPluginService;
 
 	@Inject
-	private KeyManager keyManager;
-
-	@Inject
-	private ChatMessageManager chatMessageManager;
-
-	@Inject
 	private ClientThread clientThread;
 
 	@Inject
@@ -118,6 +113,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	@Inject
 	private NameAndIdContainer nameAndIdContainer;
 
+	@Inject
+	private ChatCommandManager chatCommandManager;
+
 	public Instant lastTickUpdate;
 	public int turboModeStyle = 0;
 	public int turboTileWidth = 0;
@@ -125,11 +123,6 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	public int turboOutlineFeather = 0;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
-
-	private static final String HIDE_COMMAND = "!hide";
-	private static final String UNHIDE_COMMAND = "!unhide";
-	private static final String TAG_COMMAND = "!tag";
-	private static final String UNTAG_COMMAND = "!untag";
 
 	@Provides
 	BetterNpcHighlightConfig providesConfig(ConfigManager configManager) {
@@ -168,10 +161,11 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			configTransformManager.splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
 
 			hooks.registerRenderableDrawListener(drawListener);
-			keyManager.registerKeyListener(this);
+			chatCommandManager.registerKeyListener();
 			slayerPluginIntegration.enableSlayerPlugin();
 
-			if (client.getGameState() == GameState.LOGGED_IN) {
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
 				configTransformManager.recreateList();
 			}
 		});
@@ -182,21 +176,22 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		overlayManager.remove(overlay);
 		overlayManager.remove(mapOverlay);
 		hooks.unregisterRenderableDrawListener(drawListener);
-		keyManager.unregisterKeyListener(this);
+		chatCommandManager.unregisterKeyListener();
 	}
 
 	private void migrateOldConfig(ConfigManager configManager) {
 		// migrate old tag style mode config into the new set version of config if
 		// possible
-		try {
+		try
+		{
 			String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
 			String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
-			if (oldValue != null && newValue == null) {
+			if (oldValue != null && newValue == null)
+			{
 				log.debug("BNPC: Migrating old tag style mode config to new set version");
 
 				// Parse the old enum string value
-				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode
-						.valueOf(oldValue.toUpperCase());
+				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
 
 				// Convert to Set format
 				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
@@ -204,7 +199,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 				// Save the properly serialized Set to the new config
 				configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			// Could not migrate, ignore
 			log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
 		}
@@ -223,14 +220,16 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
-		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP)) {
+		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP))
+		{
 			configTransformManager.updateConfig(event);
 		}
 	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event) {
-		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING) {
+		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
+		{
 			nameAndIdContainer.npcSpawns.clear();
 			nameAndIdContainer.npcList.clear();
 		}
@@ -245,15 +244,21 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	public void onNpcSpawned(NpcSpawned event) {
 		NPC npc = event.getNpc();
 
-		for (NpcSpawn n : nameAndIdContainer.npcSpawns) {
-			if (npc.getIndex() == n.index && npc.getId() == n.id) {
-				if (n.spawnPoint == null && n.diedOnTick != -1) {
+		for (NpcSpawn n : nameAndIdContainer.npcSpawns)
+		{
+			if (npc.getIndex() == n.index && npc.getId() == n.id)
+			{
+				if (n.spawnPoint == null && n.diedOnTick != -1)
+				{
 					WorldPoint wp = client.isInInstancedRegion() ? WorldPoint.fromLocalInstance(client, npc.getLocalLocation())
 							: WorldPoint.fromLocal(client, npc.getLocalLocation());
-					if (n.spawnLocations.contains(wp)) {
+					if (n.spawnLocations.contains(wp))
+					{
 						n.spawnPoint = wp;
 						n.respawnTime = client.getTickCount() - n.diedOnTick + 1;
-					} else {
+					}
+					else
+					{
 						n.spawnLocations.add(wp);
 					}
 				}
@@ -263,7 +268,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		}
 
 		NPCInfo npcInfo = checkValidNPC(npc);
-		if (npcInfo != null) {
+		if (npcInfo != null)
+		{
 			nameAndIdContainer.npcList.add(npcInfo);
 		}
 	}
@@ -272,13 +278,19 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	public void onNpcDespawned(NpcDespawned event) {
 		NPC npc = event.getNpc();
 
-		if (npc.isDead()) {
+		if (npc.isDead())
+		{
 			if (nameAndIdContainer.npcList.stream().anyMatch(n -> n.getNpc() == npc)
-					&& nameAndIdContainer.npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex())) {
+					&& nameAndIdContainer.npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex()))
+			{
 				nameAndIdContainer.npcSpawns.add(new NpcSpawn(npc));
-			} else {
-				for (NpcSpawn n : nameAndIdContainer.npcSpawns) {
-					if (npc.getIndex() == n.index && npc.getId() == n.id) {
+			}
+			else
+			{
+				for (NpcSpawn n : nameAndIdContainer.npcSpawns)
+				{
+					if (npc.getIndex() == n.index && npc.getId() == n.id)
+					{
 						n.diedOnTick = client.getTickCount();
 						n.dead = true;
 						break;
@@ -297,21 +309,23 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
 
 		NPCInfo npcInfo = checkValidNPC(npc);
-		if (npcInfo != null) {
+		if (npcInfo != null)
+		{
 			nameAndIdContainer.npcList.add(npcInfo);
 		}
 	}
 
 	@Subscribe(priority = -1)
 	public void onGameTick(GameTick event) {
-		if (slayerPluginIntegration.checkSlayerPluginEnabled()
-				&& !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask())) {
+		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask()))
+		{
 			configTransformManager.recreateList();
 		}
 
 		lastTickUpdate = Instant.now();
 		nameAndIdContainer.turboColors.clear();
-		for (int i = 0; i < nameAndIdContainer.npcList.size(); i++) {
+		for (int i = 0; i < nameAndIdContainer.npcList.size(); i++)
+		{
 			nameAndIdContainer.turboColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 		}
 		turboModeStyle = new Random().nextInt(6);
@@ -322,10 +336,10 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 
 	public NPCInfo checkValidNPC(NPC npc) {
 		NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration, nameAndIdContainer, configTransformManager);
-		if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight()
-				|| n.getSwTrueTile().isHighlight() || n.getHull().isHighlight()
-				|| n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
-				|| n.getTurbo().isHighlight() || n.isTask()) {
+		if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight() || n.getSwTrueTile().isHighlight()
+				|| n.getHull().isHighlight() || n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
+				|| n.getTurbo().isHighlight() || n.isTask())
+		{
 			return n;
 		}
 		return null;
@@ -338,14 +352,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		JLabel label = new JLabel(
 				"<html><p>Turning this on will cause any NPCs highlighted with this style to change colors and styles rapidly.</p></html>");
 
-		if (JOptionPane.showOptionDialog(new JFrame(),
-				label,
-				"EPILEPSY WARNING - Occular Abhorrence",
-				JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE,
-				null,
-				options,
-				options[1]) == 0) {
+		if (JOptionPane.showOptionDialog(new JFrame(), label, "EPILEPSY WARNING - Occular Abhorrence", JOptionPane.YES_NO_OPTION,
+				JOptionPane.WARNING_MESSAGE, null, options, options[1]) == 0)
+		{
 			nameAndIdContainer.confirmedWarning = true;
 			configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "turboHighlight", true);
 		}
@@ -354,183 +363,16 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 
 	@VisibleForTesting
 	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
-		if (renderable instanceof NPC) {
+		if (renderable instanceof NPC)
+		{
 			NPC npc = (NPC) renderable;
 
-			if (config.entityHiderToggle()) {
+			if (config.entityHiderToggle())
+			{
 				return !nameAndIdContainer.hiddenIds.contains(String.valueOf(npc.getId()))
 						&& (npc.getName() != null && !nameAndIdContainer.hiddenNames.contains(npc.getName().toLowerCase()));
 			}
 		}
 		return true;
-	}
-
-	public void keyPressed(KeyEvent e) {
-		// Enter is pressed
-		if (e.getKeyCode() == 10) {
-			int inputType = client.getVarcIntValue(VarClientInt.INPUT_TYPE);
-			if (inputType == InputType.PRIVATE_MESSAGE.getType() || inputType == InputType.NONE.getType()) {
-				int var;
-				if (inputType == InputType.PRIVATE_MESSAGE.getType()) {
-					var = VarClientStr.INPUT_TEXT;
-				} else {
-					var = VarClientStr.CHATBOX_TYPED_TEXT;
-				}
-
-				if (client.getVarcStrValue(var) != null && !client.getVarcStrValue(var).isEmpty()) {
-					String text = client.getVarcStrValue(var).toLowerCase();
-					if (config.entityHiderCommands() && (text.startsWith(HIDE_COMMAND) || text.startsWith(UNHIDE_COMMAND))) {
-						hideNPCCommand(text, var);
-					} else if (config.tagCommands() && (text.startsWith(TAG_COMMAND) || text.startsWith(UNTAG_COMMAND))) {
-						tagNPCCommand(text, var);
-					}
-				}
-			}
-		}
-	}
-
-	private void hideNPCCommand(String text, int var) {
-		String npcToHide = text.replace(text.startsWith(HIDE_COMMAND) ? HIDE_COMMAND : UNHIDE_COMMAND, "").trim();
-		boolean hide = text.startsWith(HIDE_COMMAND);
-
-		if (!npcToHide.isEmpty()) {
-			if (StringUtils.isNumeric(npcToHide)) {
-				config.setEntityHiderIds(
-						configTransformManager.configListToString(hide, npcToHide, nameAndIdContainer.hiddenIds, 0));
-			} else {
-				config.setEntityHiderNames(
-						configTransformManager.configListToString(hide, npcToHide, nameAndIdContainer.hiddenNames, 0));
-			}
-		} else {
-			printMessage("Please enter a valid NPC name or ID!");
-		}
-
-		// Set typed text to nothing
-		client.setVarcStrValue(var, "");
-	}
-
-	private void tagNPCCommand(String text, int var) {
-		if (text.trim().equals(TAG_COMMAND) || text.trim().equals(UNTAG_COMMAND)) {
-			printMessage("Please enter a tag abbreviation followed by a valid NPC name or ID!");
-		} else if (text.contains(TAG_COMMAND + " ") || text.contains(UNTAG_COMMAND + " ")) {
-			printMessage("Please enter a valid tag abbreviation!");
-		} else if (!text.trim().contains(" ")) {
-			printMessage("Please enter a valid NPC name or ID!");
-		} else {
-			String npcToTag = text.substring(text.indexOf(" ") + 1).toLowerCase().trim();
-			int preset = 0;
-			if (npcToTag.contains(":")) {
-				String[] strArr = npcToTag.split(":");
-				npcToTag = strArr[0];
-				if (StringUtils.isNumeric(strArr[1]))
-					preset = Integer.parseInt(strArr[1]);
-			}
-			boolean tag = text.startsWith(TAG_COMMAND);
-
-			if (!npcToTag.isEmpty()) {
-				if (validateCommand(text, "t ") || validateCommand(text, "tile ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setTileIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.tileIds, preset));
-					} else {
-						config.setTileNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.tileNames, preset));
-					}
-				} else if (validateCommand(text, "tt ") || validateCommand(text, "truetile ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config
-								.setTrueTileIds(
-										configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.trueTileIds, preset));
-					} else {
-						config.setTrueTileNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.trueTileNames, preset));
-					}
-				} else if (validateCommand(text, "sw ") || validateCommand(text, "swt ")
-						|| validateCommand(text, "southwesttile ") || validateCommand(text, "southwest ")
-						|| validateCommand(text, "swtile ") || validateCommand(text, "southwestt ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setSwTileIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.swTileIds, preset));
-					} else {
-						config
-								.setSwTileNames(
-										configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.swTileNames, preset));
-					}
-				} else if (validateCommand(text, "swtt ") || validateCommand(text, "swtruetile ")
-						|| validateCommand(text, "southwesttruetile ") || validateCommand(text, "southwesttt ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setSwTrueTileIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.swTrueTileIds, preset));
-					} else {
-						config.setSwTrueTileNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.swTrueTileNames, preset));
-					}
-				} else if (validateCommand(text, "h ") || validateCommand(text, "hull ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setHullIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.hullIds, preset));
-					} else {
-						config.setHullNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.hullNames, preset));
-					}
-				} else if (validateCommand(text, "a ") || validateCommand(text, "area ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setAreaIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.areaIds, preset));
-					} else {
-						config.setAreaNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.areaNames, preset));
-					}
-				} else if (validateCommand(text, "o ") || validateCommand(text, "outline ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setOutlineIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.outlineIds, preset));
-					} else {
-						config.setOutlineNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.outlineNames, preset));
-					}
-				} else if (validateCommand(text, "c ") || validateCommand(text, "clickbox ") || validateCommand(text, "box ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config
-								.setClickboxIds(
-										configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.clickboxIds, preset));
-					} else {
-						config.setClickboxNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.clickboxNames, preset));
-					}
-				} else if (validateCommand(text, "tu ") || validateCommand(text, "turbo ")) {
-					if (StringUtils.isNumeric(npcToTag)) {
-						config.setTurboIds(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.turboIds, preset));
-					} else {
-						config.setTurboNames(
-								configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.turboNames, preset));
-					}
-				}
-			}
-		}
-		// Set typed text to nothing
-		client.setVarcStrValue(var, "");
-	}
-
-	public boolean validateCommand(String command, String type) {
-		return command.startsWith(TAG_COMMAND + type) || command.startsWith(UNTAG_COMMAND + type);
-	}
-
-	public void printMessage(String msg) {
-		final ChatMessageBuilder message = new ChatMessageBuilder()
-				.append(ChatColorType.HIGHLIGHT)
-				.append(msg);
-
-		chatMessageManager.queue(QueuedMessage.builder()
-				.type(ChatMessageType.CONSOLE)
-				.runeLiteFormattedMessage(message.build())
-				.build());
-	}
-
-	public void keyReleased(KeyEvent e) {
-	}
-
-	public void keyTyped(KeyEvent e) {
 	}
 }
