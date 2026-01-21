@@ -71,7 +71,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 
 	public Dimension render(Graphics2D graphics)
 	{
-		for (NPCInfo npcInfo : plugin.npcList)
+		for (NPCInfo npcInfo : plugin.nameAndIdContainer.npcList)
 		{
 			NPC npc = npcInfo.getNpc();
 			NPCComposition npcComposition = npc.getTransformedComposition();
@@ -140,9 +140,9 @@ public class BetterNpcHighlightOverlay extends Overlay
 						}
 					}
 
-					if (plugin.namesToDisplay.size() > 0 && npc.getName() != null)
+					if (plugin.nameAndIdContainer.namesToDisplay.size() > 0 && npc.getName() != null)
 					{
-						for (String str : plugin.namesToDisplay)
+						for (String str : plugin.nameAndIdContainer.namesToDisplay)
 						{
 							if (WildcardMatcher.matches(str, npc.getName().toLowerCase()))
 							{
@@ -167,15 +167,15 @@ public class BetterNpcHighlightOverlay extends Overlay
 			LocalPoint lp = LocalPoint.fromWorld(client, client.getLocalPlayer().getWorldLocation());
 			if (lp != null)
 			{
-				ArrayList<NPCInfo> closestNPCs = plugin.npcList;
-				if (!plugin.beneathNPCs.isEmpty())
+				ArrayList<NPCInfo> closestNPCs = plugin.nameAndIdContainer.npcList;
+				if (!plugin.nameAndIdContainer.beneathNPCs.isEmpty())
 				{
 					closestNPCs = new ArrayList<>();
-					for (NPCInfo npcInfo : plugin.npcList)
+					for (NPCInfo npcInfo : plugin.nameAndIdContainer.npcList)
 					{
 						if (!npcInfo.getNpc().isDead() && !npcUtil.isDying(npcInfo.getNpc()))
 						{
-							for (String str : plugin.beneathNPCs)
+							for (String str : plugin.nameAndIdContainer.beneathNPCs)
 							{
 								if (npcInfo.getNpc().getName() != null && WildcardMatcher.matches(str, npcInfo.getNpc().getName().toLowerCase()))
 								{
@@ -225,7 +225,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 
 		if (config.respawnTimer() != BetterNpcHighlightConfig.respawnTimerMode.OFF)
 		{
-			for (NpcSpawn n : plugin.npcSpawns)
+			for (NpcSpawn n : plugin.nameAndIdContainer.npcSpawns)
 			{
 				if (n.spawnPoint != null && n.respawnTime != -1 && n.dead)
 				{
@@ -240,7 +240,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 						int width = config.respawnTileWidth();
 						if (plugin.getTurboIndex(n.id, n.name.toLowerCase()) != -1)
 						{
-							raveColor = plugin.turboColors.get(plugin.getTurboIndex(n.id, n.name.toLowerCase()));
+							raveColor = plugin.nameAndIdContainer.turboColors.get(plugin.getTurboIndex(n.id, n.name.toLowerCase()));
 							outlineColor = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
 							fillColor = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
 							width = plugin.turboTileWidth;
@@ -490,7 +490,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 					}
 					break;
 				case "turbo":
-					Color raveColor = plugin.turboColors.get(plugin.npcList.indexOf(npcInfo));
+					Color raveColor = plugin.nameAndIdContainer.turboColors.get(plugin.getTurboIndex(npc.getId(), npc.getName().toLowerCase()));
 					if (raveColor != null)
 					{
 						line = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);

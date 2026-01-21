@@ -1,10 +1,8 @@
 package com.betternpchighlight;
 
-import net.runelite.api.Client;
 import net.runelite.api.NPC;
 import net.runelite.api.NPCComposition;
 import net.runelite.api.Point;
-import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.ui.overlay.*;
 import javax.inject.Inject;
 import java.awt.*;
@@ -12,16 +10,13 @@ import net.runelite.client.util.Text;
 
 public class BetterNpcMinimapOverlay extends Overlay
 {
-	private final Client client;
-
 	private final BetterNpcHighlightPlugin plugin;
 
 	private final BetterNpcHighlightConfig config;
 
 	@Inject
-	private BetterNpcMinimapOverlay(Client client, BetterNpcHighlightPlugin plugin, BetterNpcHighlightConfig config)
+	private BetterNpcMinimapOverlay(BetterNpcHighlightPlugin plugin, BetterNpcHighlightConfig config)
 	{
-		this.client = client;
 		this.plugin = plugin;
 		this.config = config;
 		setPosition(OverlayPosition.DYNAMIC);
@@ -31,7 +26,7 @@ public class BetterNpcMinimapOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		for (NPCInfo npcInfo : plugin.npcList)
+		for (NPCInfo npcInfo : plugin.nameAndIdContainer.npcList)
 		{
 			NPC npc = npcInfo.getNpc();
 			if (npc.getName() != null && config.npcMinimapMode() != BetterNpcHighlightConfig.npcMinimapMode.OFF)

@@ -17,6 +17,44 @@ public class MenuManager {
   @Inject
   private BetterNpcHighlightConfig config;
 
+  private ArrayList<String> tileNames;
+  private ArrayList<String> trueTileNames;
+  private ArrayList<String> swTileNames;
+  private ArrayList<String> swTrueTileNames;
+  private ArrayList<String> hullNames;
+  private ArrayList<String> areaNames;
+  private ArrayList<String> outlineNames;
+  private ArrayList<String> clickboxNames;
+  private ArrayList<String> turboNames;
+  private ArrayList<NPCInfo> npcList;
+
+  /**
+   * Injects the highlight lists into this menu manager.
+   * This must be called before using customColorTag or updateListConfig.
+   */
+  public void setHighlightLists(
+      ArrayList<String> tileNames,
+      ArrayList<String> trueTileNames,
+      ArrayList<String> swTileNames,
+      ArrayList<String> swTrueTileNames,
+      ArrayList<String> hullNames,
+      ArrayList<String> areaNames,
+      ArrayList<String> outlineNames,
+      ArrayList<String> clickboxNames,
+      ArrayList<String> turboNames,
+      ArrayList<NPCInfo> npcList) {
+    this.tileNames = tileNames;
+    this.trueTileNames = trueTileNames;
+    this.swTileNames = swTileNames;
+    this.swTrueTileNames = swTrueTileNames;
+    this.hullNames = hullNames;
+    this.areaNames = areaNames;
+    this.outlineNames = outlineNames;
+    this.clickboxNames = clickboxNames;
+    this.turboNames = turboNames;
+    this.npcList = npcList;
+  }
+
   public void customColorTag(int idx, NPC npc, MenuEntry parent) {
     // add X amount of preset colors based off of config
     if (config.presetColorAmount() != BetterNpcHighlightConfig.presetColorAmount.ZERO) {

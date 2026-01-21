@@ -123,47 +123,22 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	@Inject
 	private MenuManager menuManager;
 
+	@Inject
+	private ConfigTransformManager configTransformManager;
+
 	private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(MenuAction.NPC_FIRST_OPTION,
 			MenuAction.NPC_SECOND_OPTION,
 			MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION, MenuAction.NPC_FIFTH_OPTION,
 			MenuAction.WIDGET_TARGET_ON_NPC,
 			MenuAction.ITEM_USE_ON_NPC);
 
-	public ArrayList<NPCInfo> npcList = new ArrayList<>();
-	public String currentTask = "";
-	// Lists
-	public ArrayList<String> tileNames = new ArrayList<>();
-	public ArrayList<String> tileIds = new ArrayList<>();
-	public ArrayList<String> trueTileNames = new ArrayList<>();
-	public ArrayList<String> trueTileIds = new ArrayList<>();
-	public ArrayList<String> swTileNames = new ArrayList<>();
-	public ArrayList<String> swTileIds = new ArrayList<>();
-	public ArrayList<String> swTrueTileNames = new ArrayList<>();
-	public ArrayList<String> swTrueTileIds = new ArrayList<>();
-	public ArrayList<String> hullNames = new ArrayList<>();
-	public ArrayList<String> hullIds = new ArrayList<>();
-	public ArrayList<String> areaNames = new ArrayList<>();
-	public ArrayList<String> areaIds = new ArrayList<>();
-	public ArrayList<String> outlineNames = new ArrayList<>();
-	public ArrayList<String> outlineIds = new ArrayList<>();
-	public ArrayList<String> clickboxNames = new ArrayList<>();
-	public ArrayList<String> clickboxIds = new ArrayList<>();
-	public ArrayList<String> turboNames = new ArrayList<>();
-	public ArrayList<String> turboIds = new ArrayList<>();
-	public ArrayList<Color> turboColors = new ArrayList<>();
-	public ArrayList<NpcSpawn> npcSpawns = new ArrayList<>();
-	public ArrayList<String> namesToDisplay = new ArrayList<>();
-	public ArrayList<String> ignoreDeadExclusionList = new ArrayList<>();
-	public ArrayList<String> ignoreDeadExclusionIDList = new ArrayList<>();
-	public ArrayList<String> hiddenNames = new ArrayList<>();
-	public ArrayList<String> hiddenIds = new ArrayList<>();
-	public ArrayList<String> beneathNPCs = new ArrayList<>();
+	public NameAndIdContainer nameAndIdContainer = new NameAndIdContainer();
+
 	public Instant lastTickUpdate;
 	public int turboModeStyle = 0;
 	public int turboTileWidth = 0;
 	public int turboOutlineWidth = 0;
 	public int turboOutlineFeather = 0;
-	public boolean confirmedWarning = false;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -183,37 +158,44 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			reset();
 			overlayManager.add(overlay);
 			overlayManager.add(mapOverlay);
-			splitList(config.tileNames(), tileNames);
-			splitList(config.tileIds(), tileIds);
-			splitList(config.trueTileNames(), trueTileNames);
-			splitList(config.trueTileIds(), trueTileIds);
-			splitList(config.swTileNames(), swTileNames);
-			splitList(config.swTileIds(), swTileIds);
-			splitList(config.swTrueTileNames(), swTrueTileNames);
-			splitList(config.swTrueTileIds(), swTrueTileIds);
-			splitList(config.hullNames(), hullNames);
-			splitList(config.hullIds(), hullIds);
-			splitList(config.areaNames(), areaNames);
-			splitList(config.areaIds(), areaIds);
-			splitList(config.outlineNames(), outlineNames);
-			splitList(config.outlineIds(), outlineIds);
-			splitList(config.clickboxNames(), clickboxNames);
-			splitList(config.clickboxIds(), clickboxIds);
-			splitList(config.turboNames(), turboNames);
-			splitList(config.turboIds(), turboIds);
-			splitList(config.displayName(), namesToDisplay);
-			splitList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
-			splitList(config.ignoreDeadExclusionID(), ignoreDeadExclusionIDList);
-			splitList(config.entityHiderNames(), hiddenNames);
-			splitList(config.entityHiderIds(), hiddenIds);
-			splitList(config.drawBeneathList(), beneathNPCs);
+			configTransformManager.splitList(config.tileNames(), nameAndIdContainer.tileNames);
+			configTransformManager.splitList(config.tileIds(), nameAndIdContainer.tileIds);
+			configTransformManager.splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
+			configTransformManager.splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
+			configTransformManager.splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
+			configTransformManager.splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
+			configTransformManager.splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
+			configTransformManager.splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
+			configTransformManager.splitList(config.hullNames(), nameAndIdContainer.hullNames);
+			configTransformManager.splitList(config.hullIds(), nameAndIdContainer.hullIds);
+			configTransformManager.splitList(config.areaNames(), nameAndIdContainer.areaNames);
+			configTransformManager.splitList(config.areaIds(), nameAndIdContainer.areaIds);
+			configTransformManager.splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
+			configTransformManager.splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
+			configTransformManager.splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
+			configTransformManager.splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
+			configTransformManager.splitList(config.turboNames(), nameAndIdContainer.turboNames);
+			configTransformManager.splitList(config.turboIds(), nameAndIdContainer.turboIds);
+			configTransformManager.splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
+			configTransformManager.splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
+			configTransformManager.splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
+			configTransformManager.splitList(config.entityHiderNames(), nameAndIdContainer.hiddenNames);
+			configTransformManager.splitList(config.entityHiderIds(), nameAndIdContainer.hiddenIds);
+			configTransformManager.splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
+
+			// Inject highlight lists into MenuManager
+			menuManager.setHighlightLists(nameAndIdContainer.tileNames, nameAndIdContainer.trueTileNames,
+					nameAndIdContainer.swTileNames, nameAndIdContainer.swTrueTileNames,
+					nameAndIdContainer.hullNames, nameAndIdContainer.areaNames, nameAndIdContainer.outlineNames,
+					nameAndIdContainer.clickboxNames, nameAndIdContainer.turboNames,
+					nameAndIdContainer.npcList);
 			hooks.registerRenderableDrawListener(drawListener);
 			keyManager.registerKeyListener(this);
 
 			slayerPluginIntegration.enableSlayerPlugin();
 
 			if (client.getGameState() == GameState.LOGGED_IN) {
-				recreateList();
+				configTransformManager.recreateList(nameAndIdContainer, this);
 			}
 		});
 	}
@@ -252,224 +234,28 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	}
 
 	private void reset() {
-		npcList.clear();
-		currentTask = "";
-		tileNames.clear();
-		tileIds.clear();
-		trueTileNames.clear();
-		trueTileIds.clear();
-		swTileNames.clear();
-		swTileIds.clear();
-		swTrueTileNames.clear();
-		swTrueTileIds.clear();
-		hullNames.clear();
-		hullIds.clear();
-		areaNames.clear();
-		areaIds.clear();
-		outlineNames.clear();
-		outlineIds.clear();
-		clickboxNames.clear();
-		clickboxIds.clear();
-		turboNames.clear();
-		turboIds.clear();
-		hiddenNames.clear();
-		hiddenIds.clear();
-		beneathNPCs.clear();
-		ignoreDeadExclusionList.clear();
-		ignoreDeadExclusionIDList.clear();
-		namesToDisplay.clear();
-		npcSpawns.clear();
+		nameAndIdContainer.npcList.clear();
+		nameAndIdContainer.currentTask = "";
+		nameAndIdContainer.clearAll();
 		turboModeStyle = 0;
 		turboTileWidth = 0;
 		turboOutlineWidth = 0;
 		turboOutlineFeather = 0;
-		confirmedWarning = false;
-	}
-
-	private void splitList(String configStr, ArrayList<String> strList) {
-		clientThread.invokeLater(() -> {
-			if (!configStr.equals("")) {
-				for (String str : configStr.split(",")) {
-					if (!str.trim().equals("")) {
-						strList.add(str.trim().toLowerCase());
-					}
-				}
-			}
-		});
+		nameAndIdContainer.confirmedWarning = false;
 	}
 
 	@Subscribe
 	public void onConfigChanged(ConfigChanged event) {
-		if (event.getGroup().equals(config.CONFIG_GROUP)) {
-			switch (event.getKey()) {
-				case "tileNames":
-					tileNames.clear();
-					splitList(config.tileNames(), tileNames);
-					recreateList();
-					break;
-				case "tileIds":
-					tileIds.clear();
-					splitList(config.tileIds(), tileIds);
-					recreateList();
-					break;
-				case "trueTileNames":
-					trueTileNames.clear();
-					splitList(config.trueTileNames(), trueTileNames);
-					recreateList();
-					break;
-				case "trueTileIds":
-					trueTileIds.clear();
-					splitList(config.trueTileIds(), trueTileIds);
-					recreateList();
-					break;
-				case "swTileNames":
-					swTileNames.clear();
-					splitList(config.swTileNames(), swTileNames);
-					recreateList();
-					break;
-				case "swTileIds":
-					swTileIds.clear();
-					splitList(config.swTileIds(), swTileIds);
-					recreateList();
-					break;
-				case "swTrueTileNames":
-					swTrueTileNames.clear();
-					splitList(config.swTrueTileNames(), swTrueTileNames);
-					recreateList();
-					break;
-				case "swTrueTileIds":
-					swTrueTileIds.clear();
-					splitList(config.swTrueTileIds(), swTrueTileIds);
-					recreateList();
-					break;
-				case "hullNames":
-					hullNames.clear();
-					splitList(config.hullNames(), hullNames);
-					recreateList();
-					break;
-				case "hullIds":
-					hullIds.clear();
-					splitList(config.hullIds(), hullIds);
-					recreateList();
-					break;
-				case "areaNames":
-					areaNames.clear();
-					splitList(config.areaNames(), areaNames);
-					recreateList();
-					break;
-				case "areaIds":
-					areaIds.clear();
-					splitList(config.areaIds(), areaIds);
-					recreateList();
-					break;
-				case "outlineNames":
-					outlineNames.clear();
-					splitList(config.outlineNames(), outlineNames);
-					recreateList();
-					break;
-				case "outlineIds":
-					outlineIds.clear();
-					splitList(config.outlineIds(), outlineIds);
-					recreateList();
-					break;
-				case "clickboxNames":
-					clickboxNames.clear();
-					splitList(config.clickboxNames(), clickboxNames);
-					recreateList();
-					break;
-				case "clickboxIds":
-					clickboxIds.clear();
-					splitList(config.clickboxIds(), clickboxIds);
-					recreateList();
-					break;
-				case "turboNames":
-					turboNames.clear();
-					splitList(config.turboNames(), turboNames);
-					recreateList();
-					break;
-				case "turboIds":
-					turboIds.clear();
-					splitList(config.turboIds(), turboIds);
-					recreateList();
-					break;
-				case "displayName":
-					namesToDisplay.clear();
-					splitList(config.displayName(), namesToDisplay);
-					break;
-				case "ignoreDeadExclusion":
-					ignoreDeadExclusionList.clear();
-					splitList(config.ignoreDeadExclusion(), ignoreDeadExclusionList);
-					recreateList();
-					break;
-				case "ignoreDeadExclusionID":
-					ignoreDeadExclusionIDList.clear();
-					splitList(config.ignoreDeadExclusionID(), ignoreDeadExclusionIDList);
-					recreateList();
-					break;
-				case "turboHighlight":
-					if (event.getNewValue().equals("true")) {
-						if (!confirmedWarning) {
-							showEpilepsyWarning();
-						} else {
-							confirmedWarning = false;
-						}
-					}
-					break;
-				case "entityHiderNames":
-					hiddenNames.clear();
-					splitList(config.entityHiderNames(), hiddenNames);
-					break;
-				case "entityHiderIds":
-					hiddenIds.clear();
-					splitList(config.entityHiderIds(), hiddenIds);
-					break;
-				case "drawBeneathList":
-					beneathNPCs.clear();
-					splitList(config.drawBeneathList(), beneathNPCs);
-					break;
-				case "slayerHighlight":
-					slayerPluginIntegration.enableSlayerPlugin();
-					break;
-				case "tileColor":
-				case "tileFillColor":
-				case "trueTileColor":
-				case "trueTileFillColor":
-				case "swTileColor":
-				case "swTileFillColor":
-				case "swTrueTileColor":
-				case "swTrueTileFillColor":
-				case "hullColor":
-				case "hullFillColor":
-				case "areaColor":
-				case "outlineColor":
-				case "clickboxColor":
-				case "clickboxFillColor":
-				case "taskColor":
-				case "taskFillColor":
-				case "presetColor1":
-				case "presetFillColor1":
-				case "presetColor2":
-				case "presetFillColor2":
-				case "presetColor3":
-				case "presetFillColor3":
-				case "presetColor4":
-				case "presetFillColor4":
-				case "presetColor5":
-				case "presetFillColor5":
-				case "useGlobalTileColor":
-				case "globalTileColor":
-				case "globalFillColor":
-					recreateList();
-					break;
-			}
+		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP)) {
+			configTransformManager.updateConfig(event, config, nameAndIdContainer, this);
 		}
 	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event) {
 		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING) {
-			npcSpawns.clear();
-			npcList.clear();
+			nameAndIdContainer.npcSpawns.clear();
+			nameAndIdContainer.npcList.clear();
 		}
 	}
 
@@ -488,7 +274,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			if (npcUtil.isDying(npc)) {
 				color = config.deadNpcMenuColor();
 			} else if (config.highlightMenuNames() && npc.getName() != null) {
-				for (NPCInfo npcInfo : npcList) {
+				for (NPCInfo npcInfo : nameAndIdContainer.npcList) {
 					if (npcInfo.getNpc() == npc) {
 						color = getSpecificColor(npcInfo);
 						break;
@@ -517,15 +303,15 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 								&& config.tagStyleModeSet().size() > 1) ||
 								(!config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE)
 										&& !config.tagStyleModeSet().isEmpty()))) {
-					if (checkSpecificNameList(tileNames, npc) ||
-							checkSpecificNameList(trueTileNames, npc) ||
-							checkSpecificNameList(swTileNames, npc) ||
-							checkSpecificNameList(swTrueTileNames, npc) ||
-							checkSpecificNameList(hullNames, npc) ||
-							checkSpecificNameList(areaNames, npc) ||
-							checkSpecificNameList(outlineNames, npc) ||
-							checkSpecificNameList(clickboxNames, npc) ||
-							checkSpecificNameList(turboNames, npc)) {
+					if (checkSpecificNameList(nameAndIdContainer.tileNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.trueTileNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.swTileNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.swTrueTileNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.hullNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.areaNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.outlineNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.clickboxNames, npc) ||
+							checkSpecificNameList(nameAndIdContainer.turboNames, npc)) {
 						option = "Untag-NPC";
 					} else {
 						option = "Tag-NPC";
@@ -536,7 +322,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 						MenuEntry[] menuEntries = client.getMenuEntries();
 						final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
 						String target;
-						if (checkSpecificNameList(turboNames, npc)) {
+						if (checkSpecificNameList(nameAndIdContainer.turboNames, npc)) {
 							target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()),
 									Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 						} else {
@@ -552,9 +338,11 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 						if (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null)) {
 							String colorCode;
 							if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)) {
-								if (turboColors.size() == 0 && turboNames.contains(npc.getName().toLowerCase())) {
+								if (nameAndIdContainer.turboColors.size() == 0
+										&& nameAndIdContainer.turboNames.contains(npc.getName().toLowerCase())) {
 									colorCode = Integer
-											.toHexString(turboColors.get(turboNames.indexOf(npc.getName().toLowerCase())).getRGB());
+											.toHexString(nameAndIdContainer.turboColors
+													.get(nameAndIdContainer.turboNames.indexOf(npc.getName().toLowerCase())).getRGB());
 								} else {
 									colorCode = Integer.toHexString(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F).getRGB());
 								}
@@ -603,7 +391,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	public void onNpcSpawned(NpcSpawned event) {
 		NPC npc = event.getNpc();
 
-		for (NpcSpawn n : npcSpawns) {
+		for (NpcSpawn n : nameAndIdContainer.npcSpawns) {
 			if (npc.getIndex() == n.index && npc.getId() == n.id) {
 				if (n.spawnPoint == null && n.diedOnTick != -1) {
 					WorldPoint wp = client.isInInstancedRegion() ? WorldPoint.fromLocalInstance(client, npc.getLocalLocation())
@@ -622,7 +410,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 
 		NPCInfo npcInfo = checkValidNPC(npc);
 		if (npcInfo != null) {
-			npcList.add(npcInfo);
+			nameAndIdContainer.npcList.add(npcInfo);
 		}
 	}
 
@@ -631,11 +419,11 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		NPC npc = event.getNpc();
 
 		if (npc.isDead()) {
-			if (npcList.stream().anyMatch(n -> n.getNpc() == npc)
-					&& npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex())) {
-				npcSpawns.add(new NpcSpawn(npc));
+			if (nameAndIdContainer.npcList.stream().anyMatch(n -> n.getNpc() == npc)
+					&& nameAndIdContainer.npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex())) {
+				nameAndIdContainer.npcSpawns.add(new NpcSpawn(npc));
 			} else {
-				for (NpcSpawn n : npcSpawns) {
+				for (NpcSpawn n : nameAndIdContainer.npcSpawns) {
 					if (npc.getIndex() == n.index && npc.getId() == n.id) {
 						n.diedOnTick = client.getTickCount();
 						n.dead = true;
@@ -645,31 +433,31 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			}
 		}
 
-		npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+		nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
 	}
 
 	@Subscribe(priority = -1)
 	public void onNpcChanged(NpcChanged event) {
 		NPC npc = event.getNpc();
 
-		npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+		nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
 
 		NPCInfo npcInfo = checkValidNPC(npc);
 		if (npcInfo != null) {
-			npcList.add(npcInfo);
+			nameAndIdContainer.npcList.add(npcInfo);
 		}
 	}
 
 	@Subscribe(priority = -1)
 	public void onGameTick(GameTick event) {
-		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !currentTask.equals(slayerPluginService.getTask())) {
-			recreateList();
+		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask())) {
+			configTransformManager.recreateList(nameAndIdContainer, this);
 		}
 
 		lastTickUpdate = Instant.now();
-		turboColors.clear();
-		for (int i = 0; i < npcList.size(); i++) {
-			turboColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+		nameAndIdContainer.turboColors.clear();
+		for (int i = 0; i < nameAndIdContainer.npcList.size(); i++) {
+			nameAndIdContainer.turboColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
 		}
 		turboModeStyle = new Random().nextInt(6);
 		turboTileWidth = new Random().nextInt(10) + 1;
@@ -677,24 +465,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		turboOutlineFeather = new Random().nextInt(4);
 	}
 
-	public void recreateList() {
-		clientThread.invokeLater(() -> {
-			if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
-					&& client.getLocalPlayer().getPlayerComposition() != null) {
-				npcList.clear();
-				for (NPC npc : client.getNpcs()) {
-					NPCInfo npcInfo = checkValidNPC(npc);
-					if (npcInfo != null) {
-						npcList.add(npcInfo);
-					}
-				}
-				currentTask = slayerPluginService.getTask();
-			}
-		});
-	}
-
 	public NPCInfo checkValidNPC(NPC npc) {
-		NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration);
+		NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration, nameAndIdContainer);
 		if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight()
 				|| n.getSwTrueTile().isHighlight() || n.getHull().isHighlight()
 				|| n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
@@ -830,7 +602,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			return config.clickboxRave() ? getRaveColor(config.clickboxRaveSpeed()) : n.getClickbox().getColor();
 		} else if (n.getTurbo().isHighlight() && config.turboHighlight()) {
 			return getTurboIndex(n.getNpc().getId(), n.getNpc().getName()) != -1
-					? turboColors.get(getTurboIndex(n.getNpc().getId(), n.getNpc().getName()))
+					? nameAndIdContainer.turboColors.get(getTurboIndex(n.getNpc().getId(), n.getNpc().getName()))
 					: Color.WHITE;
 		} else {
 			return null;
@@ -887,11 +659,11 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 	}
 
 	public int getTurboIndex(int id, String name) {
-		if (turboIds.contains(String.valueOf(id))) {
-			return turboIds.indexOf(String.valueOf(id));
+		if (nameAndIdContainer.turboIds.contains(String.valueOf(id))) {
+			return nameAndIdContainer.turboIds.indexOf(String.valueOf(id));
 		} else if (name != null) {
-			int index = turboIds.size() - 1;
-			for (String str : turboNames) {
+			int index = nameAndIdContainer.turboIds.size() - 1;
+			for (String str : nameAndIdContainer.turboNames) {
 				if (WildcardMatcher.matches(str, name)) {
 					return index;
 				}
@@ -901,7 +673,7 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 		return -1;
 	}
 
-	private void showEpilepsyWarning() {
+	public void showEpilepsyWarning() {
 		configManager.setConfiguration(config.CONFIG_GROUP, "turboHighlight", false);
 		Font font = (Font) UIManager.get("OptionPane.buttonFont");
 		Object[] options = { "Okay, I accept the risk", "No, this is an affront to my eyes" };
@@ -916,8 +688,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 				null,
 				options,
 				options[1]) == 0) {
-			confirmedWarning = true;
-			configManager.setConfiguration(config.CONFIG_GROUP, "turboHighlight", true);
+			nameAndIdContainer.confirmedWarning = true;
+			configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "turboHighlight", true);
 		}
 		UIManager.put("OptionPane.buttonFont", font);
 	}
@@ -928,8 +700,8 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			NPC npc = (NPC) renderable;
 
 			if (config.entityHiderToggle()) {
-				return !hiddenIds.contains(String.valueOf(npc.getId()))
-						&& (npc.getName() != null && !hiddenNames.contains(npc.getName().toLowerCase()));
+				return !nameAndIdContainer.hiddenIds.contains(String.valueOf(npc.getId()))
+						&& (npc.getName() != null && !nameAndIdContainer.hiddenNames.contains(npc.getName().toLowerCase()));
 			}
 		}
 		return true;
@@ -965,9 +737,9 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 
 		if (!npcToHide.isEmpty()) {
 			if (StringUtils.isNumeric(npcToHide)) {
-				config.setEntityHiderIds(menuManager.configListToString(hide, npcToHide, hiddenIds, 0));
+				config.setEntityHiderIds(menuManager.configListToString(hide, npcToHide, nameAndIdContainer.hiddenIds, 0));
 			} else {
-				config.setEntityHiderNames(menuManager.configListToString(hide, npcToHide, hiddenNames, 0));
+				config.setEntityHiderNames(menuManager.configListToString(hide, npcToHide, nameAndIdContainer.hiddenNames, 0));
 			}
 		} else {
 			printMessage("Please enter a valid NPC name or ID!");
@@ -998,60 +770,68 @@ public class BetterNpcHighlightPlugin extends Plugin implements KeyListener {
 			if (!npcToTag.isEmpty()) {
 				if (validateCommand(text, "t ") || validateCommand(text, "tile ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setTileIds(menuManager.configListToString(tag, npcToTag, tileIds, preset));
+						config.setTileIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.tileIds, preset));
 					} else {
-						config.setTileNames(menuManager.configListToString(tag, npcToTag, tileNames, preset));
+						config.setTileNames(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.tileNames, preset));
 					}
 				} else if (validateCommand(text, "tt ") || validateCommand(text, "truetile ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setTrueTileIds(menuManager.configListToString(tag, npcToTag, trueTileIds, preset));
+						config
+								.setTrueTileIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.trueTileIds, preset));
 					} else {
-						config.setTrueTileNames(menuManager.configListToString(tag, npcToTag, trueTileNames, preset));
+						config.setTrueTileNames(
+								menuManager.configListToString(tag, npcToTag, nameAndIdContainer.trueTileNames, preset));
 					}
 				} else if (validateCommand(text, "sw ") || validateCommand(text, "swt ")
 						|| validateCommand(text, "southwesttile ") || validateCommand(text, "southwest ")
 						|| validateCommand(text, "swtile ") || validateCommand(text, "southwestt ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setSwTileIds(menuManager.configListToString(tag, npcToTag, swTileIds, preset));
+						config.setSwTileIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.swTileIds, preset));
 					} else {
-						config.setSwTileNames(menuManager.configListToString(tag, npcToTag, swTileNames, preset));
+						config
+								.setSwTileNames(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.swTileNames, preset));
 					}
 				} else if (validateCommand(text, "swtt ") || validateCommand(text, "swtruetile ")
 						|| validateCommand(text, "southwesttruetile ") || validateCommand(text, "southwesttt ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setSwTrueTileIds(menuManager.configListToString(tag, npcToTag, swTrueTileIds, preset));
+						config.setSwTrueTileIds(
+								menuManager.configListToString(tag, npcToTag, nameAndIdContainer.swTrueTileIds, preset));
 					} else {
-						config.setSwTrueTileNames(menuManager.configListToString(tag, npcToTag, swTrueTileNames, preset));
+						config.setSwTrueTileNames(
+								menuManager.configListToString(tag, npcToTag, nameAndIdContainer.swTrueTileNames, preset));
 					}
 				} else if (validateCommand(text, "h ") || validateCommand(text, "hull ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setHullIds(menuManager.configListToString(tag, npcToTag, hullIds, preset));
+						config.setHullIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.hullIds, preset));
 					} else {
-						config.setHullNames(menuManager.configListToString(tag, npcToTag, hullNames, preset));
+						config.setHullNames(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.hullNames, preset));
 					}
 				} else if (validateCommand(text, "a ") || validateCommand(text, "area ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setAreaIds(menuManager.configListToString(tag, npcToTag, areaIds, preset));
+						config.setAreaIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.areaIds, preset));
 					} else {
-						config.setAreaNames(menuManager.configListToString(tag, npcToTag, areaNames, preset));
+						config.setAreaNames(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.areaNames, preset));
 					}
 				} else if (validateCommand(text, "o ") || validateCommand(text, "outline ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setOutlineIds(menuManager.configListToString(tag, npcToTag, outlineIds, preset));
+						config.setOutlineIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.outlineIds, preset));
 					} else {
-						config.setOutlineNames(menuManager.configListToString(tag, npcToTag, outlineNames, preset));
+						config.setOutlineNames(
+								menuManager.configListToString(tag, npcToTag, nameAndIdContainer.outlineNames, preset));
 					}
 				} else if (validateCommand(text, "c ") || validateCommand(text, "clickbox ") || validateCommand(text, "box ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setClickboxIds(menuManager.configListToString(tag, npcToTag, clickboxIds, preset));
+						config
+								.setClickboxIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.clickboxIds, preset));
 					} else {
-						config.setClickboxNames(menuManager.configListToString(tag, npcToTag, clickboxNames, preset));
+						config.setClickboxNames(
+								menuManager.configListToString(tag, npcToTag, nameAndIdContainer.clickboxNames, preset));
 					}
 				} else if (validateCommand(text, "tu ") || validateCommand(text, "turbo ")) {
 					if (StringUtils.isNumeric(npcToTag)) {
-						config.setTurboIds(menuManager.configListToString(tag, npcToTag, turboIds, preset));
+						config.setTurboIds(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.turboIds, preset));
 					} else {
-						config.setTurboNames(menuManager.configListToString(tag, npcToTag, turboNames, preset));
+						config.setTurboNames(menuManager.configListToString(tag, npcToTag, nameAndIdContainer.turboNames, preset));
 					}
 				}
 			}
