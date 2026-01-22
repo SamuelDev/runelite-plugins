@@ -320,7 +320,7 @@ public class ConfigTransformManager {
 		}
 	}
 
-	public HighlightColor isInNameOrIdList(ArrayList<String> strList, ArrayList<String> idList, NPC npc, Color configColor,
+	public HighlightColor getHighlightColorFromNameOrIdList(ArrayList<String> strList, ArrayList<String> idList, NPC npc, Color configColor,
 			Color configFillColor) {
 		for (String entry : idList)
 		{

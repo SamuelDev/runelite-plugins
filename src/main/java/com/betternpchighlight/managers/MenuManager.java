@@ -64,18 +64,13 @@ public class MenuManager {
     {
       NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
 
-      // if (npc.getName().equals("Nardah Banker"))
-      // {
-      //   System.out.println("Nardah Banker detected in menu");
-      // }
-
       // Get name for menu item coloring
       Color color = null;
       if (npcUtil.isDying(npc))
       {
         color = config.deadNpcMenuColor();
       }
-      else if (config.highlightMenuNames() && npc.getName() != null)
+      else if (config.highlightMenuNames() && npc.getName() != null && configTransformManager.isInAnyNameList(npc))
       {
         for (NPCInfo npcInfo : nameAndIdContainer.npcList)
         {
@@ -84,6 +79,11 @@ public class MenuManager {
             color = colorManager.getSpecificColor(npcInfo);
             break;
           }
+        }
+
+        if (color == null)
+        {
+          color = colorManager.getTagColor();
         }
       }
 
@@ -100,11 +100,6 @@ public class MenuManager {
     else if (menuAction == MenuAction.EXAMINE_NPC)
     {
       final NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
-
-      // if (npc.getName().equals("Nardah Banker"))
-      // {
-      //   System.out.println("Nardah Banker detected in menu");
-      // }
 
       if (npc != null)
       {
@@ -131,44 +126,31 @@ public class MenuManager {
           {
             MenuEntry[] menuEntries = client.getMenuEntries();
             final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
-            String target;
-            if (configTransformManager.isInSpecificNameList(nameAndIdContainer.turboNames, npc))
+
+            Color displayColor = getNpcDisplayColor(npc);
+            if (npc.isDead() && config.deadNpcMenuColor() != null)
             {
-              target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()),
-                  Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
+              displayColor = config.deadNpcMenuColor();
             }
-            else
-            {
-              Color color = npc.isDead() ? config.deadNpcMenuColor() : colorManager.getTagColor();
-              target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
-            }
+
+            String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), displayColor);
             menuEntry.setTarget(target);
             client.setMenuEntries(menuEntries);
           }
 
+          // If shift is held, handle the tag/untag menu option
           if (client.isKeyPressed(KeyCode.KC_SHIFT))
           {
             String tagAllEntry;
+            // If highlight menu names is enabled or the npc is dead and there is a dead color set
             if (config.highlightMenuNames() || (npc.isDead() && config.deadNpcMenuColor() != null))
             {
-              String colorCode;
-              if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
+              Color displayColor = getNpcDisplayColor(npc);
+              if (npc.isDead() && config.deadNpcMenuColor() != null)
               {
-                if (nameAndIdContainer.turboColors.size() == 0 && nameAndIdContainer.turboNames.contains(npc.getName().toLowerCase()))
-                {
-                  colorCode = Integer.toHexString(
-                      nameAndIdContainer.turboColors.get(nameAndIdContainer.turboNames.indexOf(npc.getName().toLowerCase())).getRGB());
-                }
-                else
-                {
-                  colorCode = Integer.toHexString(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F).getRGB());
-                }
+                displayColor = config.deadNpcMenuColor();
               }
-              else
-              {
-                colorCode = npc.isDead() ? Integer.toHexString(config.deadNpcMenuColor().getRGB())
-                    : Integer.toHexString(colorManager.getTagColor().getRGB());
-              }
+              String colorCode = Integer.toHexString(displayColor.getRGB());
               tagAllEntry = "<col=" + colorCode.substring(2) + ">" + Text.removeTags(event.getTarget());
             }
             else
@@ -191,42 +173,12 @@ public class MenuManager {
   }
 
   public void customColorTag(int idx, NPC npc, MenuEntry parent) {
+
     // add X amount of preset colors based off of config
     if (config.presetColorAmount() != BetterNpcHighlightConfig.presetColorAmount.ZERO)
     {
-      List<Color> colors = new ArrayList<>();
+      List<Color> colors = loadPresetColors();
       Menu submenu = parent.createSubMenu();
-
-      if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.ONE)
-      {
-        colors.add(config.presetColor1());
-      }
-      else if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.TWO)
-      {
-        colors.add(config.presetColor1());
-        colors.add(config.presetColor2());
-      }
-      else if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.THREE)
-      {
-        colors.add(config.presetColor1());
-        colors.add(config.presetColor2());
-        colors.add(config.presetColor3());
-      }
-      else if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.FOUR)
-      {
-        colors.add(config.presetColor1());
-        colors.add(config.presetColor2());
-        colors.add(config.presetColor3());
-        colors.add(config.presetColor4());
-      }
-      else if (config.presetColorAmount() == BetterNpcHighlightConfig.presetColorAmount.FIVE)
-      {
-        colors.add(config.presetColor1());
-        colors.add(config.presetColor2());
-        colors.add(config.presetColor3());
-        colors.add(config.presetColor4());
-        colors.add(config.presetColor5());
-      }
 
       if (colors.size() > 0)
       {
@@ -280,4 +232,67 @@ public class MenuManager {
     }
   }
 
+  /**
+   * Gets the color to display for an NPC, considering turbo mode, specific highlight color, or fallback to tag color.
+   */
+  private Color getNpcDisplayColor(NPC npc) {
+    if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)
+        && configTransformManager.isInSpecificNameList(nameAndIdContainer.turboNames, npc))
+    {
+      return Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
+    }
+
+    NPCInfo npcInfo = nameAndIdContainer.getNpcInfoByNpc(npc);
+    if (npcInfo != null)
+    {
+      Color highlightColor = colorManager.getSpecificColor(npcInfo);
+      if (highlightColor != null)
+      {
+        return highlightColor;
+      }
+    }
+
+    return colorManager.getTagColor();
+  }
+
+  /**
+   * Loads preset colors based on config amount setting.
+   */
+  private List<Color> loadPresetColors() {
+    List<Color> colors = new ArrayList<>();
+    BetterNpcHighlightConfig.presetColorAmount amount = config.presetColorAmount();
+
+    if (amount == BetterNpcHighlightConfig.presetColorAmount.ONE)
+    {
+      colors.add(config.presetColor1());
+    }
+    else if (amount == BetterNpcHighlightConfig.presetColorAmount.TWO)
+    {
+      colors.add(config.presetColor1());
+      colors.add(config.presetColor2());
+    }
+    else if (amount == BetterNpcHighlightConfig.presetColorAmount.THREE)
+    {
+      colors.add(config.presetColor1());
+      colors.add(config.presetColor2());
+      colors.add(config.presetColor3());
+    }
+    else if (amount == BetterNpcHighlightConfig.presetColorAmount.FOUR)
+    {
+      colors.add(config.presetColor1());
+      colors.add(config.presetColor2());
+      colors.add(config.presetColor3());
+      colors.add(config.presetColor4());
+    }
+    else if (amount == BetterNpcHighlightConfig.presetColorAmount.FIVE)
+    {
+      colors.add(config.presetColor1());
+      colors.add(config.presetColor2());
+      colors.add(config.presetColor3());
+      colors.add(config.presetColor4());
+      colors.add(config.presetColor5());
+    }
+
+    return colors;
+  }
 }

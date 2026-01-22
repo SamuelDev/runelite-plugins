@@ -5,11 +5,16 @@ import java.util.ArrayList;
 
 import javax.inject.Singleton;
 
+import net.runelite.api.NPC;
+
 @Singleton
 public class NameAndIdContainer {
   public String currentTask = "";
   public boolean confirmedWarning = false;
   public ArrayList<NPCInfo> npcList = new ArrayList<>();
+  public NPCInfo getNpcInfoByNpc(NPC npc) {
+    return npcList.stream().filter(npcInfo -> npcInfo.getNpc() == npc).findFirst().orElse(null);
+  }
 
   public ArrayList<String> tileNames = new ArrayList<>();
   public ArrayList<String> tileIds = new ArrayList<>();

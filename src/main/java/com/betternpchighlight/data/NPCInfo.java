@@ -33,24 +33,24 @@ public class NPCInfo {
 		Color globalFillColor = config.useGlobalTileColor() ? config.globalFillColor() : null;
 
 		this.npc = npc;
-		this.tile = configTransformManager.isInNameOrIdList(nameAndIdContainer.tileNames, nameAndIdContainer.tileIds, npc,
+		this.tile = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.tileNames, nameAndIdContainer.tileIds, npc,
 				coalesceColor(globalTileColor, config.tileColor()), coalesceColor(globalFillColor, config.tileFillColor()));
-		this.trueTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.trueTileNames, nameAndIdContainer.trueTileIds, npc,
+		this.trueTile = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.trueTileNames, nameAndIdContainer.trueTileIds, npc,
 				coalesceColor(globalTileColor, config.trueTileColor()), coalesceColor(globalFillColor, config.trueTileFillColor()));
-		this.swTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.swTileNames, nameAndIdContainer.swTileIds, npc,
+		this.swTile = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.swTileNames, nameAndIdContainer.swTileIds, npc,
 				coalesceColor(globalTileColor, config.swTileColor()), coalesceColor(globalFillColor, config.swTileFillColor()));
-		this.swTrueTile = configTransformManager.isInNameOrIdList(nameAndIdContainer.swTrueTileNames, nameAndIdContainer.swTrueTileIds, npc,
+		this.swTrueTile = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.swTrueTileNames, nameAndIdContainer.swTrueTileIds, npc,
 				coalesceColor(globalTileColor, config.swTrueTileColor()), coalesceColor(globalFillColor, config.swTrueTileFillColor()));
 
-		this.hull = configTransformManager.isInNameOrIdList(nameAndIdContainer.hullNames, nameAndIdContainer.hullIds, npc, config.hullColor(),
+		this.hull = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.hullNames, nameAndIdContainer.hullIds, npc, config.hullColor(),
 				config.hullFillColor());
-		this.area = configTransformManager.isInNameOrIdList(nameAndIdContainer.areaNames, nameAndIdContainer.areaIds, npc, config.areaColor(),
+		this.area = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.areaNames, nameAndIdContainer.areaIds, npc, config.areaColor(),
 				null);
-		this.outline = configTransformManager.isInNameOrIdList(nameAndIdContainer.outlineNames, nameAndIdContainer.outlineIds, npc,
+		this.outline = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.outlineNames, nameAndIdContainer.outlineIds, npc,
 				config.outlineColor(), null);
-		this.clickbox = configTransformManager.isInNameOrIdList(nameAndIdContainer.clickboxNames, nameAndIdContainer.clickboxIds, npc,
+		this.clickbox = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.clickboxNames, nameAndIdContainer.clickboxIds, npc,
 				config.clickboxColor(), config.clickboxFillColor());
-		this.turbo = configTransformManager.isInNameOrIdList(nameAndIdContainer.turboNames, nameAndIdContainer.turboIds, npc, null, null);
+		this.turbo = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.turboNames, nameAndIdContainer.turboIds, npc, null, null);
 		this.isTask = slayerPluginIntegration.checkSlayerPluginEnabled() && slayerPluginService != null
 				&& slayerPluginService.getTargets().contains(npc);
 		this.ignoreDead = configTransformManager.isInSpecificNameList(nameAndIdContainer.ignoreDeadExclusionList, npc)
