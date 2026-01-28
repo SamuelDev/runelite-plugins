@@ -70,7 +70,7 @@ public class MenuManager {
       {
         color = config.deadNpcMenuColor();
       }
-      else if (config.highlightMenuNames() && npc.getName() != null && configTransformManager.isInAnyNameList(npc))
+      else if (config.highlightMenuNames() && npc.getName() != null && configTransformManager.isInAnyList(npc))
       {
         for (NPCInfo npcInfo : nameAndIdContainer.npcList)
         {
@@ -112,7 +112,7 @@ public class MenuManager {
                 || (!config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.NONE) && !config.tagStyleModeSet().isEmpty())))
         {
           // If the NPC is tagged by name in any way, show "Untag-NPC", else show "Tag-NPC"
-          if (configTransformManager.isInAnyNameList(npc))
+          if (configTransformManager.isInAnyList(npc))
           {
             option = "Untag-NPC";
           }

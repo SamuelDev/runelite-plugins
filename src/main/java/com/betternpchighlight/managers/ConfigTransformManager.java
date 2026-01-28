@@ -397,7 +397,14 @@ public class ConfigTransformManager {
 		int id = npc.getId();
 		for (String entry : strList)
 		{
-			if (StringUtils.isNumeric(entry) && Integer.parseInt(entry) == id)
+			String idStr = entry;
+			if (entry.contains(":"))
+			{
+				String[] strArr = entry.split(":");
+				idStr = strArr[0];
+			}
+
+			if (StringUtils.isNumeric(idStr) && Integer.parseInt(idStr) == id)
 			{
 				return true;
 			}
@@ -414,11 +421,11 @@ public class ConfigTransformManager {
 	}
 
 	public boolean isInAnyIdList(NPC npc) {
-		return isInSpecificIdList(nameAndIdContainer.tileNames, npc) || isInSpecificIdList(nameAndIdContainer.trueTileNames, npc)
-				|| isInSpecificIdList(nameAndIdContainer.swTileNames, npc) || isInSpecificIdList(nameAndIdContainer.swTrueTileNames, npc)
-				|| isInSpecificIdList(nameAndIdContainer.hullNames, npc) || isInSpecificIdList(nameAndIdContainer.areaNames, npc)
-				|| isInSpecificIdList(nameAndIdContainer.outlineNames, npc) || isInSpecificIdList(nameAndIdContainer.clickboxNames, npc)
-				|| isInSpecificIdList(nameAndIdContainer.turboNames, npc);
+		return isInSpecificIdList(nameAndIdContainer.tileIds, npc) || isInSpecificIdList(nameAndIdContainer.trueTileIds, npc)
+				|| isInSpecificIdList(nameAndIdContainer.swTileIds, npc) || isInSpecificIdList(nameAndIdContainer.swTrueTileIds, npc)
+				|| isInSpecificIdList(nameAndIdContainer.hullIds, npc) || isInSpecificIdList(nameAndIdContainer.areaIds, npc)
+				|| isInSpecificIdList(nameAndIdContainer.outlineIds, npc) || isInSpecificIdList(nameAndIdContainer.clickboxIds, npc)
+				|| isInSpecificIdList(nameAndIdContainer.turboIds, npc);
 	}
 
 	public boolean isInAnyList(NPC npc) {
