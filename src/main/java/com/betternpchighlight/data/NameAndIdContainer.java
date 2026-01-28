@@ -32,9 +32,6 @@ public class NameAndIdContainer {
   public ArrayList<String> outlineIds = new ArrayList<>();
   public ArrayList<String> clickboxNames = new ArrayList<>();
   public ArrayList<String> clickboxIds = new ArrayList<>();
-  public ArrayList<String> turboNames = new ArrayList<>();
-  public ArrayList<String> turboIds = new ArrayList<>();
-  public ArrayList<Color> turboColors = new ArrayList<>();
   public ArrayList<NpcSpawn> npcSpawns = new ArrayList<>();
   public ArrayList<String> namesToDisplay = new ArrayList<>();
   public ArrayList<String> ignoreDeadExclusionList = new ArrayList<>();
@@ -60,8 +57,6 @@ public class NameAndIdContainer {
     outlineIds.clear();
     clickboxNames.clear();
     clickboxIds.clear();
-    turboNames.clear();
-    turboIds.clear();
     hiddenNames.clear();
     hiddenIds.clear();
     beneathNPCs.clear();

@@ -236,12 +236,6 @@ public class MenuManager {
    * Gets the color to display for an NPC, considering turbo mode, specific highlight color, or fallback to tag color.
    */
   private Color getNpcDisplayColor(NPC npc) {
-    if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO)
-        && configTransformManager.isInSpecificNameList(nameAndIdContainer.turboNames, npc))
-    {
-      return Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
-    }
-
     NPCInfo npcInfo = nameAndIdContainer.getNpcInfoByNpc(npc);
     if (npcInfo != null)
     {

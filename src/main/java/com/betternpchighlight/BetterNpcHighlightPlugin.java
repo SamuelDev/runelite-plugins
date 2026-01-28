@@ -35,38 +35,23 @@ import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
 import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
-import java.awt.event.KeyEvent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
-import net.runelite.api.vars.InputType;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
-import net.runelite.client.chat.ChatColorType;
-import net.runelite.client.chat.ChatMessageBuilder;
-import net.runelite.client.chat.ChatMessageManager;
-import net.runelite.client.chat.QueuedMessage;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
-import net.runelite.client.input.KeyListener;
-import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.slayer.SlayerPlugin;
 import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.ui.overlay.OverlayManager;
-import org.apache.commons.lang3.StringUtils;
 import javax.inject.Inject;
-import java.awt.*;
 import java.time.Instant;
-import java.util.Random;
 import java.util.Set;
 
 @Slf4j
@@ -117,10 +102,6 @@ public class BetterNpcHighlightPlugin extends Plugin {
 	private ChatCommandManager chatCommandManager;
 
 	public Instant lastTickUpdate;
-	public int turboModeStyle = 0;
-	public int turboTileWidth = 0;
-	public int turboOutlineWidth = 0;
-	public int turboOutlineFeather = 0;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
@@ -135,24 +116,7 @@ public class BetterNpcHighlightPlugin extends Plugin {
 			reset();
 			overlayManager.add(overlay);
 			overlayManager.add(mapOverlay);
-			configTransformManager.splitList(config.tileNames(), nameAndIdContainer.tileNames);
-			configTransformManager.splitList(config.tileIds(), nameAndIdContainer.tileIds);
-			configTransformManager.splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
-			configTransformManager.splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
-			configTransformManager.splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
-			configTransformManager.splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
-			configTransformManager.splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
-			configTransformManager.splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
-			configTransformManager.splitList(config.hullNames(), nameAndIdContainer.hullNames);
-			configTransformManager.splitList(config.hullIds(), nameAndIdContainer.hullIds);
-			configTransformManager.splitList(config.areaNames(), nameAndIdContainer.areaNames);
-			configTransformManager.splitList(config.areaIds(), nameAndIdContainer.areaIds);
-			configTransformManager.splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
-			configTransformManager.splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
-			configTransformManager.splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
-			configTransformManager.splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
-			configTransformManager.splitList(config.turboNames(), nameAndIdContainer.turboNames);
-			configTransformManager.splitList(config.turboIds(), nameAndIdContainer.turboIds);
+			
 			configTransformManager.splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
 			configTransformManager.splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
 			configTransformManager.splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
@@ -179,42 +143,10 @@ public class BetterNpcHighlightPlugin extends Plugin {
 		chatCommandManager.unregisterKeyListener();
 	}
 
-	private void migrateOldConfig(ConfigManager configManager) {
-		// migrate old tag style mode config into the new set version of config if
-		// possible
-		try
-		{
-			String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
-			String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
-			if (oldValue != null && newValue == null)
-			{
-				log.debug("BNPC: Migrating old tag style mode config to new set version");
-
-				// Parse the old enum string value
-				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
-
-				// Convert to Set format
-				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
-
-				// Save the properly serialized Set to the new config
-				configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
-			}
-		}
-		catch (Exception e)
-		{
-			// Could not migrate, ignore
-			log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
-		}
-	}
-
 	private void reset() {
 		nameAndIdContainer.npcList.clear();
 		nameAndIdContainer.currentTask = "";
 		nameAndIdContainer.clearAll();
-		turboModeStyle = 0;
-		turboTileWidth = 0;
-		turboOutlineWidth = 0;
-		turboOutlineFeather = 0;
 		nameAndIdContainer.confirmedWarning = false;
 	}
 
@@ -323,42 +255,17 @@ public class BetterNpcHighlightPlugin extends Plugin {
 		}
 
 		lastTickUpdate = Instant.now();
-		nameAndIdContainer.turboColors.clear();
-		for (int i = 0; i < nameAndIdContainer.npcList.size(); i++)
-		{
-			nameAndIdContainer.turboColors.add(Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F));
-		}
-		turboModeStyle = new Random().nextInt(6);
-		turboTileWidth = new Random().nextInt(10) + 1;
-		turboOutlineWidth = new Random().nextInt(50) + 1;
-		turboOutlineFeather = new Random().nextInt(4);
 	}
 
 	public NPCInfo checkValidNPC(NPC npc) {
 		NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration, nameAndIdContainer, configTransformManager);
 		if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight() || n.getSwTrueTile().isHighlight()
 				|| n.getHull().isHighlight() || n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
-				|| n.getTurbo().isHighlight() || n.isTask())
+				|| n.isTask())
 		{
 			return n;
 		}
 		return null;
-	}
-
-	public void showEpilepsyWarning() {
-		configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "turboHighlight", false);
-		Font font = (Font) UIManager.get("OptionPane.buttonFont");
-		Object[] options = { "Okay, I accept the risk", "No, this is an affront to my eyes" };
-		JLabel label = new JLabel(
-				"<html><p>Turning this on will cause any NPCs highlighted with this style to change colors and styles rapidly.</p></html>");
-
-		if (JOptionPane.showOptionDialog(new JFrame(), label, "EPILEPSY WARNING - Occular Abhorrence", JOptionPane.YES_NO_OPTION,
-				JOptionPane.WARNING_MESSAGE, null, options, options[1]) == 0)
-		{
-			nameAndIdContainer.confirmedWarning = true;
-			configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "turboHighlight", true);
-		}
-		UIManager.put("OptionPane.buttonFont", font);
 	}
 
 	@VisibleForTesting
@@ -374,5 +281,33 @@ public class BetterNpcHighlightPlugin extends Plugin {
 			}
 		}
 		return true;
+	}
+
+	private void migrateOldConfig(ConfigManager configManager) {
+		// migrate old tag style mode config into the new set version of config if
+		// possible
+		try
+		{
+			String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
+			String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
+			if (oldValue != null && newValue == null)
+			{
+				log.debug("BNPC: Migrating old tag style mode config to new set version");
+
+				// Parse the old enum string value
+				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
+
+				// Convert to Set format
+				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
+
+				// Save the properly serialized Set to the new config
+				configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
+			}
+		}
+		catch (Exception e)
+		{
+			// Could not migrate, ignore
+			log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
+		}
 	}
 }
