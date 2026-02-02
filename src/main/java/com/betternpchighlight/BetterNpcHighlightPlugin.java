@@ -117,12 +117,36 @@ public class BetterNpcHighlightPlugin extends Plugin {
 			overlayManager.add(overlay);
 			overlayManager.add(mapOverlay);
 			
-			configTransformManager.splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
-			configTransformManager.splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
-			configTransformManager.splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
-			configTransformManager.splitList(config.entityHiderNames(), nameAndIdContainer.hiddenNames);
-			configTransformManager.splitList(config.entityHiderIds(), nameAndIdContainer.hiddenIds);
-			configTransformManager.splitList(config.drawBeneathList(), nameAndIdContainer.beneathNPCs);
+			nameAndIdContainer.tileNames = configTransformManager.getList(config.tileNames());
+			nameAndIdContainer.tileIds = configTransformManager.getList(config.tileIds());
+
+			nameAndIdContainer.trueTileNames = configTransformManager.getList(config.trueTileNames());
+			nameAndIdContainer.trueTileIds = configTransformManager.getList(config.trueTileIds());
+
+			nameAndIdContainer.swTileNames = configTransformManager.getList(config.swTileNames());
+			nameAndIdContainer.swTileIds = configTransformManager.getList(config.swTileIds());
+
+			nameAndIdContainer.swTrueTileNames = configTransformManager.getList(config.swTrueTileNames());
+			nameAndIdContainer.swTrueTileIds = configTransformManager.getList(config.swTrueTileIds());
+
+			nameAndIdContainer.hullNames = configTransformManager.getList(config.hullNames());
+			nameAndIdContainer.hullIds = configTransformManager.getList(config.hullIds());
+
+			nameAndIdContainer.areaNames = configTransformManager.getList(config.areaNames());
+			nameAndIdContainer.areaIds = configTransformManager.getList(config.areaIds());
+
+			nameAndIdContainer.outlineNames = configTransformManager.getList(config.outlineNames());
+			nameAndIdContainer.outlineIds = configTransformManager.getList(config.outlineIds());
+
+			nameAndIdContainer.clickboxNames = configTransformManager.getList(config.clickboxNames());
+			nameAndIdContainer.clickboxIds = configTransformManager.getList(config.clickboxIds());
+
+			nameAndIdContainer.namesToDisplay = configTransformManager.getList(config.displayName());
+			nameAndIdContainer.ignoreDeadExclusionList = configTransformManager.getList(config.ignoreDeadExclusion());
+			nameAndIdContainer.ignoreDeadExclusionIDList = configTransformManager.getList(config.ignoreDeadExclusionID());
+			nameAndIdContainer.hiddenNames = configTransformManager.getList(config.entityHiderNames());
+			nameAndIdContainer.hiddenIds = configTransformManager.getList(config.entityHiderIds());
+			nameAndIdContainer.beneathNPCs = configTransformManager.getList(config.drawBeneathList());
 
 			hooks.registerRenderableDrawListener(drawListener);
 			chatCommandManager.registerKeyListener();

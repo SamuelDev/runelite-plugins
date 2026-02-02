@@ -11,6 +11,7 @@ import com.betternpchighlight.data.HighlightColor;
 import com.betternpchighlight.data.NPCInfo;
 import com.betternpchighlight.data.NameAndIdContainer;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
@@ -20,6 +21,7 @@ import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.util.Text;
 import net.runelite.client.util.WildcardMatcher;
 
+@Slf4j
 public class ConfigTransformManager {
 	@Inject
 	private ClientThread clientThread;
@@ -59,6 +61,22 @@ public class ConfigTransformManager {
 			}
 		});
 	}
+
+	public ArrayList<String> getList(String configStr) {
+			ArrayList<String> strList = new ArrayList<>();
+			if (!configStr.equals(""))
+			{
+				for (String str : configStr.split(","))
+				{
+					if (!str.trim().equals(""))
+					{
+						strList.add(str.trim().toLowerCase());
+					}
+				}
+			}
+
+			return strList;
+		}
 
 	public void updateConfig(ConfigChanged event) {
 		switch (event.getKey()) {
@@ -214,6 +232,10 @@ public class ConfigTransformManager {
 
 				for (NPC npc : client.getTopLevelWorldView().npcs())
 				{
+					if (npc.getName().equals("Spiritual ranger"))
+					{
+						log.debug("Debug");
+					}
 					NPCInfo npcInfo = plugin.checkValidNPC(npc);
 					if (npcInfo != null)
 					{

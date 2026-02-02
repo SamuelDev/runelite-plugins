@@ -1,9 +1,12 @@
 package com.betternpchighlight.data;
 
-import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
 
 import net.runelite.api.NPC;
 

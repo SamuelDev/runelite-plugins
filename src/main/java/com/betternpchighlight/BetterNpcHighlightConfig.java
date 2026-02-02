@@ -1621,7 +1621,7 @@ public interface BetterNpcHighlightConfig extends Config
 	// Miscellaneous Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-		position = 0,
+		position = -1,
 		keyName = "tagCommands",
 		name = "Tag Commands",
 		description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section",
@@ -1633,7 +1633,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 1,
+		position = 0,
 		keyName = "highlightMenuNames",
 		name = "Highlight Menu Names",
 		description = "Highlights names in right click menu entry",
@@ -1642,6 +1642,18 @@ public interface BetterNpcHighlightConfig extends Config
 	default boolean highlightMenuNames()
 	{
 		return false;
+	}
+
+		@ConfigItem(
+		position = 1,
+		keyName = "highlightMenuNamesLevel",
+		name = "Highlight Menu Level",
+		description = "Include the level when highlighting menu names",
+		section = miscellaneousSection
+	)
+	default boolean highlightMenuNamesLevel()
+	{
+		return true;
 	}
 
 	@ConfigItem(

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
@@ -45,9 +47,9 @@ public class MenuManager {
   @Inject
   private ConfigTransformManager configTransformManager;
 
-  private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet.of(MenuAction.NPC_FIRST_OPTION, MenuAction.NPC_SECOND_OPTION,
-      MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION, MenuAction.NPC_FIFTH_OPTION, MenuAction.WIDGET_TARGET_ON_NPC,
-      MenuAction.ITEM_USE_ON_NPC);
+  private static final Set<MenuAction> NPC_MENU_ACTIONS = ImmutableSet
+      .of(MenuAction.NPC_FIRST_OPTION, MenuAction.NPC_SECOND_OPTION, MenuAction.NPC_THIRD_OPTION, MenuAction.NPC_FOURTH_OPTION,
+          MenuAction.NPC_FIFTH_OPTION, MenuAction.WIDGET_TARGET_ON_NPC, MenuAction.ITEM_USE_ON_NPC);
 
   public void craftMenu(MenuEntryAdded event) {
     // add craft menu entry
@@ -91,7 +93,7 @@ public class MenuManager {
       {
         MenuEntry[] menuEntries = client.getMenuEntries();
         final MenuEntry menuEntry = menuEntries[menuEntries.length - 1];
-        final String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), color);
+        final String target = getMenuEntryString(event.getTarget(), color, config.highlightMenuNamesLevel());
         menuEntry.setTarget(target);
         client.setMenuEntries(menuEntries);
       }
@@ -133,7 +135,7 @@ public class MenuManager {
               displayColor = config.deadNpcMenuColor();
             }
 
-            String target = ColorUtil.prependColorTag(Text.removeTags(event.getTarget()), displayColor);
+            String target = getMenuEntryString(event.getTarget(), displayColor, config.highlightMenuNamesLevel());
             menuEntry.setTarget(target);
             client.setMenuEntries(menuEntries);
           }
@@ -150,8 +152,9 @@ public class MenuManager {
               {
                 displayColor = config.deadNpcMenuColor();
               }
-              String colorCode = Integer.toHexString(displayColor.getRGB());
-              tagAllEntry = "<col=" + colorCode.substring(2) + ">" + Text.removeTags(event.getTarget());
+              // String colorCode = Integer.toHexString(displayColor.getRGB());
+              // tagAllEntry = "<col=" + colorCode.substring(2) + ">" + Text.removeTags(event.getTarget());
+              tagAllEntry = getMenuEntryString(event.getTarget(), displayColor, config.highlightMenuNamesLevel());
             }
             else
             {
@@ -159,8 +162,15 @@ public class MenuManager {
             }
 
             int idx = -1;
-            MenuEntry parent = client.createMenuEntry(idx).setOption(option).setTarget(tagAllEntry).setIdentifier(event.getIdentifier())
-                .setParam0(event.getActionParam0()).setParam1(event.getActionParam1()).setType(MenuAction.RUNELITE).onClick(this::tagNPC);
+            MenuEntry parent = client
+                .createMenuEntry(idx)
+                .setOption(option)
+                .setTarget(tagAllEntry)
+                .setIdentifier(event.getIdentifier())
+                .setParam0(event.getActionParam0())
+                .setParam1(event.getActionParam1())
+                .setType(MenuAction.RUNELITE)
+                .onClick(this::tagNPC);
 
             if (parent != null)
             {
@@ -188,7 +198,10 @@ public class MenuManager {
           if (c != null)
           {
             int preset = index;
-            submenu.createMenuEntry(0).setOption(ColorUtil.prependColorTag("Preset color " + index, c)).setType(MenuAction.RUNELITE)
+            submenu
+                .createMenuEntry(0)
+                .setOption(ColorUtil.prependColorTag("Preset color " + index, c))
+                .setType(MenuAction.RUNELITE)
                 .onClick(e -> {
                   if (npc.getName() != null)
                   {
@@ -288,5 +301,45 @@ public class MenuManager {
     }
 
     return colors;
+  }
+
+  private String getMenuEntryString(String target, Color color, boolean includeLevel) {
+    Pattern pattern = Pattern
+        .compile("^(?<leadingTags>(?:<[^>]+>)*)" + "(?<name>[^<(]+?)" + "(?<trailingTags>(?:<[^>]+>)*)"
+            + "(?:\\s*(?<level>\\(level-\\d+\\)))?$");
+
+    Matcher matcher = pattern.matcher(target);
+
+    if (matcher.matches())
+    {
+      String leadingTags = matcher.group("leadingTags"); // Existing color for name, will be replaced
+      String name = matcher.group("name"); // npc name
+      String trailingTags = matcher.group("trailingTags"); // Color for level, may be kept if config is set to not include level
+      String levelPart = matcher.group("level"); // may be null
+
+      String cleanName = name;
+      String rebuilt = ColorUtil.prependColorTag(cleanName, color);
+      if (includeLevel)
+      {
+        if (levelPart != null)
+        {
+          rebuilt += "  " + ColorUtil.prependColorTag(levelPart, color);
+        }
+      }
+      else
+      {
+        if (trailingTags != null && !trailingTags.isEmpty())
+        {
+          rebuilt += trailingTags;
+        }
+        if (levelPart != null)
+        {
+          rebuilt += "  " + levelPart;
+        }
+      }
+      return rebuilt;
+    }
+
+    return ColorUtil.prependColorTag(Text.removeTags(target), color);
   }
 }
