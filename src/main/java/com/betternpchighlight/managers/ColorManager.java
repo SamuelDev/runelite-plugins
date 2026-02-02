@@ -64,12 +64,6 @@ public class ColorManager {
     {
       return config.clickboxRave() ? getRaveColor(config.clickboxRaveSpeed()) : n.getClickbox().getColor();
     }
-    else if (n.getTurbo().isHighlight() && config.turboHighlight())
-    {
-      return getTurboIndex(n.getNpc().getId(), n.getNpc().getName()) != -1
-          ? nameAndIdContainer.turboColors.get(getTurboIndex(n.getNpc().getId(), n.getNpc().getName()))
-          : Color.WHITE;
-    }
     else
     {
       return null;
@@ -171,25 +165,5 @@ public class ColorManager {
   public Color getRaveColor(int speed) {
     int ticks = speed / 20;
     return Color.getHSBColor((client.getGameCycle() % ticks) / ((float) ticks), 1.0f, 1.0f);
-  }
-
-  public int getTurboIndex(int id, String name) {
-    if (nameAndIdContainer.turboIds.contains(String.valueOf(id)))
-    {
-      return nameAndIdContainer.turboIds.indexOf(String.valueOf(id));
-    }
-    else if (name != null)
-    {
-      int index = nameAndIdContainer.turboIds.size();
-      for (String str : nameAndIdContainer.turboNames)
-      {
-        if (WildcardMatcher.matches(str, name))
-        {
-          return index;
-        }
-        index++;
-      }
-    }
-    return -1;
   }
 }

@@ -11,6 +11,7 @@ import com.betternpchighlight.data.HighlightColor;
 import com.betternpchighlight.data.NPCInfo;
 import com.betternpchighlight.data.NameAndIdContainer;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
 import net.runelite.api.NPC;
@@ -20,6 +21,7 @@ import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.util.Text;
 import net.runelite.client.util.WildcardMatcher;
 
+@Slf4j
 public class ConfigTransformManager {
 	@Inject
 	private ClientThread clientThread;
@@ -59,6 +61,22 @@ public class ConfigTransformManager {
 			}
 		});
 	}
+
+	public ArrayList<String> getList(String configStr) {
+			ArrayList<String> strList = new ArrayList<>();
+			if (!configStr.equals(""))
+			{
+				for (String str : configStr.split(","))
+				{
+					if (!str.trim().equals(""))
+					{
+						strList.add(str.trim().toLowerCase());
+					}
+				}
+			}
+
+			return strList;
+		}
 
 	public void updateConfig(ConfigChanged event) {
 		switch (event.getKey()) {
@@ -142,16 +160,6 @@ public class ConfigTransformManager {
 			splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
 			recreateList();
 			break;
-		case "turboNames":
-			nameAndIdContainer.turboNames.clear();
-			splitList(config.turboNames(), nameAndIdContainer.turboNames);
-			recreateList();
-			break;
-		case "turboIds":
-			nameAndIdContainer.turboIds.clear();
-			splitList(config.turboIds(), nameAndIdContainer.turboIds);
-			recreateList();
-			break;
 		case "displayName":
 			nameAndIdContainer.namesToDisplay.clear();
 			splitList(config.displayName(), nameAndIdContainer.namesToDisplay);
@@ -165,19 +173,6 @@ public class ConfigTransformManager {
 			nameAndIdContainer.ignoreDeadExclusionIDList.clear();
 			splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
 			recreateList();
-			break;
-		case "turboHighlight":
-			if (event.getNewValue().equals("true"))
-			{
-				if (!nameAndIdContainer.confirmedWarning)
-				{
-					plugin.showEpilepsyWarning();
-				}
-				else
-				{
-					nameAndIdContainer.confirmedWarning = false;
-				}
-			}
 			break;
 		case "entityHiderNames":
 			nameAndIdContainer.hiddenNames.clear();
@@ -237,6 +232,10 @@ public class ConfigTransformManager {
 
 				for (NPC npc : client.getTopLevelWorldView().npcs())
 				{
+					if (npc.getName().equals("Spiritual ranger"))
+					{
+						log.debug("Debug");
+					}
 					NPCInfo npcInfo = plugin.checkValidNPC(npc);
 					if (npcInfo != null)
 					{
@@ -312,10 +311,6 @@ public class ConfigTransformManager {
 			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.CLICKBOX))
 			{
 				config.setClickboxNames(configListToString(add, name, nameAndIdContainer.clickboxNames, preset));
-			}
-			if (config.tagStyleModeSet().contains(BetterNpcHighlightConfig.tagStyleMode.TURBO))
-			{
-				config.setTurboNames(configListToString(add, name, nameAndIdContainer.turboNames, 0));
 			}
 		}
 	}
@@ -416,16 +411,14 @@ public class ConfigTransformManager {
 		return isInSpecificNameList(nameAndIdContainer.tileNames, npc) || isInSpecificNameList(nameAndIdContainer.trueTileNames, npc)
 				|| isInSpecificNameList(nameAndIdContainer.swTileNames, npc) || isInSpecificNameList(nameAndIdContainer.swTrueTileNames, npc)
 				|| isInSpecificNameList(nameAndIdContainer.hullNames, npc) || isInSpecificNameList(nameAndIdContainer.areaNames, npc)
-				|| isInSpecificNameList(nameAndIdContainer.outlineNames, npc) || isInSpecificNameList(nameAndIdContainer.clickboxNames, npc)
-				|| isInSpecificNameList(nameAndIdContainer.turboNames, npc);
+				|| isInSpecificNameList(nameAndIdContainer.outlineNames, npc) || isInSpecificNameList(nameAndIdContainer.clickboxNames, npc);
 	}
 
 	public boolean isInAnyIdList(NPC npc) {
 		return isInSpecificIdList(nameAndIdContainer.tileIds, npc) || isInSpecificIdList(nameAndIdContainer.trueTileIds, npc)
 				|| isInSpecificIdList(nameAndIdContainer.swTileIds, npc) || isInSpecificIdList(nameAndIdContainer.swTrueTileIds, npc)
 				|| isInSpecificIdList(nameAndIdContainer.hullIds, npc) || isInSpecificIdList(nameAndIdContainer.areaIds, npc)
-				|| isInSpecificIdList(nameAndIdContainer.outlineIds, npc) || isInSpecificIdList(nameAndIdContainer.clickboxIds, npc)
-				|| isInSpecificIdList(nameAndIdContainer.turboIds, npc);
+				|| isInSpecificIdList(nameAndIdContainer.outlineIds, npc) || isInSpecificIdList(nameAndIdContainer.clickboxIds, npc);
 	}
 
 	public boolean isInAnyList(NPC npc) {
@@ -441,6 +434,5 @@ public class ConfigTransformManager {
 		config.setAreaNames(configListToString(false, name, nameAndIdContainer.areaNames, 0));
 		config.setOutlineNames(configListToString(false, name, nameAndIdContainer.outlineNames, 0));
 		config.setClickboxNames(configListToString(false, name, nameAndIdContainer.clickboxNames, 0));
-		config.setTurboNames(configListToString(false, name, nameAndIdContainer.turboNames, 0));
 	}
 }

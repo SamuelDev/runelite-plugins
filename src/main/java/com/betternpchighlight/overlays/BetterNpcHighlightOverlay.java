@@ -146,11 +146,6 @@ public class BetterNpcHighlightOverlay extends Overlay
 						{
 							renderNpcOverlay(graphics, npcInfo, "clickbox");
 						}
-
-						if (config.turboHighlight() && npcInfo.getTurbo().isHighlight())
-						{
-							renderNpcOverlay(graphics, npcInfo, "turbo");
-						}
 					}
 
 					if (nameAndIdContainer.namesToDisplay.size() > 0 && npc.getName() != null)
@@ -251,13 +246,6 @@ public class BetterNpcHighlightOverlay extends Overlay
 						Color fillColor = config.respawnFillColor();
 						Color raveColor = Color.WHITE;
 						int width = config.respawnTileWidth();
-						if (colorManager.getTurboIndex(n.id, n.name.toLowerCase()) != -1)
-						{
-							raveColor = nameAndIdContainer.turboColors.get(colorManager.getTurboIndex(n.id, n.name.toLowerCase()));
-							outlineColor = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
-							fillColor = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
-							width = plugin.turboTileWidth;
-						}
 
 						Polygon tilePoly = Perspective.getCanvasTileAreaPoly(client, centerLp, n.size);
 						if (tilePoly != null)
@@ -500,107 +488,6 @@ public class BetterNpcHighlightOverlay extends Overlay
 						Shape clickbox = Perspective.getClickbox(client, npc.getWorldView(), npc.getModel(), npc.getCurrentOrientation(), lp.getX(), lp.getY(),
 							Perspective.getTileHeight(client, lp, npc.getWorldLocation().getPlane()));
 						renderClickbox(graphics, clickbox, client.getMouseCanvasPosition(), line, fill, lineAlpha, fillAlpha, line.darker(), config.clickboxAA());
-					}
-					break;
-				case "turbo":
-				Color raveColor = nameAndIdContainer.turboColors.get(colorManager.getTurboIndex(npc.getId(), npc.getName().toLowerCase()));
-					if (raveColor != null)
-					{
-						line = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
-						fill = new Color(raveColor.getRed(), raveColor.getGreen(), raveColor.getBlue(), new Random().nextInt(254) + 1);
-						int tileMode = new Random().nextInt(3);
-
-						if (plugin.turboModeStyle == 0)
-						{
-							lp = npc.getLocalLocation();
-							if (lp != null)
-							{
-								tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
-								if (tilePoly != null)
-								{
-									if (tileMode == 0)
-									{
-										renderPoly(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-									else if (tileMode == 1)
-									{
-										renderPolygonDashed(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, size,true);
-									}
-									else
-									{
-										renderPolygonCorners(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-								}
-							}
-						}
-						else if (plugin.turboModeStyle == 1)
-						{
-							lp = LocalPoint.fromWorld(client, npc.getWorldLocation());
-							if (lp != null)
-							{
-								lp = new LocalPoint(lp.getX() + size * 128 / 2 - 64, lp.getY() + size * 128 / 2 - 64);
-								tilePoly = Perspective.getCanvasTileAreaPoly(client, lp, size);
-								if (tilePoly != null)
-								{
-									if (tileMode == 0)
-									{
-										renderPoly(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-									else if (tileMode == 1)
-									{
-										renderPolygonDashed(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, size,true);
-									}
-									else
-									{
-										renderPolygonCorners(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-								}
-							}
-						}
-						else if (plugin.turboModeStyle == 2)
-						{
-							lp = npc.getLocalLocation();
-							if (lp != null)
-							{
-								int x = lp.getX() - (size - 1) * 128 / 2;
-								int y = lp.getY() - (size - 1) * 128 / 2;
-								tilePoly = Perspective.getCanvasTilePoly(client, new LocalPoint(x, y));
-								if (tilePoly != null)
-								{
-									if (tileMode == 0)
-									{
-										renderPoly(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-									else if (tileMode == 1)
-									{
-										renderPolygonDashed(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, size,true);
-									}
-									else
-									{
-										renderPolygonCorners(graphics, line, fill, line.getAlpha(), fill.getAlpha(), tilePoly, plugin.turboTileWidth, true);
-									}
-								}
-							}
-						}
-						else if (plugin.turboModeStyle == 3)
-						{
-							if (npc.getConvexHull() != null)
-							{
-								renderPoly(graphics, line, fill, line.getAlpha(), fill.getAlpha(), npc.getConvexHull(), plugin.turboTileWidth, true);
-							}
-						}
-						else if (plugin.turboModeStyle == 4)
-						{
-							if (npc.getConvexHull() != null)
-							{
-								graphics.setColor(fill);
-								graphics.fill(npc.getConvexHull());
-							}
-						}
-						else
-						{
-							modelOutlineRenderer.drawOutline(npc, plugin.turboTileWidth, line, plugin.turboOutlineFeather);
-						}
 					}
 					break;
 			}

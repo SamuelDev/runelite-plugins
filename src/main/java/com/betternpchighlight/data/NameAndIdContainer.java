@@ -1,9 +1,12 @@
 package com.betternpchighlight.data;
 
-import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import com.betternpchighlight.BetterNpcHighlightConfig;
 
 import net.runelite.api.NPC;
 
@@ -32,9 +35,6 @@ public class NameAndIdContainer {
   public ArrayList<String> outlineIds = new ArrayList<>();
   public ArrayList<String> clickboxNames = new ArrayList<>();
   public ArrayList<String> clickboxIds = new ArrayList<>();
-  public ArrayList<String> turboNames = new ArrayList<>();
-  public ArrayList<String> turboIds = new ArrayList<>();
-  public ArrayList<Color> turboColors = new ArrayList<>();
   public ArrayList<NpcSpawn> npcSpawns = new ArrayList<>();
   public ArrayList<String> namesToDisplay = new ArrayList<>();
   public ArrayList<String> ignoreDeadExclusionList = new ArrayList<>();
@@ -60,8 +60,6 @@ public class NameAndIdContainer {
     outlineIds.clear();
     clickboxNames.clear();
     clickboxIds.clear();
-    turboNames.clear();
-    turboIds.clear();
     hiddenNames.clear();
     hiddenIds.clear();
     beneathNPCs.clear();

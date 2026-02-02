@@ -123,14 +123,6 @@ public interface BetterNpcHighlightConfig extends Config
 	String clickboxSection = "clickbox";
 
 	@ConfigSection(
-		name = "TURBO MODE",
-		description = "Full send",
-		position = 9,
-		closedByDefault = true
-	)
-	String turboSection = "turbo";
-
-	@ConfigSection(
 		name = "Slayer",
 		description = "Slayer Plugins",
 		position = 10,
@@ -1242,68 +1234,6 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	//------------------------------------------------------------//
-	// Turbo Section
-	//------------------------------------------------------------//
-	@ConfigItem(
-		position = 0,
-		name = "—————— Epilepsy Warning ——————",
-		keyName = "epilepsyWarning",
-		description = "A warning message will pop up if you try to enable Turbo Highlight. Turbo mode highlights NPCs switching between all styles and colors.",
-		section = turboSection
-	)
-	void epilepsyWarning();
-
-	@ConfigItem(
-		position = 1,
-		keyName = "turboHighlight",
-		name = "Turbo Highlight",
-		description = "Highlights NPCs in turbo mode",
-		section = turboSection
-	)
-	default boolean turboHighlight()
-	{
-		return false;
-	}
-
-	@ConfigItem(
-		position = 2,
-		keyName = "turboNames",
-		name = "Turbo Names",
-		description = "List of NPCs to do things with",
-		section = turboSection
-	)
-	default String turboNames()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "turboNames",
-		name = "",
-		description = ""
-	)
-	void setTurboNames(String names);
-
-	@ConfigItem(
-		position = 3,
-		keyName = "turboIds",
-		name = "Turbo IDs",
-		description = "Can be used to see ghosts if you really want to",
-		section = turboSection
-	)
-	default String turboIds()
-	{
-		return "";
-	}
-
-	@ConfigItem(
-		keyName = "turboIds",
-		name = "",
-		description = ""
-	)
-	void setTurboIds(String ids);
-
-	//------------------------------------------------------------//
 	// Slayer Section
 	//------------------------------------------------------------//
 	@ConfigItem(
@@ -1623,8 +1553,7 @@ public interface BetterNpcHighlightConfig extends Config
 			"Hull = \"h\", \"hull\" \n" +
 			"Area = \"a\", \"area\" \n" +
 			"Outline = \"o\", \"outline\" \n" +
-			"Clickbox = \"c\", \"clickbox\", \"box\" \n" +
-			"Turbo = \"tu\", \"turbo\" \n";
+			"Clickbox = \"c\", \"clickbox\", \"box\" \n";
 	}
 
 	@ConfigItem(
@@ -1692,7 +1621,7 @@ public interface BetterNpcHighlightConfig extends Config
 	// Miscellaneous Section
 	//------------------------------------------------------------//
 	@ConfigItem(
-		position = 0,
+		position = -1,
 		keyName = "tagCommands",
 		name = "Tag Commands",
 		description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section",
@@ -1704,7 +1633,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 1,
+		position = 0,
 		keyName = "highlightMenuNames",
 		name = "Highlight Menu Names",
 		description = "Highlights names in right click menu entry",
@@ -1713,6 +1642,18 @@ public interface BetterNpcHighlightConfig extends Config
 	default boolean highlightMenuNames()
 	{
 		return false;
+	}
+
+		@ConfigItem(
+		position = 1,
+		keyName = "highlightMenuNamesLevel",
+		name = "Highlight Menu Level",
+		description = "Include the level when highlighting menu names",
+		section = miscellaneousSection
+	)
+	default boolean highlightMenuNamesLevel()
+	{
+		return true;
 	}
 
 	@ConfigItem(
@@ -1949,7 +1890,6 @@ public interface BetterNpcHighlightConfig extends Config
 		AREA("Area", "area"),
 		OUTLINE("Outline", "outline"),
 		CLICKBOX("Clickbox", "clickbox"),
-		TURBO("Turbo", "turbo"),
 		;
 
 		@Getter

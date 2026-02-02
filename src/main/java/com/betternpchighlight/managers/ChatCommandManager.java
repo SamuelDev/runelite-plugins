@@ -230,17 +230,6 @@ public class ChatCommandManager implements KeyListener {
             config.setClickboxNames(configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.clickboxNames, preset));
           }
         }
-        else if (validateCommand(text, "tu ") || validateCommand(text, "turbo "))
-        {
-          if (StringUtils.isNumeric(npcToTag))
-          {
-            config.setTurboIds(configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.turboIds, preset));
-          }
-          else
-          {
-            config.setTurboNames(configTransformManager.configListToString(tag, npcToTag, nameAndIdContainer.turboNames, preset));
-          }
-        }
       }
     }
     // Set typed text to nothing

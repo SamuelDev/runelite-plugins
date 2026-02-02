@@ -23,7 +23,6 @@ public class NPCInfo {
 	HighlightColor area;
 	HighlightColor outline;
 	HighlightColor clickbox;
-	HighlightColor turbo;
 	boolean isTask;
 	boolean ignoreDead;
 
@@ -50,7 +49,6 @@ public class NPCInfo {
 				config.outlineColor(), null);
 		this.clickbox = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.clickboxNames, nameAndIdContainer.clickboxIds, npc,
 				config.clickboxColor(), config.clickboxFillColor());
-		this.turbo = configTransformManager.getHighlightColorFromNameOrIdList(nameAndIdContainer.turboNames, nameAndIdContainer.turboIds, npc, null, null);
 		this.isTask = slayerPluginIntegration.checkSlayerPluginEnabled() && slayerPluginService != null
 				&& slayerPluginService.getTargets().contains(npc);
 		this.ignoreDead = configTransformManager.isInSpecificNameList(nameAndIdContainer.ignoreDeadExclusionList, npc)
