@@ -64,7 +64,7 @@ public class MenuManager {
     // Colorize all name in all menu entries except examine and tag/untag
     if (NPC_MENU_ACTIONS.contains(menuAction))
     {
-      NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
+      NPC npc = event.getMenuEntry().getNpc();
 
       // Get name for menu item coloring
       Color color = null;
@@ -101,7 +101,7 @@ public class MenuManager {
     // Colorize examine and tag/untag menu options
     else if (menuAction == MenuAction.EXAMINE_NPC)
     {
-      final NPC npc = client.getTopLevelWorldView().npcs().byIndex(event.getIdentifier());
+      final NPC npc = event.getMenuEntry().getNpc();
 
       if (npc != null)
       {
@@ -167,6 +167,7 @@ public class MenuManager {
                 .setOption(option)
                 .setTarget(tagAllEntry)
                 .setIdentifier(event.getIdentifier())
+                .setWorldViewId(event.getMenuEntry().getWorldViewId())
                 .setParam0(event.getActionParam0())
                 .setParam1(event.getActionParam1())
                 .setType(MenuAction.RUNELITE)
@@ -235,7 +236,7 @@ public class MenuManager {
       if (event.getOption().equals("Tag-NPC") || event.getOption().equals("Untag-NPC"))
       {
         final int id = event.getIdentifier();
-        final NPC npc = client.getTopLevelWorldView().npcs().byIndex(id);
+        final NPC npc = client.getWorldView(event.getWorldViewId()).npcs().byIndex(event.getIdentifier());
         boolean tag = event.getOption().equals("Tag-NPC");
         if (npc.getName() != null)
         {

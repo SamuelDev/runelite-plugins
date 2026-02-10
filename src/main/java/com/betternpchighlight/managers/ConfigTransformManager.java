@@ -20,6 +20,7 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.util.Text;
 import net.runelite.client.util.WildcardMatcher;
+import net.runelite.api.WorldView;
 
 @Slf4j
 public class ConfigTransformManager {
@@ -63,102 +64,102 @@ public class ConfigTransformManager {
 	}
 
 	public ArrayList<String> getList(String configStr) {
-			ArrayList<String> strList = new ArrayList<>();
-			if (!configStr.equals(""))
+		ArrayList<String> strList = new ArrayList<>();
+		if (!configStr.equals(""))
+		{
+			for (String str : configStr.split(","))
 			{
-				for (String str : configStr.split(","))
+				if (!str.trim().equals(""))
 				{
-					if (!str.trim().equals(""))
-					{
-						strList.add(str.trim().toLowerCase());
-					}
+					strList.add(str.trim().toLowerCase());
 				}
 			}
-
-			return strList;
 		}
+
+		return strList;
+	}
 
 	public void updateConfig(ConfigChanged event) {
 		switch (event.getKey()) {
 		case "tileNames":
 			nameAndIdContainer.tileNames.clear();
 			splitList(config.tileNames(), nameAndIdContainer.tileNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "tileIds":
 			nameAndIdContainer.tileIds.clear();
 			splitList(config.tileIds(), nameAndIdContainer.tileIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "trueTileNames":
 			nameAndIdContainer.trueTileNames.clear();
 			splitList(config.trueTileNames(), nameAndIdContainer.trueTileNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "trueTileIds":
 			nameAndIdContainer.trueTileIds.clear();
 			splitList(config.trueTileIds(), nameAndIdContainer.trueTileIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "swTileNames":
 			nameAndIdContainer.swTileNames.clear();
 			splitList(config.swTileNames(), nameAndIdContainer.swTileNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "swTileIds":
 			nameAndIdContainer.swTileIds.clear();
 			splitList(config.swTileIds(), nameAndIdContainer.swTileIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "swTrueTileNames":
 			nameAndIdContainer.swTrueTileNames.clear();
 			splitList(config.swTrueTileNames(), nameAndIdContainer.swTrueTileNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "swTrueTileIds":
 			nameAndIdContainer.swTrueTileIds.clear();
 			splitList(config.swTrueTileIds(), nameAndIdContainer.swTrueTileIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "hullNames":
 			nameAndIdContainer.hullNames.clear();
 			splitList(config.hullNames(), nameAndIdContainer.hullNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "hullIds":
 			nameAndIdContainer.hullIds.clear();
 			splitList(config.hullIds(), nameAndIdContainer.hullIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "areaNames":
 			nameAndIdContainer.areaNames.clear();
 			splitList(config.areaNames(), nameAndIdContainer.areaNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "areaIds":
 			nameAndIdContainer.areaIds.clear();
 			splitList(config.areaIds(), nameAndIdContainer.areaIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "outlineNames":
 			nameAndIdContainer.outlineNames.clear();
 			splitList(config.outlineNames(), nameAndIdContainer.outlineNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "outlineIds":
 			nameAndIdContainer.outlineIds.clear();
 			splitList(config.outlineIds(), nameAndIdContainer.outlineIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "clickboxNames":
 			nameAndIdContainer.clickboxNames.clear();
 			splitList(config.clickboxNames(), nameAndIdContainer.clickboxNames);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "clickboxIds":
 			nameAndIdContainer.clickboxIds.clear();
 			splitList(config.clickboxIds(), nameAndIdContainer.clickboxIds);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "displayName":
 			nameAndIdContainer.namesToDisplay.clear();
@@ -167,12 +168,12 @@ public class ConfigTransformManager {
 		case "ignoreDeadExclusion":
 			nameAndIdContainer.ignoreDeadExclusionList.clear();
 			splitList(config.ignoreDeadExclusion(), nameAndIdContainer.ignoreDeadExclusionList);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "ignoreDeadExclusionID":
 			nameAndIdContainer.ignoreDeadExclusionIDList.clear();
 			splitList(config.ignoreDeadExclusionID(), nameAndIdContainer.ignoreDeadExclusionIDList);
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		case "entityHiderNames":
 			nameAndIdContainer.hiddenNames.clear();
@@ -218,33 +219,39 @@ public class ConfigTransformManager {
 		case "useGlobalTileColor":
 		case "globalTileColor":
 		case "globalFillColor":
-			recreateList();
+			recreateNPCInfoList();
 			break;
 		}
 	}
 
-	public void recreateList() {
+	public void recreateNPCInfoList() {
 		clientThread.invokeLater(() -> {
 			if (client.getGameState() == GameState.LOGGED_IN && client.getLocalPlayer() != null
 					&& client.getLocalPlayer().getPlayerComposition() != null)
 			{
 				nameAndIdContainer.npcList.clear();
 
-				for (NPC npc : client.getTopLevelWorldView().npcs())
-				{
-					if (npc.getName().equals("Spiritual ranger"))
-					{
-						log.debug("Debug");
-					}
-					NPCInfo npcInfo = plugin.checkValidNPC(npc);
-					if (npcInfo != null)
-					{
-						nameAndIdContainer.npcList.add(npcInfo);
-					}
-				}
+				recreateNPCInfoListForWorldView(client.getTopLevelWorldView());
+
 				nameAndIdContainer.currentTask = slayerPluginService.getTask();
 			}
 		});
+	}
+
+	private void recreateNPCInfoListForWorldView(WorldView wv) {
+		for (NPC npc : wv.npcs())
+		{
+			NPCInfo npcInfo = plugin.checkValidNPC(npc);
+			if (npcInfo != null)
+			{
+				nameAndIdContainer.npcList.add(npcInfo);
+			}
+		}
+
+		for (WorldView subWv : wv.worldViews())
+		{
+			recreateNPCInfoListForWorldView(subWv);
+		}
 	}
 
 	public String configListToString(boolean tagOrHide, String name, ArrayList<String> strList, int preset) {

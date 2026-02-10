@@ -14,7 +14,7 @@
       "args": "--developer-mode --debug --profile=plugintesting",
       "vmArgs": "-ea",
       "env": {
-        "JAVA_HOME": "C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.25.9-hotspot"
+        "JAVA_HOME": "C:\\Program Files\\Eclipse Adoptium\\jdk-11.0.29.7-hotspot"
       }
     }
   ]

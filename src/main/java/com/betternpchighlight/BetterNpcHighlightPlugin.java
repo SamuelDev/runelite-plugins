@@ -154,7 +154,7 @@ public class BetterNpcHighlightPlugin extends Plugin {
 
 			if (client.getGameState() == GameState.LOGGED_IN)
 			{
-				configTransformManager.recreateList();
+				configTransformManager.recreateNPCInfoList();
 			}
 		});
 	}
@@ -275,7 +275,7 @@ public class BetterNpcHighlightPlugin extends Plugin {
 	public void onGameTick(GameTick event) {
 		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask()))
 		{
-			configTransformManager.recreateList();
+			configTransformManager.recreateNPCInfoList();
 		}
 
 		lastTickUpdate = Instant.now();
