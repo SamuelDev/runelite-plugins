@@ -11,9 +11,20 @@ public interface AverageTotalLevelConfig extends Config
 		keyName = "averageTotalLevel",
 		name = "Average Total Level",
 		description = "Display average total level on the skill tab",
-		position = 0
+		position = 10
 	)
 	default boolean averageTotalLevel()
+	{
+		return true;
+	}
+
+		@ConfigItem(
+		keyName = "averageTotalExperience",
+		name = "Average Total Experience",
+		description = "Display average total experience when hovering over total level",
+		position = 20
+	)
+	default boolean averageTotalExperience()
 	{
 		return true;
 	}
@@ -22,7 +33,7 @@ public interface AverageTotalLevelConfig extends Config
 			keyName = "virtualAverageTotalLevel",
 			name = "Use virtual level",
 			description = "If virtual total level plugin is enabled, use virtual level when calculating average level",
-			position = 1
+			position = 30
 	)
 	default boolean virtualAverageTotalLevel()
 	{
@@ -33,7 +44,7 @@ public interface AverageTotalLevelConfig extends Config
 			keyName = "useDecimals",
 			name = "Use decimals in average level",
 			description = "Choose whether or not to show decimal places in the average level",
-			position = 2
+			position = 40
 	)
 	default boolean useDecimals()
 	{
