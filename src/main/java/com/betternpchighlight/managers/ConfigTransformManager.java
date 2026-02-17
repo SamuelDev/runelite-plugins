@@ -233,7 +233,7 @@ public class ConfigTransformManager {
 
 				recreateNPCInfoListForWorldView(client.getTopLevelWorldView());
 
-				nameAndIdContainer.currentTask = slayerPluginService.getTask();
+				nameAndIdContainer.currentTask = slayerPluginService.getTask() == null ? "" : slayerPluginService.getTask();
 			}
 		});
 	}
