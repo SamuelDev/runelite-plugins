@@ -24,15 +24,16 @@
  */
 package com.betternpchighlight;
 
-import com.betternpchighlight.data.NPCInfo;
-import com.betternpchighlight.data.NameAndIdContainer;
-import com.betternpchighlight.data.NpcSpawn;
-import com.betternpchighlight.managers.ChatCommandManager;
-import com.betternpchighlight.managers.ConfigTransformManager;
-import com.betternpchighlight.managers.MenuManager;
-import com.betternpchighlight.managers.SlayerPluginManager;
-import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
-import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
+import com.betternpchighlight.config.migrators.ConfigMigrator;
+// import com.betternpchighlight.data.NPCInfo;
+// import com.betternpchighlight.data.NameAndIdContainer;
+// import com.betternpchighlight.data.NpcSpawn;
+// import com.betternpchighlight.managers.ChatCommandManager;
+// import com.betternpchighlight.managers.ConfigTransformManager;
+// import com.betternpchighlight.managers.MenuManager;
+// import com.betternpchighlight.managers.SlayerPluginManager;
+// import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
+// import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
@@ -59,279 +60,279 @@ import java.util.Set;
 		"indicators", "respawn", "hide", "entity", "custom", "id", "name" })
 @PluginDependency(SlayerPlugin.class)
 public class BetterNpcHighlightPlugin extends Plugin {
-	@Inject
-	private Client client;
+	// @Inject
+	// private Client client;
 
-	@Inject
-	private OverlayManager overlayManager;
+	// @Inject
+	// private OverlayManager overlayManager;
 
-	@Inject
-	private BetterNpcHighlightOverlay overlay;
+	// @Inject
+	// private BetterNpcHighlightOverlay overlay;
 
-	@Inject
-	private BetterNpcHighlightConfig config;
+	// @Inject
+	// private BetterNpcHighlightConfig config;
 
-	@Inject
-	private BetterNpcMinimapOverlay mapOverlay;
+	// @Inject
+	// private BetterNpcMinimapOverlay mapOverlay;
 
-	@Inject
-	private ConfigManager configManager;
+	// @Inject
+	// private ConfigManager configManager;
 
-	@Inject
-	private Hooks hooks;
+	// @Inject
+	// private Hooks hooks;
 
-	@Inject
-	private SlayerPluginService slayerPluginService;
+	// @Inject
+	// private SlayerPluginService slayerPluginService;
 
-	@Inject
-	private ClientThread clientThread;
+	// @Inject
+	// private ClientThread clientThread;
 
-	@Inject
-	private SlayerPluginManager slayerPluginIntegration;
+	// @Inject
+	// private SlayerPluginManager slayerPluginIntegration;
 
-	@Inject
-	private MenuManager menuManager;
+	// @Inject
+	// private MenuManager menuManager;
 
-	@Inject
-	private ConfigTransformManager configTransformManager;
+	// @Inject
+	// private ConfigTransformManager configTransformManager;
 
-	@Inject
-	private NameAndIdContainer nameAndIdContainer;
+	// @Inject
+	// private NameAndIdContainer nameAndIdContainer;
 
-	@Inject
-	private ChatCommandManager chatCommandManager;
+	// @Inject
+	// private ChatCommandManager chatCommandManager;
 
-	public Instant lastTickUpdate;
+	// public Instant lastTickUpdate;
 
-	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+	// private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
 	@Provides
 	BetterNpcHighlightConfig providesConfig(ConfigManager configManager) {
-		migrateOldConfig(configManager);
+		ConfigMigrator.migrateOldConfigs(configManager);
 		return configManager.getConfig(BetterNpcHighlightConfig.class);
 	}
 
-	protected void startUp() {
-		clientThread.invokeLater(() -> {
-			reset();
-			overlayManager.add(overlay);
-			overlayManager.add(mapOverlay);
+	// protected void startUp() {
+	// 	clientThread.invokeLater(() -> {
+	// 		reset();
+	// 		overlayManager.add(overlay);
+	// 		overlayManager.add(mapOverlay);
 			
-			nameAndIdContainer.tileNames = configTransformManager.getList(config.tileNames());
-			nameAndIdContainer.tileIds = configTransformManager.getList(config.tileIds());
+	// 		nameAndIdContainer.tileNames = configTransformManager.getList(config.tileNames());
+	// 		nameAndIdContainer.tileIds = configTransformManager.getList(config.tileIds());
 
-			nameAndIdContainer.trueTileNames = configTransformManager.getList(config.trueTileNames());
-			nameAndIdContainer.trueTileIds = configTransformManager.getList(config.trueTileIds());
+	// 		nameAndIdContainer.trueTileNames = configTransformManager.getList(config.trueTileNames());
+	// 		nameAndIdContainer.trueTileIds = configTransformManager.getList(config.trueTileIds());
 
-			nameAndIdContainer.swTileNames = configTransformManager.getList(config.swTileNames());
-			nameAndIdContainer.swTileIds = configTransformManager.getList(config.swTileIds());
+	// 		nameAndIdContainer.swTileNames = configTransformManager.getList(config.swTileNames());
+	// 		nameAndIdContainer.swTileIds = configTransformManager.getList(config.swTileIds());
 
-			nameAndIdContainer.swTrueTileNames = configTransformManager.getList(config.swTrueTileNames());
-			nameAndIdContainer.swTrueTileIds = configTransformManager.getList(config.swTrueTileIds());
+	// 		nameAndIdContainer.swTrueTileNames = configTransformManager.getList(config.swTrueTileNames());
+	// 		nameAndIdContainer.swTrueTileIds = configTransformManager.getList(config.swTrueTileIds());
 
-			nameAndIdContainer.hullNames = configTransformManager.getList(config.hullNames());
-			nameAndIdContainer.hullIds = configTransformManager.getList(config.hullIds());
+	// 		nameAndIdContainer.hullNames = configTransformManager.getList(config.hullNames());
+	// 		nameAndIdContainer.hullIds = configTransformManager.getList(config.hullIds());
 
-			nameAndIdContainer.areaNames = configTransformManager.getList(config.areaNames());
-			nameAndIdContainer.areaIds = configTransformManager.getList(config.areaIds());
+	// 		nameAndIdContainer.areaNames = configTransformManager.getList(config.areaNames());
+	// 		nameAndIdContainer.areaIds = configTransformManager.getList(config.areaIds());
 
-			nameAndIdContainer.outlineNames = configTransformManager.getList(config.outlineNames());
-			nameAndIdContainer.outlineIds = configTransformManager.getList(config.outlineIds());
+	// 		nameAndIdContainer.outlineNames = configTransformManager.getList(config.outlineNames());
+	// 		nameAndIdContainer.outlineIds = configTransformManager.getList(config.outlineIds());
 
-			nameAndIdContainer.clickboxNames = configTransformManager.getList(config.clickboxNames());
-			nameAndIdContainer.clickboxIds = configTransformManager.getList(config.clickboxIds());
+	// 		nameAndIdContainer.clickboxNames = configTransformManager.getList(config.clickboxNames());
+	// 		nameAndIdContainer.clickboxIds = configTransformManager.getList(config.clickboxIds());
 
-			nameAndIdContainer.namesToDisplay = configTransformManager.getList(config.displayName());
-			nameAndIdContainer.ignoreDeadExclusionList = configTransformManager.getList(config.ignoreDeadExclusion());
-			nameAndIdContainer.ignoreDeadExclusionIDList = configTransformManager.getList(config.ignoreDeadExclusionID());
-			nameAndIdContainer.hiddenNames = configTransformManager.getList(config.entityHiderNames());
-			nameAndIdContainer.hiddenIds = configTransformManager.getList(config.entityHiderIds());
-			nameAndIdContainer.beneathNPCs = configTransformManager.getList(config.drawBeneathList());
+	// 		nameAndIdContainer.namesToDisplay = configTransformManager.getList(config.displayName());
+	// 		nameAndIdContainer.ignoreDeadExclusionList = configTransformManager.getList(config.ignoreDeadExclusion());
+	// 		nameAndIdContainer.ignoreDeadExclusionIDList = configTransformManager.getList(config.ignoreDeadExclusionID());
+	// 		nameAndIdContainer.hiddenNames = configTransformManager.getList(config.entityHiderNames());
+	// 		nameAndIdContainer.hiddenIds = configTransformManager.getList(config.entityHiderIds());
+	// 		nameAndIdContainer.beneathNPCs = configTransformManager.getList(config.drawBeneathList());
 
-			hooks.registerRenderableDrawListener(drawListener);
-			chatCommandManager.registerKeyListener();
-			slayerPluginIntegration.enableSlayerPlugin();
+	// 		hooks.registerRenderableDrawListener(drawListener);
+	// 		chatCommandManager.registerKeyListener();
+	// 		slayerPluginIntegration.enableSlayerPlugin();
 
-			if (client.getGameState() == GameState.LOGGED_IN)
-			{
-				configTransformManager.recreateNPCInfoList();
-			}
-		});
-	}
+	// 		if (client.getGameState() == GameState.LOGGED_IN)
+	// 		{
+	// 			configTransformManager.recreateNPCInfoList();
+	// 		}
+	// 	});
+	// }
 
-	protected void shutDown() {
-		reset();
-		overlayManager.remove(overlay);
-		overlayManager.remove(mapOverlay);
-		hooks.unregisterRenderableDrawListener(drawListener);
-		chatCommandManager.unregisterKeyListener();
-	}
+	// protected void shutDown() {
+	// 	reset();
+	// 	overlayManager.remove(overlay);
+	// 	overlayManager.remove(mapOverlay);
+	// 	hooks.unregisterRenderableDrawListener(drawListener);
+	// 	chatCommandManager.unregisterKeyListener();
+	// }
 
-	private void reset() {
-		nameAndIdContainer.npcList.clear();
-		nameAndIdContainer.currentTask = "";
-		nameAndIdContainer.clearAll();
-		nameAndIdContainer.confirmedWarning = false;
-	}
+	// private void reset() {
+	// 	nameAndIdContainer.npcList.clear();
+	// 	nameAndIdContainer.currentTask = "";
+	// 	nameAndIdContainer.clearAll();
+	// 	nameAndIdContainer.confirmedWarning = false;
+	// }
 
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event) {
-		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP))
-		{
-			configTransformManager.updateConfig(event);
-		}
-	}
+	// @Subscribe
+	// public void onConfigChanged(ConfigChanged event) {
+	// 	if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP))
+	// 	{
+	// 		configTransformManager.updateConfig(event);
+	// 	}
+	// }
 
-	@Subscribe
-	public void onGameStateChanged(GameStateChanged event) {
-		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
-		{
-			nameAndIdContainer.npcSpawns.clear();
-			nameAndIdContainer.npcList.clear();
-		}
-	}
+	// @Subscribe
+	// public void onGameStateChanged(GameStateChanged event) {
+	// 	if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
+	// 	{
+	// 		nameAndIdContainer.npcSpawns.clear();
+	// 		nameAndIdContainer.npcList.clear();
+	// 	}
+	// }
 
-	@Subscribe
-	public void onMenuEntryAdded(MenuEntryAdded event) {
-		menuManager.craftMenu(event);
-	}
+	// @Subscribe
+	// public void onMenuEntryAdded(MenuEntryAdded event) {
+	// 	menuManager.craftMenu(event);
+	// }
 
-	@Subscribe(priority = -1)
-	public void onNpcSpawned(NpcSpawned event) {
-		NPC npc = event.getNpc();
+	// @Subscribe(priority = -1)
+	// public void onNpcSpawned(NpcSpawned event) {
+	// 	NPC npc = event.getNpc();
 
-		for (NpcSpawn n : nameAndIdContainer.npcSpawns)
-		{
-			if (npc.getIndex() == n.index && npc.getId() == n.id)
-			{
-				if (n.spawnPoint == null && n.diedOnTick != -1)
-				{
-					WorldPoint wp = client.isInInstancedRegion() ? WorldPoint.fromLocalInstance(client, npc.getLocalLocation())
-							: WorldPoint.fromLocal(client, npc.getLocalLocation());
-					if (n.spawnLocations.contains(wp))
-					{
-						n.spawnPoint = wp;
-						n.respawnTime = client.getTickCount() - n.diedOnTick + 1;
-					}
-					else
-					{
-						n.spawnLocations.add(wp);
-					}
-				}
-				n.dead = false;
-				break;
-			}
-		}
+	// 	for (NpcSpawn n : nameAndIdContainer.npcSpawns)
+	// 	{
+	// 		if (npc.getIndex() == n.index && npc.getId() == n.id)
+	// 		{
+	// 			if (n.spawnPoint == null && n.diedOnTick != -1)
+	// 			{
+	// 				WorldPoint wp = client.isInInstancedRegion() ? WorldPoint.fromLocalInstance(client, npc.getLocalLocation())
+	// 						: WorldPoint.fromLocal(client, npc.getLocalLocation());
+	// 				if (n.spawnLocations.contains(wp))
+	// 				{
+	// 					n.spawnPoint = wp;
+	// 					n.respawnTime = client.getTickCount() - n.diedOnTick + 1;
+	// 				}
+	// 				else
+	// 				{
+	// 					n.spawnLocations.add(wp);
+	// 				}
+	// 			}
+	// 			n.dead = false;
+	// 			break;
+	// 		}
+	// 	}
 
-		NPCInfo npcInfo = checkValidNPC(npc);
-		if (npcInfo != null)
-		{
-			nameAndIdContainer.npcList.add(npcInfo);
-		}
-	}
+	// 	NPCInfo npcInfo = checkValidNPC(npc);
+	// 	if (npcInfo != null)
+	// 	{
+	// 		nameAndIdContainer.npcList.add(npcInfo);
+	// 	}
+	// }
 
-	@Subscribe
-	public void onNpcDespawned(NpcDespawned event) {
-		NPC npc = event.getNpc();
+	// @Subscribe
+	// public void onNpcDespawned(NpcDespawned event) {
+	// 	NPC npc = event.getNpc();
 
-		if (npc.isDead())
-		{
-			if (nameAndIdContainer.npcList.stream().anyMatch(n -> n.getNpc() == npc)
-					&& nameAndIdContainer.npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex()))
-			{
-				nameAndIdContainer.npcSpawns.add(new NpcSpawn(npc));
-			}
-			else
-			{
-				for (NpcSpawn n : nameAndIdContainer.npcSpawns)
-				{
-					if (npc.getIndex() == n.index && npc.getId() == n.id)
-					{
-						n.diedOnTick = client.getTickCount();
-						n.dead = true;
-						break;
-					}
-				}
-			}
-		}
+	// 	if (npc.isDead())
+	// 	{
+	// 		if (nameAndIdContainer.npcList.stream().anyMatch(n -> n.getNpc() == npc)
+	// 				&& nameAndIdContainer.npcSpawns.stream().noneMatch(n -> n.index == npc.getIndex()))
+	// 		{
+	// 			nameAndIdContainer.npcSpawns.add(new NpcSpawn(npc));
+	// 		}
+	// 		else
+	// 		{
+	// 			for (NpcSpawn n : nameAndIdContainer.npcSpawns)
+	// 			{
+	// 				if (npc.getIndex() == n.index && npc.getId() == n.id)
+	// 				{
+	// 					n.diedOnTick = client.getTickCount();
+	// 					n.dead = true;
+	// 					break;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
 
-		nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
-	}
+	// 	nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+	// }
 
-	@Subscribe(priority = -1)
-	public void onNpcChanged(NpcChanged event) {
-		NPC npc = event.getNpc();
+	// @Subscribe(priority = -1)
+	// public void onNpcChanged(NpcChanged event) {
+	// 	NPC npc = event.getNpc();
 
-		nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+	// 	nameAndIdContainer.npcList.removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
 
-		NPCInfo npcInfo = checkValidNPC(npc);
-		if (npcInfo != null)
-		{
-			nameAndIdContainer.npcList.add(npcInfo);
-		}
-	}
+	// 	NPCInfo npcInfo = checkValidNPC(npc);
+	// 	if (npcInfo != null)
+	// 	{
+	// 		nameAndIdContainer.npcList.add(npcInfo);
+	// 	}
+	// }
 
-	@Subscribe(priority = -1)
-	public void onGameTick(GameTick event) {
-		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask()))
-		{
-			configTransformManager.recreateNPCInfoList();
-		}
+	// @Subscribe(priority = -1)
+	// public void onGameTick(GameTick event) {
+	// 	if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.currentTask.equals(slayerPluginService.getTask()))
+	// 	{
+	// 		configTransformManager.recreateNPCInfoList();
+	// 	}
 
-		lastTickUpdate = Instant.now();
-	}
+	// 	lastTickUpdate = Instant.now();
+	// }
 
-	public NPCInfo checkValidNPC(NPC npc) {
-		NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration, nameAndIdContainer, configTransformManager);
-		if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight() || n.getSwTrueTile().isHighlight()
-				|| n.getHull().isHighlight() || n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
-				|| n.isTask())
-		{
-			return n;
-		}
-		return null;
-	}
+	// public NPCInfo checkValidNPC(NPC npc) {
+	// 	NPCInfo n = new NPCInfo(npc, this, slayerPluginService, config, slayerPluginIntegration, nameAndIdContainer, configTransformManager);
+	// 	if (n.getTile().isHighlight() || n.getTrueTile().isHighlight() || n.getSwTile().isHighlight() || n.getSwTrueTile().isHighlight()
+	// 			|| n.getHull().isHighlight() || n.getArea().isHighlight() || n.getOutline().isHighlight() || n.getClickbox().isHighlight()
+	// 			|| n.isTask())
+	// 	{
+	// 		return n;
+	// 	}
+	// 	return null;
+	// }
 
-	@VisibleForTesting
-	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
-		if (renderable instanceof NPC)
-		{
-			NPC npc = (NPC) renderable;
+	// @VisibleForTesting
+	// boolean shouldDraw(Renderable renderable, boolean drawingUI) {
+	// 	if (renderable instanceof NPC)
+	// 	{
+	// 		NPC npc = (NPC) renderable;
 
-			if (config.entityHiderToggle())
-			{
-				return !nameAndIdContainer.hiddenIds.contains(String.valueOf(npc.getId()))
-						&& (npc.getName() != null && !nameAndIdContainer.hiddenNames.contains(npc.getName().toLowerCase()));
-			}
-		}
-		return true;
-	}
+	// 		if (config.entityHiderToggle())
+	// 		{
+	// 			return !nameAndIdContainer.hiddenIds.contains(String.valueOf(npc.getId()))
+	// 					&& (npc.getName() != null && !nameAndIdContainer.hiddenNames.contains(npc.getName().toLowerCase()));
+	// 		}
+	// 	}
+	// 	return true;
+	// }
 
-	private void migrateOldConfig(ConfigManager configManager) {
-		// migrate old tag style mode config into the new set version of config if
-		// possible
-		try
-		{
-			String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
-			String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
-			if (oldValue != null && newValue == null)
-			{
-				log.debug("BNPC: Migrating old tag style mode config to new set version");
+	// private void migrateOldConfig(ConfigManager configManager) {
+	// 	// migrate old tag style mode config into the new set version of config if
+	// 	// possible
+	// 	try
+	// 	{
+	// 		String oldValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleMode");
+	// 		String newValue = configManager.getConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet");
+	// 		if (oldValue != null && newValue == null)
+	// 		{
+	// 			log.debug("BNPC: Migrating old tag style mode config to new set version");
 
-				// Parse the old enum string value
-				BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
+	// 			// Parse the old enum string value
+	// 			BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
 
-				// Convert to Set format
-				Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
+	// 			// Convert to Set format
+	// 			Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
 
-				// Save the properly serialized Set to the new config
-				configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
-			}
-		}
-		catch (Exception e)
-		{
-			// Could not migrate, ignore
-			log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
-		}
-	}
+	// 			// Save the properly serialized Set to the new config
+	// 			configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);
+	// 		}
+	// 	}
+	// 	catch (Exception e)
+	// 	{
+	// 		// Could not migrate, ignore
+	// 		log.debug("BNPC: Could not migrate old tag style mode config to new set version", e);
+	// 	}
+	// }
 }
