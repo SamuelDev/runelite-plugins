@@ -6,7 +6,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface TrueTileConfig extends Config {
-  String trueTileSectionName = "trueTile";
+  String trueTileSectionName = "True Tile";
 
   //------------------------------------------------------------//
   // True Tile Section

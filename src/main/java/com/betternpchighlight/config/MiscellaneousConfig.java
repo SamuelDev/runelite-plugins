@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.runelite.client.config.*;
 
 public interface MiscellaneousConfig {
-  String miscellaneousSectionName = "miscellaneous";
+  String miscellaneousSectionName = "Miscellaneous";
 
   //------------------------------------------------------------//
   // Miscellaneous Section

@@ -3,7 +3,7 @@ package com.betternpchighlight.config;
 import net.runelite.client.config.*;
 
 public interface EntityHiderConfig extends Config {
-	String entityHiderSectionName = "entityHider";
+	String entityHiderSectionName = "Entity Hider";
 
   //------------------------------------------------------------//
 	// Entity Hider Section

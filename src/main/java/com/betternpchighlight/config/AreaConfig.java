@@ -5,7 +5,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface AreaConfig {
-  String areaSectionName = "area";
+  String areaSectionName = "Area";
   
   //------------------------------------------------------------//
   // Area Section

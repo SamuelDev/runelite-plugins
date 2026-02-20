@@ -43,9 +43,8 @@ import com.betternpchighlight.config.TileConfig;
 import com.betternpchighlight.config.TrueTileConfig;
 
 @ConfigGroup(BetterNpcHighlightConfig.CONFIG_GROUP)
-public interface BetterNpcHighlightConfig
-		extends GlobalConfig, TileConfig, TrueTileConfig, SouthwestTileConfig, SouthwestTrueTileConfig, HullConfig, AreaConfig, OutlineConfig, ClickboxConfig, 
-		SlayerConfig, EntityHiderConfig, PresetsConfig, MiscellaneousConfig {
+public interface BetterNpcHighlightConfig extends GlobalConfig, TileConfig, TrueTileConfig, SouthwestTileConfig, SouthwestTrueTileConfig,
+		HullConfig, AreaConfig, OutlineConfig, ClickboxConfig, SlayerConfig, EntityHiderConfig, PresetsConfig, MiscellaneousConfig {
 	String CONFIG_GROUP = "BetterNpcHighlight";
 
 	@Deprecated
@@ -54,43 +53,43 @@ public interface BetterNpcHighlightConfig
 		return null;
 	}
 
-	@ConfigSection(name = "Global Settings", description = "Settings that apply across multiple highlight types", position = 0, closedByDefault = false)
+	@ConfigSection(name = globalTagSectionGroupName, description = "Settings that apply across multiple highlight types", position = 0, closedByDefault = false)
 	String globalTagSection = globalTagSectionGroupName;
 
-	@ConfigSection(name = "Tile", description = "Tile Plugins", position = 1, closedByDefault = true)
+	@ConfigSection(name = tileSectionName, description = "Tile Plugins", position = 1, closedByDefault = true)
 	String tileSection = tileSectionName;
 
-	@ConfigSection(name = "True Tile", description = "True Tile Plugins", position = 2, closedByDefault = true)
+	@ConfigSection(name = trueTileSectionName, description = "True Tile Plugins", position = 2, closedByDefault = true)
 	String trueTileSection = trueTileSectionName;
 
-	@ConfigSection(name = "South West Tile", description = "South West Tile Plugins", position = 3, closedByDefault = true)
+	@ConfigSection(name = swTileSectionName, description = "South West Tile Plugins", position = 3, closedByDefault = true)
 	String swTileSection = swTileSectionName;
 
-	@ConfigSection(name = "South West True Tile", description = "South West True Tile Plugins", position = 4, closedByDefault = true)
+	@ConfigSection(name = swTrueTileSectionName, description = "South West True Tile Plugins", position = 4, closedByDefault = true)
 	String swTrueTileSection = swTrueTileSectionName;
 
-	@ConfigSection(name = "Hull", description = "Hull Plugins", position = 5, closedByDefault = true)
+	@ConfigSection(name = hullSectionName, description = "Hull Plugins", position = 5, closedByDefault = true)
 	String hullSection = hullSectionName;
 
-	@ConfigSection(name = "Area", description = "Area Plugins", position = 6, closedByDefault = true)
+	@ConfigSection(name = areaSectionName, description = "Area Plugins", position = 6, closedByDefault = true)
 	String areaSection = areaSectionName;
 
-	@ConfigSection(name = "Outline", description = "Outline Plugins", position = 7, closedByDefault = true)
+	@ConfigSection(name = outlineSectionName, description = "Outline Plugins", position = 7, closedByDefault = true)
 	String outlineSection = outlineSectionName;
 
-	@ConfigSection(name = "Clickbox", description = "Clickbox Plugins", position = 8, closedByDefault = true)
+	@ConfigSection(name = clickboxSectionName, description = "Clickbox Plugins", position = 8, closedByDefault = true)
 	String clickboxSection = clickboxSectionName;
 
-	@ConfigSection(name = "Slayer", description = "Slayer Plugins", position = 10, closedByDefault = true)
+	@ConfigSection(name = slayerSectionName, description = "Slayer Plugins", position = 10, closedByDefault = true)
 	String slayerSection = slayerSectionName;
 
-	@ConfigSection(name = "Entity Hider", description = "Entity Hider Plugins", position = 11, closedByDefault = true)
+	@ConfigSection(name = entityHiderSectionName, description = "Entity Hider Plugins", position = 11, closedByDefault = true)
 	String entityHiderSection = entityHiderSectionName;
 
-	@ConfigSection(name = "Presets", description = "Presets Plugins", position = 12, closedByDefault = true)
+	@ConfigSection(name = presetsSectionName, description = "Presets Plugins", position = 12, closedByDefault = true)
 	String presetsSection = presetsSectionName;
 
-	@ConfigSection(name = "Miscellaneous", description = "Miscellaneous Settings", position = 13, closedByDefault = true)
+	@ConfigSection(name = miscellaneousSectionName, description = "Miscellaneous Settings", position = 13, closedByDefault = true)
 	String miscellaneousSection = miscellaneousSectionName;
 
 	//------------------------------------------------------------//
@@ -107,6 +106,23 @@ public interface BetterNpcHighlightConfig
 		@Override
 		public String toString() {
 			return group;
+		}
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	enum highlightType {
+		GLOBAL(globalTagSectionGroupName), TILE(tileSectionName), TRUE_TILE(trueTileSectionName), SOUTH_WEST_TILE(swTileSectionName),
+		SOUTH_WEST_TRUE_TILE(swTrueTileSectionName), HULL(hullSectionName), AREA(areaSectionName), OUTLINE(outlineSectionName),
+		CLICKBOX(clickboxSectionName),;
+		// SLAYER(slayerSectionName), ENTITY_HIDER(entityHiderSectionName), PRESETS(presetsSectionName), MISCELLANEOUS(miscellaneousSectionName);
+
+		@Getter
+		private final String type;
+
+		@Override
+		public String toString() {
+			return type;
 		}
 	}
 }

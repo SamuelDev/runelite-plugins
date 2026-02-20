@@ -9,7 +9,7 @@ import java.awt.Color;
 
 public interface GlobalConfig extends Config {
   
-  String globalTagSectionGroupName = "globalTagStyle";
+  String globalTagSectionGroupName = "Global Tag Style";
   //------------------------------------------------------------//
   // Global tag style section
   //------------------------------------------------------------//

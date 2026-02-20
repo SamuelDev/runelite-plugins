@@ -9,7 +9,7 @@ import com.betternpchighlight.config.GlobalConfig.tagStyleMode;
 import net.runelite.client.config.*;
 
 public interface SlayerConfig extends Config {
-	String slayerSectionName = "slayer";
+	String slayerSectionName = "Slayer";
 
   //------------------------------------------------------------//
 	// Slayer Section

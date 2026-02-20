@@ -5,7 +5,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface ClickboxConfig extends Config {
-	String clickboxSectionName = "clickbox";
+	String clickboxSectionName = "Clickbox";
 
     //------------------------------------------------------------//
     // Clickbox Section

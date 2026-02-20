@@ -6,7 +6,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface SouthwestTrueTileConfig extends Config {
-	String swTrueTileSectionName = "swTrueTile";
+	String swTrueTileSectionName = "Southwest True Tile";
 
     //------------------------------------------------------------//
     // SW True Tile Section

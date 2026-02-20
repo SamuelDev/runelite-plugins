@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.runelite.client.config.*;
 
 public interface PresetsConfig extends Config {
-	String presetsSectionName = "presets";
+	String presetsSectionName = "Presets";
 
   //------------------------------------------------------------//
 	// Presets Section

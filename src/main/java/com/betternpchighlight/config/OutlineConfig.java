@@ -5,7 +5,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface OutlineConfig extends Config {
-	String outlineSectionName = "outline";
+	String outlineSectionName = "Outline";
 
   //------------------------------------------------------------//
 	// Outline Section

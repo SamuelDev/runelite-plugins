@@ -5,7 +5,7 @@ import java.awt.Color;
 import net.runelite.client.config.*;
 
 public interface HullConfig extends Config {
-  String hullSectionName = "hull";
+  String hullSectionName = "Hull";
 
   //------------------------------------------------------------//
   // Hull Section
