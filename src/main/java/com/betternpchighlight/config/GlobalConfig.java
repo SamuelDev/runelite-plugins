@@ -15,24 +15,24 @@ public interface GlobalConfig extends Config {
   //------------------------------------------------------------//
   public static final Set<tagStyleMode> defaultTagStyle = Set.of(tagStyleMode.TILE);
 
-  @ConfigItem(position = 0, keyName = "tagStyleModeSet", name = "Tag Style", description = "Sets which highlight styles to apply to an NPC when tagged from the right click menu. Select none to hide the right click menu option.", section = "globalTagStyle")
+  @ConfigItem(position = 0, keyName = "tagStyleModeSet", name = "Tag Style", description = "Sets which highlight styles to apply to an NPC when tagged from the right click menu. Select none to hide the right click menu option.", section = globalTagSectionGroupName)
   default Set<tagStyleMode> tagStyleModeSet() {
     return defaultTagStyle;
   }
 
-  @ConfigItem(position = 1, keyName = "useGlobalTileColor", name = "Use Global Tile Color", description = "Forces tile, true tile, SW tile, and SW true tile to use the same colors. Will not override highlights using a preset.", section = "globalTagStyle")
+  @ConfigItem(position = 1, keyName = "useGlobalTileColor", name = "Use Global Tile Color", description = "Forces tile, true tile, SW tile, and SW true tile to use the same colors. Will not override highlights using a preset.", section = globalTagSectionGroupName)
   default boolean useGlobalTileColor() {
     return false;
   }
 
   @Alpha
-  @ConfigItem(position = 2, keyName = "globalTileColor", name = "Global Tile Color", description = "Overrides all other tag style outlines.", section = "globalTagStyle")
+  @ConfigItem(position = 2, keyName = "globalTileColor", name = "Global Tile Color", description = "Overrides all other tag style outlines.", section = globalTagSectionGroupName)
   default Color globalTileColor() {
     return Color.CYAN;
   }
 
   @Alpha
-  @ConfigItem(position = 3, keyName = "globalFillColor", name = "Global Fill Color", description = "Overrides all other tag style fill colors.", section = "globalTagStyle")
+  @ConfigItem(position = 3, keyName = "globalFillColor", name = "Global Fill Color", description = "Overrides all other tag style fill colors.", section = globalTagSectionGroupName)
   default Color globalFillColor() {
     return new Color(0, 255, 255, 20);
   }

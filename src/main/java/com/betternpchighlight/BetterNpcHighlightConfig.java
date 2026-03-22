@@ -47,6 +47,7 @@ public interface BetterNpcHighlightConfig extends GlobalConfig, TileConfig, True
 		HullConfig, AreaConfig, OutlineConfig, ClickboxConfig, SlayerConfig, EntityHiderConfig, PresetsConfig, MiscellaneousConfig {
 	String CONFIG_GROUP = "BetterNpcHighlight";
 
+	// Kept for migrating old configs to the new config, but no longer in use. Can probably be removed at some point in the future
 	@Deprecated
 	@ConfigItem(position = -1, keyName = "tagStyleMode", name = "Tag Style", description = "Sets which highlight style list the NPC tagged is added too", hidden = true)
 	default tagStyleMode tagStyleMode() {
@@ -56,37 +57,37 @@ public interface BetterNpcHighlightConfig extends GlobalConfig, TileConfig, True
 	@ConfigSection(name = globalTagSectionGroupName, description = "Settings that apply across multiple highlight types", position = 0, closedByDefault = false)
 	String globalTagSection = globalTagSectionGroupName;
 
-	@ConfigSection(name = tileSectionName, description = "Tile Plugins", position = 1, closedByDefault = true)
+	@ConfigSection(name = tileSectionName, description = "Tile Options", position = 1, closedByDefault = true)
 	String tileSection = tileSectionName;
 
-	@ConfigSection(name = trueTileSectionName, description = "True Tile Plugins", position = 2, closedByDefault = true)
+	@ConfigSection(name = trueTileSectionName, description = "True Tile Options", position = 2, closedByDefault = true)
 	String trueTileSection = trueTileSectionName;
 
-	@ConfigSection(name = swTileSectionName, description = "South West Tile Plugins", position = 3, closedByDefault = true)
+	@ConfigSection(name = swTileSectionName, description = "South West Tile Options", position = 3, closedByDefault = true)
 	String swTileSection = swTileSectionName;
 
-	@ConfigSection(name = swTrueTileSectionName, description = "South West True Tile Plugins", position = 4, closedByDefault = true)
+	@ConfigSection(name = swTrueTileSectionName, description = "South West True Tile Options", position = 4, closedByDefault = true)
 	String swTrueTileSection = swTrueTileSectionName;
 
-	@ConfigSection(name = hullSectionName, description = "Hull Plugins", position = 5, closedByDefault = true)
+	@ConfigSection(name = hullSectionName, description = "Hull Options", position = 5, closedByDefault = true)
 	String hullSection = hullSectionName;
 
-	@ConfigSection(name = areaSectionName, description = "Area Plugins", position = 6, closedByDefault = true)
+	@ConfigSection(name = areaSectionName, description = "Area Options", position = 6, closedByDefault = true)
 	String areaSection = areaSectionName;
 
-	@ConfigSection(name = outlineSectionName, description = "Outline Plugins", position = 7, closedByDefault = true)
+	@ConfigSection(name = outlineSectionName, description = "Outline Options", position = 7, closedByDefault = true)
 	String outlineSection = outlineSectionName;
 
-	@ConfigSection(name = clickboxSectionName, description = "Clickbox Plugins", position = 8, closedByDefault = true)
+	@ConfigSection(name = clickboxSectionName, description = "Clickbox Options", position = 8, closedByDefault = true)
 	String clickboxSection = clickboxSectionName;
 
-	@ConfigSection(name = slayerSectionName, description = "Slayer Plugins", position = 10, closedByDefault = true)
+	@ConfigSection(name = slayerSectionName, description = "Slayer Options", position = 10, closedByDefault = true)
 	String slayerSection = slayerSectionName;
 
-	@ConfigSection(name = entityHiderSectionName, description = "Entity Hider Plugins", position = 11, closedByDefault = true)
+	@ConfigSection(name = entityHiderSectionName, description = "Entity Hider Options", position = 11, closedByDefault = true)
 	String entityHiderSection = entityHiderSectionName;
 
-	@ConfigSection(name = presetsSectionName, description = "Presets Plugins", position = 12, closedByDefault = true)
+	@ConfigSection(name = presetsSectionName, description = "Presets Options", position = 12, closedByDefault = true)
 	String presetsSection = presetsSectionName;
 
 	@ConfigSection(name = miscellaneousSectionName, description = "Miscellaneous Settings", position = 13, closedByDefault = true)

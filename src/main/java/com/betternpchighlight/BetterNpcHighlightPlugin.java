@@ -119,7 +119,7 @@ public class BetterNpcHighlightPlugin extends Plugin {
 		final String npcName = npc.getName();
 		final int npcId = npc.getId();
 
-		if (npcName == null)
+		if (npcName == null || npcId == 0)
 		{
 			return;
 		}
