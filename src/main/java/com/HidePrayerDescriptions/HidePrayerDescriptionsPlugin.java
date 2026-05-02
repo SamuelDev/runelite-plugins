@@ -50,7 +50,7 @@ public class HidePrayerDescriptionsPlugin extends Plugin
 	@Subscribe
 	public void onScriptPostFired(ScriptPostFired e)
 	{
-		if (e.getScriptId() == 2701)
+		if (e.getScriptId() == 526)
 		{
 			Widget tooltip = client.getWidget(InterfaceID.Prayerbook.TOOLTIP);
 			if (tooltip == null || tooltip.isHidden())
