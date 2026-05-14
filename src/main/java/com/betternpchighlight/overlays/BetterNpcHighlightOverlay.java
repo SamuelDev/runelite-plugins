@@ -194,12 +194,40 @@ public class BetterNpcHighlightOverlay extends Overlay
 						}
 					}
 				}
-				closestNPCs
-					.stream()
-					.sorted(Comparator.comparingInt(n -> n.getNpc().getLocalLocation().distanceTo(lp)))
-					.limit(config.drawBeneathLimit())
-					.collect(Collectors.toList())
-					.forEach(nInfo -> removeActor(graphics, nInfo.getNpc()));
+
+				if (config.drawBeneathPerformanceMode())
+				{
+					// Performance mode: erase each NPC's convex hull (already computed by
+					// RuneLite during scene rendering, so free to access) with a single fill
+					// per NPC. Slightly less precise than per-triangle projection but much
+					// cheaper with many NPCs on screen.
+					Composite orig = graphics.getComposite();
+					graphics.setComposite(AlphaComposite.Clear);
+					closestNPCs
+						.stream()
+						.sorted(Comparator.comparingInt(n -> n.getNpc().getLocalLocation().distanceTo(lp)))
+						.limit(config.drawBeneathLimit())
+						.forEach(nInfo ->
+						{
+							Shape hull = nInfo.getNpc().getConvexHull();
+							if (hull != null)
+							{
+								graphics.fill(hull);
+							}
+						});
+					graphics.setComposite(orig);
+				}
+				else
+				{
+					// Default: project every model triangle to screen space and erase
+					// them individually for a pixel-accurate result.
+					closestNPCs
+						.stream()
+						.sorted(Comparator.comparingInt(n -> n.getNpc().getLocalLocation().distanceTo(lp)))
+						.limit(config.drawBeneathLimit())
+						.collect(Collectors.toList())
+						.forEach(nInfo -> removeActor(graphics, nInfo.getNpc()));
+				}
 			}
 		}
 
