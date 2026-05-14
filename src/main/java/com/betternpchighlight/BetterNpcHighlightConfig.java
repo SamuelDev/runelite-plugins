@@ -1704,7 +1704,7 @@ public interface BetterNpcHighlightConfig extends Config
 		return false;
 	}
 
-	@Range(max = 20)
+	@Range(max = 30)
 	@ConfigItem(
 		position = 6,
 		keyName = "drawBeneathLimit",
@@ -1731,6 +1731,18 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@ConfigItem(
 		position = 8,
+		keyName = "drawBeneathPerformanceMode",
+		name = "Draw Beneath Performance Mode",
+		description = "Uses the convex hull instead of per-triangle projection to erase NPC models. <br>Much faster with many NPCs, at the cost of slight visual accuracy",
+		section = miscellaneousSection
+	)
+	default boolean drawBeneathPerformanceMode()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+		position = 9,
 		keyName = "renderDistance",
 		name = "Render Distance",
 		description = "Limits overlays to be drawn to within the chosen distance from the local player. <br>Short = 7 tiles, Medium = 11 tiles",
@@ -1742,7 +1754,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 9,
+		position = 10,
 		keyName = "highlightPets",
 		name = "Highlight pets",
 		description = "Highlights followers/pets that are in any of your lists",
@@ -1754,7 +1766,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 10,
+		position = 11,
 		keyName = "deadNpcMenuColor",
 		name = "Dead NPC Menu Color",
 		description = "Highlights names in right click menu entry when an NPC is dead",
@@ -1763,7 +1775,7 @@ public interface BetterNpcHighlightConfig extends Config
 	Color deadNpcMenuColor();
 
 	@ConfigItem(
-		position = 11,
+		position = 12,
 		keyName = "respawnTimer",
 		name = "Respawn Timer",
 		description = "Marks tile and shows timer for when a marker NPC will respawn",
@@ -1776,7 +1788,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 12,
+		position = 13,
 		keyName = "respawnTimerColor",
 		name = "Respawn Time Color",
 		description = "Sets the color of the text for Respawn Timer",
@@ -1789,7 +1801,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 13,
+		position = 14,
 		keyName = "respawnOutlineColor",
 		name = "Respawn Outline Color",
 		description = "Sets the color of the tile for Respawn Timer",
@@ -1802,7 +1814,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Alpha
 	@ConfigItem(
-		position = 14,
+		position = 15,
 		keyName = "respawnFillColor",
 		name = "Respawn Fill Color",
 		description = "Sets the fill color of the tile for Respawn Timer",
@@ -1815,7 +1827,7 @@ public interface BetterNpcHighlightConfig extends Config
 
 	@Range(min = 1, max = 10)
 	@ConfigItem(
-		position = 15,
+		position = 16,
 		keyName = "respawnTileWidth",
 		name = "Respawn Tile Width",
 		description = "Sets the width of the tile for Respawn Timer",
@@ -1827,7 +1839,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 16,
+		position = 17,
 		keyName = "displayName",
 		name = "Display Name",
 		description = "Shows name of NPCs in the list above them",
@@ -1839,7 +1851,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 17,
+		position = 18,
 		keyName = "fontBackground",
 		name = "Font Background",
 		description = "Puts an outline, shadow, or nothing behind font overlays",
@@ -1851,7 +1863,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 18,
+		position = 19,
 		keyName = "npcMinimapMode",
 		name = "Highlight Minimap",
 		description = "Highlights NPC on minimap and/or displays name",
@@ -1863,7 +1875,7 @@ public interface BetterNpcHighlightConfig extends Config
 	}
 
 	@ConfigItem(
-		position = 19,
+		position = 20,
 		keyName = "debugNPC",
 		name = "Debug NPC Info",
 		description = "Highlights all NPCs with their Name and ID",
