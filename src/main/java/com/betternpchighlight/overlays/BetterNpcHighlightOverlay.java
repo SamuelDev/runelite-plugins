@@ -96,7 +96,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 
 				if (showNPC && withinDistanceLimit(npc))
 				{
-					if (config.slayerHighlight() && npcInfo.isTask())
+					if (colorManager.shouldUseSlayerHighlight(npcInfo))
 					{
 						for (tagStyleMode mode : tagStyleMode.values())
 						{
@@ -344,7 +344,7 @@ public class BetterNpcHighlightOverlay extends Overlay
 			int lineAlpha;
 			int fillAlpha;
 			boolean antialias;
-			boolean isTask = npcInfo.isTask() && config.slayerHighlight();
+			boolean isTask = colorManager.shouldUseSlayerHighlight(npcInfo);
 
 			switch (highlight)
 			{

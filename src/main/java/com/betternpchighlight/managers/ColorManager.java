@@ -28,7 +28,7 @@ public class ColorManager {
 	 * @return Color
 	 */
 	public Color getSpecificColor(NPCInfo n) {
-		if (n.isTask() && config.slayerHighlight())
+		if (shouldUseSlayerHighlight(n))
 		{
 			return config.taskColor();
 		}
@@ -160,5 +160,28 @@ public class ColorManager {
 		{
 			return Color.getHSBColor(new Random().nextFloat(), 1.0F, 1.0F);
 		}
+	}
+
+	/**
+	 * Whether the NPC has a custom (non-slayer) highlight configured.
+	 */
+	public boolean hasCustomHighlight(NPCInfo n) {
+		return (n.getTile().isHighlight() && config.tileHighlight())
+				|| (n.getTrueTile().isHighlight() && config.trueTileHighlight())
+				|| (n.getSwTile().isHighlight() && config.swTileHighlight())
+				|| (n.getSwTrueTile().isHighlight() && config.swTrueTileHighlight())
+				|| (n.getHull().isHighlight() && config.hullHighlight())
+				|| (n.getArea().isHighlight() && config.areaHighlight())
+				|| (n.getOutline().isHighlight() && config.outlineHighlight())
+				|| (n.getClickbox().isHighlight() && config.clickboxHighlight());
+	}
+
+	/**
+	 * Whether the slayer task highlight should be used for this NPC. The slayer
+	 * highlight is used when the NPC is a slayer task and either deprioritization
+	 * is disabled or the NPC has no custom highlight set.
+	 */
+	public boolean shouldUseSlayerHighlight(NPCInfo n) {
+		return n.isTask() && config.slayerHighlight() && (!config.slayerDeprioritizeHighlight() || !hasCustomHighlight(n));
 	}
 }
