@@ -27,7 +27,6 @@ package com.betternpchighlight;
 import com.betternpchighlight.config.migrators.ConfigMigrator;
 import com.betternpchighlight.data.NPCInfo;
 import com.betternpchighlight.data.NameAndIdContainer;
-import com.betternpchighlight.managers.ChatCommandManager;
 import com.betternpchighlight.managers.ConfigTransformManager;
 import com.betternpchighlight.managers.MenuManager;
 import com.betternpchighlight.managers.RespawnManager;
@@ -97,9 +96,6 @@ public class BetterNpcHighlightPlugin extends Plugin {
 	private NameAndIdContainer nameAndIdContainer;
 
 	@Inject
-	private ChatCommandManager chatCommandManager;
-
-	@Inject
 	private RespawnManager respawnManager;
 
 	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
@@ -119,7 +115,6 @@ public class BetterNpcHighlightPlugin extends Plugin {
 			configTransformManager.reloadLists();
 
 			hooks.registerRenderableDrawListener(drawListener);
-			chatCommandManager.registerKeyListener();
 			slayerPluginIntegration.enableSlayerPlugin();
 
 			if (client.getGameState() == GameState.LOGGED_IN)
@@ -134,7 +129,6 @@ public class BetterNpcHighlightPlugin extends Plugin {
 		overlayManager.remove(overlay);
 		overlayManager.remove(mapOverlay);
 		hooks.unregisterRenderableDrawListener(drawListener);
-		chatCommandManager.unregisterKeyListener();
 	}
 
 	private void reset() {

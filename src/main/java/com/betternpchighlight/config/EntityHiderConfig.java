@@ -13,12 +13,7 @@ public interface EntityHiderConfig extends Config {
 		return false;
 	}
 
-	@ConfigItem(position = 2, keyName = "entityHiderCommands", name = "Entity Hider Commands", description = "Enables the use of commands to add/remove NPCs to the Names/IDs list <br>Read the guide in Instructions section", section = entityHiderSectionName)
-	default boolean entityHiderCommands() {
-		return true;
-	}
-
-	@ConfigItem(position = 3, keyName = "entityHiderNames", name = "Entity Hider Names", description = "NPCs by Name to hide", section = entityHiderSectionName)
+	@ConfigItem(position = 2, keyName = "entityHiderNames", name = "Entity Hider Names", description = "NPCs by Name to hide", section = entityHiderSectionName)
 	default String entityHiderNames() {
 		return "";
 	}
@@ -26,7 +21,7 @@ public interface EntityHiderConfig extends Config {
 	@ConfigItem(keyName = "entityHiderNames", name = "", description = "")
 	void setEntityHiderNames(String names);
 
-	@ConfigItem(position = 4, keyName = "entityHiderIds", name = "Entity Hider IDs", description = "NPCs by ID to hide", section = entityHiderSectionName)
+	@ConfigItem(position = 3, keyName = "entityHiderIds", name = "Entity Hider IDs", description = "NPCs by ID to hide", section = entityHiderSectionName)
 	default String entityHiderIds() {
 		return "";
 	}
