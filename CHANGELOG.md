@@ -22,14 +22,18 @@
   `RespawnManager`). The spawn tile is learned from the first observed spawn (including the tile "behind" an
   NPC that moves on its spawn tick), so the timer no longer requires multiple kills to appear or draws off by
   a tile.
-- **Fix**: marked `RespawnManager` as `@Singleton` — previously the overlay read state from a different,
-  empty instance than the one being mutated, so the timer never rendered.
+  - https://github.com/riktenx/better-npc-highlight/issues/1
+  - https://github.com/SamuelDev/runelite-plugins/issues/22
 - **Refactor**: restructured `MenuManager` into a layered, single-responsibility set of methods (entry point,
   NPC-interaction coloring, examine/tag handling, color resolution, preset loading, and target-string
   building) with named constants and a precompiled target regex.
 - **Added**: `drawBeneathPerformanceMode` option (ported from the `better-npc-highlight` branch) that erases
   NPC models via their convex hull instead of per-triangle projection, and raised `drawBeneathLimit` max from
   20 to 30.
+  - Originally implemented by @Robbejj https://github.com/SamuelDev/runelite-plugins/pull/18
+- **Added**: `slayerDeprioritizeHighlight` option (ported from PR #7) that lets custom highlight colors/styles
+  override the slayer task highlight on task NPCs, rather than the slayer highlight always winning.
+  - Originally implemented by @Infinitay https://github.com/riktenx/better-npc-highlight/pull/7
 - **Removed**: rave mode — all `*Rave` / `*RaveSpeed` config options and associated color logic.
 - **Removed**: turbo mode as a highlight type.
 - **Removed**: chat commands (`!tag` / `!untag` / `!hide` / `!unhide`) — `ChatCommandManager` deleted, and the
