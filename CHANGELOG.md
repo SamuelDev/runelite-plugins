@@ -14,8 +14,7 @@
 - **Rewrite**: broke the `ConfigTransformManager -> Plugin` dependency cycle by moving NPC construction into
   `ConfigTransformManager.createNpcInfo(...)`.
 - **Rewrite**: fixed `ConfigMigrator` to reference the `tagStyleMode` enum in its new home (`GlobalConfig`).
-- **Rewrite**: dropped the in-panel `Instructions` config section (help text) — command abbreviations are now
-  documented in code rather than the config UI.
+- **Rewrite**: dropped the in-panel `Instructions` config section (help text)
 - **Fix**: NPC names containing commas now survive the comma-separated config round trip; `ConfigReaderService`
   escapes commas (`\,`) on write and treats an escaped comma as part of the entry (not a delimiter) on read.
 - **Fix**: reworked the respawn timer to mirror RuneLite's NPC Indicators implementation (`MemorizedNpc` +
