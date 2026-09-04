@@ -25,20 +25,19 @@
 package com.betternpchighlight;
 
 import com.betternpchighlight.config.migrators.ConfigMigrator;
-// import com.betternpchighlight.data.NPCInfo;
-// import com.betternpchighlight.data.NameAndIdContainer;
-// import com.betternpchighlight.data.NpcSpawn;
-// import com.betternpchighlight.managers.ChatCommandManager;
-// import com.betternpchighlight.managers.ConfigTransformManager;
-// import com.betternpchighlight.managers.MenuManager;
-// import com.betternpchighlight.managers.SlayerPluginManager;
-// import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
-// import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
+import com.betternpchighlight.data.NPCInfo;
+import com.betternpchighlight.data.NameAndIdContainer;
+import com.betternpchighlight.managers.ChatCommandManager;
+import com.betternpchighlight.managers.ConfigTransformManager;
+import com.betternpchighlight.managers.MenuManager;
+import com.betternpchighlight.managers.RespawnManager;
+import com.betternpchighlight.managers.SlayerPluginManager;
+import com.betternpchighlight.overlays.BetterNpcHighlightOverlay;
+import com.betternpchighlight.overlays.BetterNpcMinimapOverlay;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.callback.Hooks;
@@ -52,59 +51,58 @@ import net.runelite.client.plugins.slayer.SlayerPlugin;
 import net.runelite.client.plugins.slayer.SlayerPluginService;
 import net.runelite.client.ui.overlay.OverlayManager;
 import javax.inject.Inject;
-import java.time.Instant;
-import java.util.Set;
 
 @Slf4j
 @PluginDescriptor(name = "Better NPC Highlight", description = "A more customizable NPC highlight", tags = { "npc", "highlight",
 		"indicators", "respawn", "hide", "entity", "custom", "id", "name" })
 @PluginDependency(SlayerPlugin.class)
 public class BetterNpcHighlightPlugin extends Plugin {
-	// @Inject
-	// private Client client;
+	@Inject
+	private Client client;
 
-	// @Inject
-	// private OverlayManager overlayManager;
+	@Inject
+	private OverlayManager overlayManager;
 
-	// @Inject
-	// private BetterNpcHighlightOverlay overlay;
+	@Inject
+	private BetterNpcHighlightOverlay overlay;
 
-	// @Inject
-	// private BetterNpcHighlightConfig config;
+	@Inject
+	private BetterNpcHighlightConfig config;
 
-	// @Inject
-	// private BetterNpcMinimapOverlay mapOverlay;
+	@Inject
+	private BetterNpcMinimapOverlay mapOverlay;
 
-	// @Inject
-	// private ConfigManager configManager;
+	@Inject
+	private ConfigManager configManager;
 
-	// @Inject
-	// private Hooks hooks;
+	@Inject
+	private Hooks hooks;
 
-	// @Inject
-	// private SlayerPluginService slayerPluginService;
+	@Inject
+	private SlayerPluginService slayerPluginService;
 
-	// @Inject
-	// private ClientThread clientThread;
+	@Inject
+	private ClientThread clientThread;
 
-	// @Inject
-	// private SlayerPluginManager slayerPluginIntegration;
+	@Inject
+	private SlayerPluginManager slayerPluginIntegration;
 
-	// @Inject
-	// private MenuManager menuManager;
+	@Inject
+	private MenuManager menuManager;
 
-	// @Inject
-	// private ConfigTransformManager configTransformManager;
+	@Inject
+	private ConfigTransformManager configTransformManager;
 
-	// @Inject
-	// private NameAndIdContainer nameAndIdContainer;
+	@Inject
+	private NameAndIdContainer nameAndIdContainer;
 
-	// @Inject
-	// private ChatCommandManager chatCommandManager;
+	@Inject
+	private ChatCommandManager chatCommandManager;
 
-	// public Instant lastTickUpdate;
+	@Inject
+	private RespawnManager respawnManager;
 
-	// private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
+	private final Hooks.RenderableDrawListener drawListener = this::shouldDraw;
 
 	@Provides
 	BetterNpcHighlightConfig providesConfig(ConfigManager configManager) {
@@ -112,34 +110,127 @@ public class BetterNpcHighlightPlugin extends Plugin {
 		return configManager.getConfig(BetterNpcHighlightConfig.class);
 	}
 
-	// Every time the client receives an event to load an npc, check if the name or id should be highlighted, and for which types
-	@Subscribe
-	public void onNpcSpawned(NpcSpawned npcSpawned) {
-		final NPC npc = npcSpawned.getNpc();
-		final String npcName = npc.getName();
-		final int npcId = npc.getId();
+	protected void startUp() {
+		clientThread.invokeLater(() -> {
+			reset();
+			overlayManager.add(overlay);
+			overlayManager.add(mapOverlay);
 
-		if (npcName == null || npcId == 0)
+			configTransformManager.reloadLists();
+
+			hooks.registerRenderableDrawListener(drawListener);
+			chatCommandManager.registerKeyListener();
+			slayerPluginIntegration.enableSlayerPlugin();
+
+			if (client.getGameState() == GameState.LOGGED_IN)
+			{
+				configTransformManager.recreateNPCInfoList();
+			}
+		});
+	}
+
+	protected void shutDown() {
+		reset();
+		overlayManager.remove(overlay);
+		overlayManager.remove(mapOverlay);
+		hooks.unregisterRenderableDrawListener(drawListener);
+		chatCommandManager.unregisterKeyListener();
+	}
+
+	private void reset() {
+		nameAndIdContainer.getNpcList().clear();
+		nameAndIdContainer.setCurrentTask("");
+		nameAndIdContainer.clearAll();
+		nameAndIdContainer.setConfirmedWarning(false);
+		respawnManager.reset();
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event) {
+		if (event.getGroup().equals(BetterNpcHighlightConfig.CONFIG_GROUP))
 		{
-			return;
+			configTransformManager.updateConfig(event);
+		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event) {
+		if (event.getGameState() == GameState.LOGIN_SCREEN || event.getGameState() == GameState.HOPPING)
+		{
+			nameAndIdContainer.getNpcList().clear();
+			respawnManager.onGameStateChanged();
+		}
+	}
+
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded event) {
+		menuManager.onMenuEntryAdded(event);
+	}
+
+	@Subscribe(priority = -1)
+	public void onNpcSpawned(NpcSpawned event) {
+		NPC npc = event.getNpc();
+
+		NPCInfo npcInfo = configTransformManager.createNpcInfo(npc);
+		if (npcInfo != null)
+		{
+			nameAndIdContainer.getNpcList().add(npcInfo);
+
+			if (!client.isInInstancedRegion())
+			{
+				respawnManager.onNpcSpawned(npc);
+			}
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned event) {
+		NPC npc = event.getNpc();
+
+		respawnManager.onNpcDespawned(npc);
+		nameAndIdContainer.getNpcList().removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+	}
+
+	@Subscribe
+	public void onGraphicsObjectCreated(GraphicsObjectCreated event) {
+		respawnManager.onGraphicsObjectCreated(event);
+	}
+
+	@Subscribe(priority = -1)
+	public void onNpcChanged(NpcChanged event) {
+		NPC npc = event.getNpc();
+
+		nameAndIdContainer.getNpcList().removeIf(n -> n.getNpc().getIndex() == npc.getIndex());
+
+		NPCInfo npcInfo = configTransformManager.createNpcInfo(npc);
+		if (npcInfo != null)
+		{
+			nameAndIdContainer.getNpcList().add(npcInfo);
+		}
+	}
+
+	@Subscribe(priority = -1)
+	public void onGameTick(GameTick event) {
+		if (slayerPluginIntegration.checkSlayerPluginEnabled() && !nameAndIdContainer.getCurrentTask().equals(slayerPluginService.getTask()))
+		{
+			configTransformManager.recreateNPCInfoList();
 		}
 
-		// if (npcTags.contains(npc.getIndex()))
-		// {
-		// 	memorizeNpc(npc);
-		// 	highlightedNpcs.put(npc, highlightedNpc(npc));
-		// 	spawnedNpcsThisTick.add(npc);
-		// 	return;
-		// }
+		respawnManager.onGameTick();
+	}
 
-		// if (highlightMatchesNPCName(npcName))
-		// {
-		// 	highlightedNpcs.put(npc, highlightedNpc(npc));
-		// 	if (!client.isInInstancedRegion())
-		// 	{
-		// 		memorizeNpc(npc);
-		// 		spawnedNpcsThisTick.add(npc);
-		// 	}
-		// }
+	@VisibleForTesting
+	boolean shouldDraw(Renderable renderable, boolean drawingUI) {
+		if (renderable instanceof NPC)
+		{
+			NPC npc = (NPC) renderable;
+
+			if (config.entityHiderToggle())
+			{
+				return !nameAndIdContainer.getHiddenIds().contains(String.valueOf(npc.getId()))
+						&& (npc.getName() != null && !nameAndIdContainer.getHiddenNames().contains(npc.getName().toLowerCase()));
+			}
+		}
+		return true;
 	}
 }

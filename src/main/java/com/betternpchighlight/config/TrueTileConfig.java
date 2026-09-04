@@ -55,18 +55,7 @@ public interface TrueTileConfig extends Config {
     return true;
   }
 
-  @ConfigItem(position = 8, keyName = "trueTileRave", name = "Enable Rave Mode", description = "Sets all true tile overlays to Rave Mode", section = trueTileSectionName)
-  default boolean trueTileRave() {
-    return false;
-  }
-
-  @ConfigItem(position = 9, keyName = "trueTileRaveSpeed", name = "Rave Speed", description = "Sets the speed the overlays rave at", section = trueTileSectionName)
-  @Units(Units.MILLISECONDS)
-  default int trueTileRaveSpeed() {
-    return 6000;
-  }
-
-  @ConfigItem(position = 10, keyName = "trueTileLines", name = "True Tile Line Type", description = "Sets the true tile outline to regular, dashed, or corners only", section = trueTileSectionName)
+  @ConfigItem(position = 8, keyName = "trueTileLines", name = "True Tile Line Type", description = "Sets the true tile outline to regular, dashed, or corners only", section = trueTileSectionName)
   default lineType trueTileLines() {
     return lineType.REG;
   }

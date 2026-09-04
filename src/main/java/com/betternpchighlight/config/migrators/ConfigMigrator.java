@@ -3,6 +3,7 @@ package com.betternpchighlight.config.migrators;
 import java.util.Set;
 
 import com.betternpchighlight.BetterNpcHighlightConfig;
+import com.betternpchighlight.config.GlobalConfig.tagStyleMode;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.client.config.ConfigManager;
@@ -23,11 +24,11 @@ public final class ConfigMigrator {
   		{
   			log.debug("BNPC: Migrating old tag style mode config to new set version");
 
-  			// Parse the old enum string value
-  			BetterNpcHighlightConfig.tagStyleMode oldMode = BetterNpcHighlightConfig.tagStyleMode.valueOf(oldValue.toUpperCase());
+			// Parse the old enum string value
+			tagStyleMode oldMode = tagStyleMode.valueOf(oldValue.toUpperCase());
 
-  			// Convert to Set format
-  			Set<BetterNpcHighlightConfig.tagStyleMode> newModeSet = Set.of(oldMode);
+			// Convert to Set format
+			Set<tagStyleMode> newModeSet = Set.of(oldMode);
 
   			// Save the properly serialized Set to the new config
   			configManager.setConfiguration(BetterNpcHighlightConfig.CONFIG_GROUP, "tagStyleModeSet", newModeSet);

@@ -55,18 +55,7 @@ public interface TileConfig extends Config {
     return true;
   }
 
-  @ConfigItem(position = 8, keyName = "tileRave", name = "Enable Rave Mode", description = "Sets all tile overlays to Rave Mode", section = tileSectionName)
-  default boolean tileRave() {
-    return false;
-  }
-
-  @ConfigItem(position = 9, keyName = "tileRaveSpeed", name = "Rave Speed", description = "Sets the speed the overlays rave at", section = tileSectionName)
-  @Units(Units.MILLISECONDS)
-  default int tileRaveSpeed() {
-    return 6000;
-  }
-
-  @ConfigItem(position = 10, keyName = "tileLines", name = "Tile Line Type", description = "Sets the tile outline to regular, dashed, or corners only", section = tileSectionName)
+  @ConfigItem(position = 8, keyName = "tileLines", name = "Tile Line Type", description = "Sets the tile outline to regular, dashed, or corners only", section = tileSectionName)
   default lineType tileLines() {
     return lineType.REG;
   }

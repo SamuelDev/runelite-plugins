@@ -6,7 +6,7 @@ import net.runelite.client.config.*;
 
 public interface AreaConfig {
   String areaSectionName = "Area";
-  
+
   //------------------------------------------------------------//
   // Area Section
   //------------------------------------------------------------//
@@ -35,16 +35,5 @@ public interface AreaConfig {
   @ConfigItem(position = 4, keyName = "areaColor", name = "Highlight Color", description = "Sets color of npc highlights", section = areaSectionName)
   default Color areaColor() {
     return new Color(0, 255, 255, 50);
-  }
-
-  @ConfigItem(position = 5, keyName = "areaRave", name = "Enable Rave Mode", description = "Sets all area overlays to Rave Mode", section = areaSectionName)
-  default boolean areaRave() {
-    return false;
-  }
-
-  @ConfigItem(position = 6, keyName = "areaRaveSpeed", name = "Rave Speed", description = "Sets the speed the overlays rave at", section = areaSectionName)
-  @Units(Units.MILLISECONDS)
-  default int areaRaveSpeed() {
-    return 6000;
   }
 }

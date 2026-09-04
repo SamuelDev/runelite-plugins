@@ -53,15 +53,4 @@ public interface HullConfig extends Config {
   default boolean hullAA() {
     return true;
   }
-
-  @ConfigItem(position = 8, keyName = "hullRave", name = "Enable Rave Mode", description = "Sets all hull overlays to Rave Mode", section = hullSectionName)
-  default boolean hullRave() {
-    return false;
-  }
-
-  @ConfigItem(position = 9, keyName = "hullRaveSpeed", name = "Rave Speed", description = "Sets the speed the overlays rave at", section = hullSectionName)
-  @Units(Units.MILLISECONDS)
-  default int hullRaveSpeed() {
-    return 6000;
-  }  
 }
